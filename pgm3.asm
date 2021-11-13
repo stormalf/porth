@@ -24,6 +24,46 @@ pop    rax
 pop    rbx 
 add    rax, rbx 
 push    rax 
+; sub 
+pop    rbx 
+pop    rax 
+sub    rax, rbx 
+push    rax 
+; add 
+pop    rax 
+pop    rbx 
+add    rax, rbx 
+push    rax 
+call print
+; add 
+pop    rax 
+pop    rbx 
+add    rax, rbx 
+push    rax 
+; add 
+pop    rax 
+pop    rbx 
+add    rax, rbx 
+push    rax 
+call print
+; sub 
+pop    rbx 
+pop    rax 
+sub    rax, rbx 
+push    rax 
+; sub 
+pop    rbx 
+pop    rax 
+sub    rax, rbx 
+push    rax 
+; sub 
+pop    rbx 
+pop    rax 
+sub    rax, rbx 
+push    rax 
+call print
+call print
+call print
 mov rax, SYS_EXIT
 mov rdi, 69
 syscall

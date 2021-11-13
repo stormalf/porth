@@ -115,13 +115,19 @@ def parse_word(token):
 def load_program(filename):
     tokens = lex_file(filename)
     isOK = True
-    line_ko = 0
+    current_line = 1
+    first_token = True
     for token in tokens:
         filename, line, col, tok = token
-        if check_first_token(tok, forbidden_tokens) and line != line_ko:
+        if line != current_line:
+            first_token = True            
+            line = current_line        
+        if check_first_token(tok, forbidden_tokens) and first_token:
             print(f"Error Code {ERR_TOK_FORBIDDEN} Token {tok} is forbidden in first position in file {filename}, line {line} column {col}")
-            line_ko = line
+            first_token = False
             isOK = False
+        first_token = False    
+
     return [parse_word(word) for word in tokens], tokens, isOK
     
 #simulate the program execution without compiling it
