@@ -3,6 +3,7 @@
 python3 forth language following youtube tutorial from Tsoding Daily
 
 Link to the gitlab repo : https://gitlab.com/tsoding/porth/-/blob/master/porth.py
+
 Youtube link for the first Tutorial : https://youtu.be/8QP2fDBIxjM?list=PLpM-Dvs8t0VbMZA7wW9aR3EtBqe2kinu4
 
 ## porth compiler usage
@@ -24,6 +25,10 @@ python3 porth.py --help
                             intput file
     -o OUTFILE, --outfile OUTFILE
                             output file
+
+Example to compile :
+
+    python3 porth.py -c -i pgm1.porth -o pgm1
 
 ## release notes
 
