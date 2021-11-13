@@ -11,7 +11,7 @@ Youtube videos from Tsoding Daily
 
 import argparse
 import os
-
+from porth_lexer import lex_file
 __version__ = "1.0.0"
 
 
@@ -139,6 +139,7 @@ def simulate(program):
                 print(f"Unknown opcode: {op}")  
     return stack, error  
 
+#compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode, outfile):
     asmfile = outfile + ".asm"
     output = open(asmfile, "w") 
@@ -169,7 +170,7 @@ def compile(bytecode, outfile):
     os.system(f"nasm -felf64 {asmfile} &&  gcc {outfile}.o -o {outfile} ")
     return error
 
-#generate the bytecode and compile it using nasm and gcc (for printf usage) 
+#generate the bytecode  
 def generate_bytecode(program):
     bytecode=[]
     error = False

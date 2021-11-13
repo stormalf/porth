@@ -14,7 +14,15 @@ print:
         ret
 main:
 push 34
-push 35
+push 34
+; add 
+pop    rax 
+pop    rbx 
+add    rax, rbx 
+push    rax 
+call print
+push 34
+push 34
 ; add 
 pop    rax 
 pop    rbx 
