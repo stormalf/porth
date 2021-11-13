@@ -80,8 +80,9 @@ def dump():
     return (OP_DUMP,)
 
 #returns the function corresponding to the token found
-def parse_word(word):
+def parse_word(token):
     #print(word)
+    filename, line, column, word = token
     if word == PLUS:
         return add()
     elif word == MINUS:
@@ -93,14 +94,13 @@ def parse_word(word):
             number = int(word)
             return push(number)                    
         except ValueError:
-            print(f"Unknown word: {word}")
+            print(f"Unknown word: {word} at line {line}, column {column} in file {filename}")
             return None
 
 #returns the program in the porth language
 def load_program(filename):
-    with open(filename, "r") as f:
-        tokens = f.read().split()
-        return [parse_word(word) for word in tokens], tokens
+    tokens = lex_file(filename)
+    return [parse_word(word) for word in tokens], tokens
     
 #simulate the program execution without compiling it
 def simulate(program):

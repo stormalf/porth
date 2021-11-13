@@ -9,14 +9,14 @@ def lex_file(filename):
 #tokenize a line
 def lex_line(line):
     tokens = line.split()
-    cols= [] 
+    coltok= [] 
     # to manage duplicated tokens in a line
     start = 0
     for token in tokens:
         col = line[start:].find(token) 
         start= col + start + 1  #adding 1 to start from column 1 instead of 0
-        cols.append((start, token))
-    return cols
+        coltok.append((start, token))
+    return coltok
 
        
 #print(lex_file("pgm1.porth"))
