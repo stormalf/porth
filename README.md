@@ -30,6 +30,26 @@ Example to compile :
 
     python3 porth.py -c -i pgm1.porth -o pgm1
 
+## Lexing
+
+It shows all errors in a file and don't compile or simulate if error found during lexing phasis:
+
+python3 porth.py -c -i pgm3.porth -o pgm3
+
+    Error Code 1 Token . is forbidden in first position in file pgm3.porth, line 1 column 1
+    Error Code 1 Token - is forbidden in first position in file pgm3.porth, line 2 column 1
+    Error Code 1 Token + is forbidden in first position in file pgm3.porth, line 3 column 1
+    Error Code 1 Token - is forbidden in first position in file pgm3.porth, line 4 column 1
+    Error Code 1 Token . is forbidden in first position in file pgm3.porth, line 5 column 1
+
+python3 porth.py -c -i pgm4.porth -o pgm4
+
+    Error Code 0 Unknown word: "test" at line 1, column 1 in file pgm4.porth
+    Error Code 0 Unknown word: fqkqjqs at line 2, column 1 in file pgm4.porth
+    Error Code 0 Unknown word: akfkjkj at line 3, column 1 in file pgm4.porth
+    Error Code 0 Unknown word: "''( at line 4, column 1 in file pgm4.porth
+    Error Code 0 Unknown word: ) at line 6, column 1 in file pgm4.porth
+
 ## release notes
 
 1.0.0 initial version
