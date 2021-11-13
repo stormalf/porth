@@ -13,44 +13,17 @@ print:
         call    printf   WRT ..plt               ; printf(format, current_number)
         ret
 main:
-push 34
-push 34
-; add 
-pop    rax 
-pop    rbx 
-add    rax, rbx 
-push    rax 
 call print
-push 34
-push 34
-; add 
-pop    rax 
-pop    rbx 
-add    rax, rbx 
-push    rax 
-call print
-push 500
-push 80
 ; sub 
 pop    rbx 
 pop    rax 
 sub    rax, rbx 
 push    rax 
-call print
-push 344
-push 75
 ; add 
 pop    rax 
 pop    rbx 
 add    rax, rbx 
 push    rax 
-push 37
-; sub 
-pop    rbx 
-pop    rax 
-sub    rax, rbx 
-push    rax 
-call print
 mov rax, SYS_EXIT
 mov rdi, 69
 syscall

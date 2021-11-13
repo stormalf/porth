@@ -18,6 +18,5 @@ def lex_line(line):
         coltok.append((start, token))
     return coltok
 
-       
 #print(lex_file("pgm1.porth"))
 

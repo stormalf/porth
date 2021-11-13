@@ -44,6 +44,7 @@ PLUS= "+"
 MINUS = "-"
 DUMP = "."
 
+forbidden_tokens = [PLUS, MINUS, DUMP]
 
 def porthVersion():
     return f"porth version : {__version__}"
@@ -66,6 +67,10 @@ OP_DUMP=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
+ERR_TOK_UNKNOWN = iota(True)
+ERR_TOK_FORBIDDEN = iota()
+
+
 ##functions for the porth language
 def push(value):
     return (OP_PUSH, value)
@@ -79,10 +84,19 @@ def sub():
 def dump():
     return (OP_DUMP,)
 
+
+def check_first_token(token, forbidden_tokens):
+    isOK = False
+    if token in forbidden_tokens:
+        isOK = True
+    return isOK
+
+
 #returns the function corresponding to the token found
 def parse_word(token):
     #print(word)
     filename, line, column, word = token
+
     if word == PLUS:
         return add()
     elif word == MINUS:
@@ -94,13 +108,21 @@ def parse_word(token):
             number = int(word)
             return push(number)                    
         except ValueError:
-            print(f"Unknown word: {word} at line {line}, column {column} in file {filename}")
-            return None
+            print(f"Error Code {ERR_TOK_UNKNOWN} Unknown word: {word} at line {line}, column {column} in file {filename}")
+            return (None, None, None, None)
 
 #returns the program in the porth language
 def load_program(filename):
     tokens = lex_file(filename)
-    return [parse_word(word) for word in tokens], tokens
+    isOK = True
+    line_ko = 0
+    for token in tokens:
+        filename, line, col, tok = token
+        if check_first_token(tok, forbidden_tokens) and line != line_ko:
+            print(f"Error Code {ERR_TOK_FORBIDDEN} Token {tok} is forbidden in first position in file {filename}, line {line} column {col}")
+            line_ko = line
+            isOK = False
+    return [parse_word(word) for word in tokens], tokens, isOK
     
 #simulate the program execution without compiling it
 def simulate(program):
@@ -195,8 +217,8 @@ def main(args, filename):
     error = False
     tokens=[]
     bytecode=[]
-    program, tokens = load_program(filename)
-    if None in program:
+    program, tokens, isOK = load_program(filename)
+    if program==None or program[0]==(None, None, None, None) or not isOK:
         error = True
     if not error and args.simulate:
         print(f"simulating...")
