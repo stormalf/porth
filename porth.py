@@ -48,6 +48,7 @@ EQUAL = "="
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
 iota_counter= 0
+error_counter = 0
 
 def porthVersion():
     return f"porth version : {__version__}"
@@ -71,7 +72,8 @@ OP_EQUAL=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
-ERR_TOK_UNKNOWN = iota(True)
+NO_ERROR=iota(True)
+ERR_TOK_UNKNOWN = iota()
 ERR_TOK_FORBIDDEN = iota()
 
 
@@ -100,6 +102,7 @@ def check_first_token(token, forbidden_tokens):
 
 #returns the function corresponding to the token found
 def parse_word(token):
+    global error_counter
     #print(word)
     filename, line, column, word = token
 
@@ -117,10 +120,12 @@ def parse_word(token):
             return push(number)                    
         except ValueError:
             print(f"Error Code {ERR_TOK_UNKNOWN} Unknown word: {word} at line {line}, column {column} in file {filename}")
+            error_counter += 1
             return (None, None, None, None)
 
 #returns the program in the porth language
 def load_program(filename):
+    global error_counter
     tokens = lex_file(filename)
     isOK = True
     current_line = 0
@@ -132,6 +137,7 @@ def load_program(filename):
             current_line = line
         if check_first_token(tok, forbidden_tokens) and first_token:
             print(f"Error Code {ERR_TOK_FORBIDDEN} Token {tok} is forbidden in first position in file {filename}, line {line} column {col}")
+            error_counter += 1
             first_token = False
             isOK = False
         first_token = False    
@@ -278,11 +284,14 @@ def main(args, filename):
         else:
             print("compilation failed!")    
 
+    if error:
+        print(f"Errors found in program: {error_counter}")
     if args.dump:
         print(f"dumping...")
         print(f"tokens : {tokens}")
         print(f"stack : {stack}")
-        print(f"bytecode : {bytecode}")        
+        print(f"bytecode : {bytecode}")    
+        print(f"errors : {error_counter}")      
         print("dumping done!")
 
 if __name__=='__main__':
