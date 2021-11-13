@@ -43,6 +43,7 @@ format db  "%20ld", 10, 0
 PLUS= "+"
 MINUS = "-"
 DUMP = "."
+EQUAL = "="
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
@@ -60,10 +61,11 @@ def iota(reset=False):
         iota_counter+=1
     return iota_counter
 
-OP_PUSH=iota()    
+OP_PUSH=iota(True)    
 OP_ADD=iota()
 OP_SUB=iota()
 OP_DUMP=iota()
+OP_EQUAL=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -84,6 +86,8 @@ def sub():
 def dump():
     return (OP_DUMP,)
 
+def equal():
+    return (OP_EQUAL,)
 
 def check_first_token(token, forbidden_tokens):
     isOK = False
@@ -115,13 +119,13 @@ def parse_word(token):
 def load_program(filename):
     tokens = lex_file(filename)
     isOK = True
-    current_line = 1
-    first_token = True
+    current_line = 0
+    first_token = False
     for token in tokens:
         filename, line, col, tok = token
         if line != current_line:
             first_token = True            
-            line = current_line        
+            current_line = line
         if check_first_token(tok, forbidden_tokens) and first_token:
             print(f"Error Code {ERR_TOK_FORBIDDEN} Token {tok} is forbidden in first position in file {filename}, line {line} column {col}")
             first_token = False
@@ -155,6 +159,14 @@ def simulate(program):
                     a = stack.pop()
                     b = stack.pop()
                     stack.append(b - a)
+            elif op[0]==OP_EQUAL:
+                if len(stack) < 2:
+                    print("EQUAL impossible not enough element in stack")
+                    error = True
+                else:
+                    a = stack.pop()
+                    b = stack.pop()
+                    stack.append(b == a)                    
             elif op[0]==OP_DUMP:
                 if len(stack) == 0:
                     print("stack is empty")
@@ -169,6 +181,7 @@ def simulate(program):
 
 #compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode, outfile):
+    assert COUNT_OPS == 5, "Max Opcode implemented!"    
     asmfile = outfile + ".asm"
     output = open(asmfile, "w") 
     output.write(HEADER) 
@@ -188,6 +201,14 @@ def compile(bytecode, outfile):
             output.write("pop    rax \n")
             output.write("sub    rax, rbx \n")                
             output.write("push    rax \n")
+        elif op[0]==OP_EQUAL:
+            output.write("; equal \n")
+            output.write("mov    rcx, 0 \n")
+            output.write("mov    rdx, 1 \n")
+            output.write("pop    rax \n")
+            output.write("pop    rbx \n")            
+            output.write("cmp    rax, rbx \n")                
+            output.write("cmove  rcx, rdx \n")            
         elif op[0]==OP_DUMP:
             output.write("call print\n")   
         else:
