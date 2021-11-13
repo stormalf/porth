@@ -47,10 +47,12 @@ EQUAL = "="
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
+iota_counter= 0
+
 def porthVersion():
     return f"porth version : {__version__}"
 
-iota_counter=0
+
 
 #enum function in python 
 def iota(reset=False):
@@ -107,6 +109,8 @@ def parse_word(token):
         return sub()
     elif word == DUMP:
         return dump()
+    elif word == EQUAL:
+        return equal()        
     else:
         try :
             number = int(word)
@@ -166,7 +170,7 @@ def simulate(program):
                 else:
                     a = stack.pop()
                     b = stack.pop()
-                    stack.append(b == a)                    
+                    stack.append(int(b == a))                    
             elif op[0]==OP_DUMP:
                 if len(stack) == 0:
                     print("stack is empty")
@@ -208,7 +212,9 @@ def compile(bytecode, outfile):
             output.write("pop    rax \n")
             output.write("pop    rbx \n")            
             output.write("cmp    rax, rbx \n")                
-            output.write("cmove  rcx, rdx \n")            
+            output.write("cmove  rcx, rdx \n")  
+            output.write("mov  rax, rcx \n") 
+            output.write("push    rax \n")           
         elif op[0]==OP_DUMP:
             output.write("call print\n")   
         else:
@@ -232,9 +238,10 @@ def generate_bytecode(program):
 
             elif op[0]==OP_SUB:
                 bytecode.append(sub())
-
             elif op[0]==OP_DUMP:
                 bytecode.append(dump())
+            elif op[0]==OP_EQUAL:
+                bytecode.append(equal())                
             else:
                 print(f"Unknown opcode: {op}")    
                 error = True
