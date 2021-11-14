@@ -10,7 +10,7 @@ Youtube link for the first Tutorial : https://youtu.be/8QP2fDBIxjM?list=PLpM-Dvs
 
 python3 porth.py --help
 
-    usage: porth.py [-h] [-V] [-c] [-d] [-b] [-s] -i INPUTFILE [-o OUTFILE]
+    usage: porth.py [-h] [-V] [-c] [-d] [-s] -i INPUTFILE [-o OUTFILE]
 
     porth is a python3 forth language simulation
 
@@ -19,7 +19,6 @@ python3 porth.py --help
     -V, --version         Display the version of porth
     -c, --compile         compile
     -d, --dump            dump
-    -b, --bytecode        generate bytecode
     -s, --simulate        simulate
     -i INPUTFILE, --inputfile INPUTFILE
                             intput file
@@ -50,6 +49,16 @@ python3 porth.py -c -i pgm4.porth -o pgm4
     Error Code 0 Unknown word: "''( at line 4, column 1 in file pgm4.porth
     Error Code 0 Unknown word: ) at line 6, column 1 in file pgm4.porth
 
+Exemple with simulation instead of compilation :
+
+    python3 porth.py -s -i pgm7.porth -o pgm7
+
+    simulating...
+    777
+    simulation succeeded!
+
 ## release notes
 
 1.0.0 initial version
+
+1.0.1 restructuring the code, adding simple IF/END statement and removing generate_bytecode function (no adding value and duplicated code)
