@@ -26,10 +26,10 @@ def main(args, filename):
     bytecode=[]
     stack = []
     program, tokens, isOK = load_program(filename)
-    if program==None or program[0]==(None, None, None, None) or not isOK:
+    if program==None or program[0]==(None, None, None, None, None) or not isOK:
         error = True
     if not error and args.simulate:
-        print(f"simulating...")
+        print("simulating...")
         stack, error = simulate(program)
         if not error:
             #print(f"stack : {stack}")
@@ -37,21 +37,21 @@ def main(args, filename):
         else:
             print("simulation failed!")
     if not error and (args.bytecode or args.compile):
-        bytecode, error = generate_bytecode(program)
+        print("generating bytecode...")
+        bytecode, error = generate_bytecode(program, tokens)
         if not error:
-            print(f"bytecode : {bytecode}")            
+            #print(f"bytecode : {bytecode}")            
             print("bytecode generated!")
         else:
             print("bytecode generation failed!")
             error = True
     if not error and args.compile:
-        print(f"compiling...")
+        print("compiling...")
         error = compile(bytecode, args.outfile)
         if not error:
             print("compilation done!")
         else:
             print("compilation failed!")    
-
     if error:
         print(f"Errors found in program: {get_counter_error()}")
     if args.dump:
