@@ -96,35 +96,6 @@ def simulate(program):
     return stack, error  
 
 
-#generate the bytecode  
-def generate_bytecode(program, tokens):
-    bytecode=[]
-    bytecode_xref = []
-    error = False
-    if not error:    
-        for op in program:
-            if op[0]==get_OP_PUSH():
-                bytecode.append(push(op[1]))
-            elif op[0]==get_OP_ADD():
-                bytecode.append(add())
-
-            elif op[0]==get_OP_SUB():
-                bytecode.append(sub())
-            elif op[0]==get_OP_DUMP():
-                bytecode.append(dump())
-            elif op[0]==get_OP_EQUAL():
-                bytecode.append(equal())                
-            elif op[0]==get_OP_IF():
-                bytecode.append(opif())                  
-            elif op[0]==get_OP_END():
-                bytecode.append(opend())                  
-            else:
-                print(f"Unknown opcode: {op}")    
-                error = True
-        bytecode_xref = cross_reference_block(bytecode, tokens)                
-    return bytecode_xref, error
-
-
 #compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode, outfile):
     assert get_OPS() == 9, "Max Opcode implemented!"    
