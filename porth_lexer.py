@@ -9,6 +9,7 @@ DUMP = "."
 EQUAL = "="
 OPIF = "IF"
 OPEND = "END"
+OPELSE= "ELSE"
 NUMBER= "number"
 UNKNOWN= "unknown"
 
@@ -52,6 +53,8 @@ def get_token_type(token):
         return OP_IF
     elif token == OPEND:
         return OP_END
+    elif token == OPELSE:
+        return OP_ELSE        
     else:       
         try:
             int(token)
@@ -73,6 +76,8 @@ def get_token_type_label(token):
         return OPIF
     elif token == OP_END:
         return OPEND
+    elif token == OP_ELSE:
+        return OPELSE        
     elif token == OP_NUMBER:
         return NUMBER
     elif token == OP_UNKNOWN:
@@ -95,6 +100,7 @@ OP_DUMP=iota()
 OP_EQUAL=iota()
 OP_IF=iota()
 OP_END=iota()
+OP_ELSE=iota()
 OP_NUMBER=iota()
 OP_UNKNOWN=iota()
 #keep in last line to have the counter working
@@ -129,6 +135,10 @@ def opif():
 def opend():
     return (OP_END,)    
 
+def opelse():
+    return (OP_ELSE,)    
+
+
 #returns the list of forbidden tokens as first token in a line (probably need to be removed if we accept multilines for a single instruction)
 def check_first_token(token, forbidden_tokens):
     isOK = False
@@ -153,7 +163,9 @@ def parse_word(token):
     elif word == OPIF:
         return opif()  
     elif word == OPEND:
-        return opend()                              
+        return opend() 
+    elif word == OPELSE:
+        return opelse()                                        
     else:
         try :
             number = int(word)
@@ -202,14 +214,25 @@ def cross_reference_block(program, tokens):
         if op[0] == OP_IF:
             stack.append(ip)
             iffound = True
+        elif op[0] == OP_ELSE:            
+            if not iffound:
+                print(f"Error Code {ERR_TOK_BLOCK} ELSE without IF in file {filename}, line {line} column {col}")
+                error_counter += 1
+            else:
+                if_ip = stack.pop()
+                program[if_ip] = (OP_IF, ip + 1)
+                iffound = False             
+                stack.append(ip)   
         elif op[0] == OP_END:
             endfound = True
             if len(stack) == 0:
                 print(f"Error Code {ERR_TOK_BLOCK} END without IF at line {line} column {col}, in file {filename}")
                 error_counter += 1
             else:
-                if_ip = stack.pop()
-                program[if_ip]= (OP_IF, ip)
+                block_ip = stack.pop()
+                if program[block_ip][0] == OP_IF or program[block_ip][0] == OP_ELSE:
+                    program[block_ip] = (program[block_ip][0], ip)
+
     if iffound and not endfound:
         print(f"Error Code {ERR_TOK_BLOCK} IF without END at line {line}")
         error_counter += 1
@@ -237,8 +260,12 @@ def get_OP_EQUAL():
 def get_OP_IF():
     return OP_IF
 
-def get_OP_END():
+def get_OP_END():    
     return OP_END
+
+def get_OP_ELSE():
+    return OP_ELSE
+
 
 # program, tokens, isOK = load_program("pgm6.porth")
 # print(cross_reference_block(program, tokens))

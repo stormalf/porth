@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import os
-from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, add, load_program, sub, push, dump, equal, opif, opend, cross_reference_block
+from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE
 
 #header assembly that contains the printf call function
 HEADER = '''%define SYS_EXIT 60\n
@@ -29,7 +29,7 @@ format db  "%20ld", 10, 0
 
 #simulate the program execution without compiling it
 def simulate(program):
-    assert get_OPS() == 9, "Max Opcode implemented!"
+    assert get_OPS() == 10, "Max Opcode implemented!"
     stack=[]
     error = False
     ip = 0
@@ -87,8 +87,12 @@ def simulate(program):
                         assert len(op) >= 2, "if instruction does not have an End instruction!"
                         ip = op[1]
                         pass
+            elif op[0]==get_OP_ELSE():
+                ip += 1  
+                assert len(op) >= 2, "else instruction does not have an End instruction!"   
+                ip = op[1]                      
             elif op[0]==get_OP_END():
-                ip += 1                
+                ip += 1
             else:
                 ip += 1                
                 error = True
@@ -98,13 +102,14 @@ def simulate(program):
 
 #compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode, outfile):
-    assert get_OPS() == 9, "Max Opcode implemented!"    
+    assert get_OPS() == 10, "Max Opcode implemented!"    
     asmfile = outfile + ".asm"
     output = open(asmfile, "w") 
     output.write(HEADER) 
     error = False    
-    jumpaddress = 0
-    for op in bytecode:
+    #print(bytecode)
+    for ip in range(len(bytecode)):
+        op = bytecode[ip]
         if op[0]==get_OP_PUSH():
             output.write(f"push {op[1]}\n")
         elif op[0]==get_OP_ADD():
@@ -130,15 +135,21 @@ def compile(bytecode, outfile):
             output.write("mov  rax, rcx \n") 
             output.write("push    rax \n")           
         elif op[0]==get_OP_IF():
+            assert len(op) >= 2, f"compile error! if instruction does not have an End instruction! {op}"            
             output.write("; if \n")
             output.write("pop    rax \n")
             output.write("test    rax, rax \n")
-            assert len(op) >= 2, f"compile error! if instruction does not have an End instruction! {op}"
             jumpaddress = op[1]
-            output.write(f"jz    addr_{jumpaddress} \n")
+            output.write(f"jz    addr_{op[1]} \n")
+        elif op[0]==get_OP_ELSE(): 
+            assert len(op) >= 2, f"compile error! else instruction does not have an End instruction! {op}"
+            jumpelse = op[1]
+            output.write("; else \n")
+            output.write(f"jmp    addr_{op[1]} \n")  
+            output.write(f"addr_{ip+1}: \n")    
         elif op[0]==get_OP_END():
             output.write("; end \n")
-            output.write(f"addr_{jumpaddress}: \n")
+            output.write(f"addr_{ip}: \n")
         elif op[0]==get_OP_DUMP():
             output.write("pop rax \n")
             output.write("call print\n")   

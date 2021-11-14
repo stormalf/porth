@@ -20,6 +20,7 @@ pop    rax
 pop    rbx 
 add    rax, rbx 
 push    rax 
+pop rax 
 call print
 push 34
 push 34
@@ -28,6 +29,7 @@ pop    rax
 pop    rbx 
 add    rax, rbx 
 push    rax 
+pop rax 
 call print
 push 500
 push 80
@@ -36,6 +38,7 @@ pop    rbx
 pop    rax 
 sub    rax, rbx 
 push    rax 
+pop rax 
 call print
 push 344
 push 75
@@ -50,6 +53,7 @@ pop    rbx
 pop    rax 
 sub    rax, rbx 
 push    rax 
+pop rax 
 call print
 mov rax, SYS_EXIT
 mov rdi, 69

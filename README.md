@@ -62,3 +62,5 @@ Exemple with simulation instead of compilation :
 1.0.0 initial version
 
 1.0.1 restructuring the code, adding simple IF/END statement and removing generate_bytecode function (no adding value and duplicated code)
+
+1.0.2 adding ELSE statement

@@ -65,6 +65,41 @@ pop rax
 call print
 ; end 
 addr_17: 
+push 17
+pop rax 
+call print
+push 12
+push 12
+; add 
+pop    rax 
+pop    rbx 
+add    rax, rbx 
+push    rax 
+push 24
+; equal 
+mov    rcx, 0 
+mov    rdx, 1 
+pop    rax 
+pop    rbx 
+cmp    rax, rbx 
+cmove  rcx, rdx 
+mov  rax, rcx 
+push    rax 
+; if 
+pop    rax 
+test    rax, rax 
+jz    addr_29 
+push 24
+pop rax 
+call print
+; else 
+jmp    addr_31 
+addr_29: 
+push 2
+pop rax 
+call print
+; end 
+addr_31: 
 mov rax, SYS_EXIT
 mov rdi, 69
 syscall

@@ -20,6 +20,7 @@ pop    rax
 pop    rbx 
 add    rax, rbx 
 push    rax 
+pop rax 
 call print
 mov rax, SYS_EXIT
 mov rdi, 69
