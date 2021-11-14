@@ -10,7 +10,8 @@ Youtube videos from Tsoding Daily
 '''
 
 import argparse
-from porth_lexer import get_counter_error, load_program, simulate, generate_bytecode, compile
+from porth_lexer import get_counter_error, load_program
+from porth_compiler import compile, generate_bytecode, simulate
 __version__ = "1.0.0"
 
 
@@ -23,6 +24,7 @@ def main(args, filename):
     error = False
     tokens=[]
     bytecode=[]
+    stack = []
     program, tokens, isOK = load_program(filename)
     if program==None or program[0]==(None, None, None, None) or not isOK:
         error = True
