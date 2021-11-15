@@ -10,7 +10,7 @@ Youtube link for the first Tutorial : https://youtu.be/8QP2fDBIxjM?list=PLpM-Dvs
 
 python3 porth.py --help
 
-    usage: porth.py [-h] [-V] [-c] [-d] [-s] -i INPUTFILE [-o OUTFILE]
+    usage: porth.py [-h] [-V] [-c] [-d] [-s] -i INPUTFILE [-o OUTFILE] [-a]
 
     porth is a python3 forth language simulation
 
@@ -24,6 +24,7 @@ python3 porth.py --help
                             intput file
     -o OUTFILE, --outfile OUTFILE
                             output file
+    -a, --ast             ast tree
 
 Example to compile :
 
@@ -64,3 +65,5 @@ Exemple with simulation instead of compilation :
 1.0.1 restructuring the code, adding simple IF/END statement and removing generate_bytecode function (no adding value and duplicated code)
 
 1.0.2 adding ELSE statement
+
+1.0.3 adding a kind of AST Tree

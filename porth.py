@@ -12,7 +12,7 @@ Youtube videos from Tsoding Daily
 import argparse
 from porth_lexer import get_counter_error, load_program, print_ast
 from porth_compiler import compile, simulate
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 
 def porthVersion():
