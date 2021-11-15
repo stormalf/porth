@@ -13,6 +13,16 @@ OPELSE= "ELSE"
 NUMBER= "number"
 UNKNOWN= "unknown"
 
+LABEL_PLUS= "PLUS"
+LABEL_MINUS= "MINUS"
+LABEL_DUMP= "PRINT"
+LABEL_EQUAL= "EQUAL"
+LABEL_IF= "IF"
+LABEL_ELSE= "ELSE"
+LABEL_END= "END"
+LABEL_NUMBER = "NUMBER"
+LABEL_UNKNOWN = "UNKNOWN"
+
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
 iota_counter= 0
@@ -63,25 +73,25 @@ def get_token_type(token):
             return OP_UNKNOWN
 
 #returns the label for the token type
-def get_token_type_label(token):
-    if token == OP_ADD:
-        return PLUS
-    elif token == OP_SUB:
-        return MINUS
-    elif token == OP_DUMP:
-        return DUMP
-    elif token == OP_EQUAL:
-        return EQUAL
-    elif token == OP_IF:
-        return OPIF
-    elif token == OP_END:
-        return OPEND
-    elif token == OP_ELSE:
-        return OPELSE        
-    elif token == OP_NUMBER:
-        return NUMBER
-    elif token == OP_UNKNOWN:
-        return UNKNOWN
+def get_token_type_label(tokentype):
+    if tokentype == OP_ADD:
+        return LABEL_PLUS
+    elif tokentype == OP_SUB:
+        return LABEL_MINUS
+    elif tokentype == OP_DUMP:
+        return LABEL_DUMP
+    elif tokentype == OP_EQUAL:
+        return LABEL_EQUAL
+    elif tokentype == OP_IF:
+        return LABEL_IF
+    elif tokentype == OP_END:
+        return LABEL_END
+    elif tokentype == OP_ELSE:
+        return LABEL_ELSE        
+    elif tokentype == OP_NUMBER:
+        return LABEL_NUMBER
+    elif tokentype == OP_UNKNOWN:
+        return LABEL_UNKNOWN
 
 
 #enum function in python 
@@ -274,6 +284,29 @@ def get_OP_END():
 def get_OP_ELSE():
     return OP_ELSE
 
+def print_ast(ast):
+    print("----------------------------------")
+    print('------------ AST TREE ------------')
+    print("----------------------------------")
+    #print(OP_PUSH, OP_ADD, OP_SUB, OP_DUMP, OP_EQUAL, OP_IF, OP_END, OP_ELSE)
+    indent = 0
+    for *_, tokentype, token in ast:
+        tokenlabel = get_token_type_label(tokentype)
+        print(tokenlabel, token)        
+        if tokentype == OP_IF:
+            print("if-body")
+            indent += 2
+        elif tokentype == OP_ELSE:
+            print("else-body")
+        elif tokentype == OP_END:
+            print("end-body")
+            indent -= 2
+        for i in range(indent):
+            print(" ", end="")
+    print("----------------------------------")
 
-# program, tokens, isOK = load_program("pgm6.porth")
+
+
+# program, tokens, isOK = load_program("pgm8.porth")
 # print(cross_reference_block(program, tokens))
+# print_ast(tokens)

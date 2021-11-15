@@ -10,7 +10,7 @@ Youtube videos from Tsoding Daily
 '''
 
 import argparse
-from porth_lexer import get_counter_error, load_program
+from porth_lexer import get_counter_error, load_program, print_ast
 from porth_compiler import compile, simulate
 __version__ = "1.0.2"
 
@@ -43,6 +43,8 @@ def main(args, filename):
             print("compilation failed!")    
     if error:
         print(f"Errors found in program {filename}: {get_counter_error()}")
+    if args.ast and not error:
+        print_ast(tokens)
     if args.dump:
         print(f"dumping...")
         print(f"tokens : {tokens}")
@@ -58,6 +60,7 @@ if __name__=='__main__':
     parser.add_argument('-s', '--simulate', help='simulate', action="store_true", required=False)
     parser.add_argument('-i', '--inputfile', help='intput file', required=True)
     parser.add_argument('-o', '--outfile', help='output file', default="output", required=False)
+    parser.add_argument('-a', '--ast', help='ast tree', action="store_true", required=False)  
     args = parser.parse_args()
     #program=[push(51), push(32), add(), dump(), push(528), push(140), sub(), dump()]
     program = args.inputfile
