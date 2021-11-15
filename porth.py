@@ -42,7 +42,7 @@ def main(args, filename):
         else:
             print("compilation failed!")    
     if error:
-        print(f"Errors found in program: {get_counter_error()}")
+        print(f"Errors found in program {filename}: {get_counter_error()}")
     if args.dump:
         print(f"dumping...")
         print(f"tokens : {tokens}")

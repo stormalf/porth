@@ -10,3 +10,11 @@ END
 ELSE
 2 .
 END
+10 10 - 0 = IF
+    1 IF 
+    10 .
+    ELSE
+    20 .
+    END
+19 .
+END

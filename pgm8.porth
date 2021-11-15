@@ -1,0 +1,10 @@
+0 IF
+    1 IF
+    10 .
+    ELSE 
+    20 .
+    END
+17 .
+ELSE    
+    40 .
+END

@@ -100,8 +100,43 @@ pop rax
 call print
 ; end 
 addr_31: 
-mov rax, SYS_EXIT
-mov rdi, 69
-syscall
-section .data
-format db  "%20ld", 10, 0
+push 10
+push 10
+; sub 
+pop    rbx 
+pop    rax 
+sub    rax, rbx 
+push    rax 
+push 0
+; equal 
+mov    rcx, 0 
+mov    rdx, 1 
+pop    rax 
+pop    rbx 
+cmp    rax, rbx 
+cmove  rcx, rdx 
+mov  rax, rcx 
+push    rax 
+; if 
+pop    rax 
+test    rax, rax 
+jz    addr_51 
+push 1
+; if 
+pop    rax 
+test    rax, rax 
+jz    addr_43 
+push 10
+pop rax 
+call print
+; else 
+jmp    addr_45 
+addr_43: 
+push 20
+pop rax 
+call print
+; end 
+addr_45: 
+push 19
+pop rax 
+call print

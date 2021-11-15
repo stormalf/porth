@@ -179,7 +179,9 @@ def parse_word(token):
 def load_program(filename):
     program, tokens, isOK = load_program_first_pass(filename)
     if isOK:
-        program_xref = cross_reference_block(program, tokens)
+        program_xref, error = cross_reference_block(program, tokens)
+        if error:
+            isOK = False
     return program_xref, tokens, isOK
 
 #do a first pass  to parse tokesn and check for errors
@@ -206,37 +208,43 @@ def load_program_first_pass(filename):
 def cross_reference_block(program, tokens):
     global error_counter
     stack = []
-    iffound = False
-    endfound = False
+    ifarray= []
+    error = False
     for ip in range(len(program)):
+        #print(stack)
         filename, line, col, *_ = tokens[ip]
         op = program[ip]
         if op[0] == OP_IF:
+            #print(f"IF {ip} {op}")
             stack.append(ip)
-            iffound = True
-        elif op[0] == OP_ELSE:            
-            if not iffound:
+            ifarray.append(ip)
+        elif op[0] == OP_ELSE:    
+            #print(f"ELSE {ip} {op}")        
+            if len(ifarray) == 0:
                 print(f"Error Code {ERR_TOK_BLOCK} ELSE without IF in file {filename}, line {line} column {col}")
                 error_counter += 1
             else:
                 if_ip = stack.pop()
                 program[if_ip] = (OP_IF, ip + 1)
-                iffound = False             
                 stack.append(ip)   
         elif op[0] == OP_END:
-            endfound = True
-            if len(stack) == 0:
+            #print(f"END {ip} {op}")
+            if len(ifarray) == 0:
                 print(f"Error Code {ERR_TOK_BLOCK} END without IF at line {line} column {col}, in file {filename}")
                 error_counter += 1
             else:
+                ifarray.pop()
                 block_ip = stack.pop()
                 if program[block_ip][0] == OP_IF or program[block_ip][0] == OP_ELSE:
                     program[block_ip] = (program[block_ip][0], ip)
 
-    if iffound and not endfound:
-        print(f"Error Code {ERR_TOK_BLOCK} IF without END at line {line}")
+    if len(ifarray) > 0:
+        print(f"Error Code {ERR_TOK_BLOCK} IF ELSE END missing one")
         error_counter += 1
-    return program
+    if error_counter > 0:
+        print(f"{error_counter} errors found during cross references")        
+        error= True
+    return program, error
 
 
 def get_OPS():

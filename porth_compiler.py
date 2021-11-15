@@ -24,7 +24,7 @@ FOOTER = '''mov rax, SYS_EXIT
 mov rdi, 69
 syscall
 section .data
-format db  "%20ld", 10, 0
+format db  "%d", 10, 0
 '''
 
 #simulate the program execution without compiling it
@@ -33,10 +33,10 @@ def simulate(program):
     stack=[]
     error = False
     ip = 0
+    #print(program)
     if not error:
         while ip < len(program):
             op = program[ip]
-            #print(op)
             if op[0]==get_OP_PUSH():
                 ip += 1
                 stack.append(op[1])
@@ -76,7 +76,6 @@ def simulate(program):
                     a = stack.pop()
                     print(a)
             elif op[0]==get_OP_IF():
-                #print(stack)
                 ip += 1                
                 if len(stack) == 0:
                     print("stack is empty impossible to execute if statement")
