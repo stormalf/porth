@@ -50,7 +50,7 @@ python3 porth.py -c -i pgm4.porth -o pgm4
     Error Code 0 Unknown word: "''( at line 4, column 1 in file pgm4.porth
     Error Code 0 Unknown word: ) at line 6, column 1 in file pgm4.porth
 
-Exemple with simulation instead of compilation :
+Example with simulation instead of compilation :
 
     python3 porth.py -s -i pgm7.porth -o pgm7
 
