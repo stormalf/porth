@@ -12,6 +12,9 @@ OPEND = "END"
 OPELSE= "ELSE"
 NUMBER= "number"
 UNKNOWN= "unknown"
+OPDUP="DUP"
+OPGT = ">"
+OPLT = "<"
 
 LABEL_PLUS= "PLUS"
 LABEL_MINUS= "MINUS"
@@ -22,6 +25,9 @@ LABEL_ELSE= "ELSE"
 LABEL_END= "END"
 LABEL_NUMBER = "NUMBER"
 LABEL_UNKNOWN = "UNKNOWN"
+LABEL_DUP="DUPLICATE"
+LABEL_GT= "GREATER"
+LABEL_LT= "LESSER"
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
@@ -65,6 +71,12 @@ def get_token_type(token):
         return OP_END
     elif token == OPELSE:
         return OP_ELSE        
+    elif token == OPDUP:
+        return OP_DUP     
+    elif token == OPGT:
+        return OP_GT          
+    elif token == OPLT:
+        return OP_LT           
     else:       
         try:
             int(token)
@@ -92,7 +104,12 @@ def get_token_type_label(tokentype):
         return LABEL_NUMBER
     elif tokentype == OP_UNKNOWN:
         return LABEL_UNKNOWN
-
+    elif tokentype == OP_DUP:
+        return LABEL_DUP
+    elif tokentype == OP_GT:
+        return LABEL_GT        
+    elif tokentype == OP_LT:
+        return LABEL_LT   
 
 #enum function in python 
 def iota(reset=False):
@@ -113,6 +130,9 @@ OP_END=iota()
 OP_ELSE=iota()
 OP_NUMBER=iota()
 OP_UNKNOWN=iota()
+OP_DUP=iota()
+OP_GT=iota()
+OP_LT=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -148,6 +168,15 @@ def opend():
 def opelse():
     return (OP_ELSE,)    
 
+def opdup():
+    return (OP_DUP,)    
+
+def opgt():
+    return (OP_GT,)    
+
+def oplt():
+    return (OP_LT,)    
+
 
 #returns the list of forbidden tokens as first token in a line (probably need to be removed if we accept multilines for a single instruction)
 def check_first_token(token, forbidden_tokens):
@@ -175,7 +204,13 @@ def parse_word(token):
     elif word == OPEND:
         return opend() 
     elif word == OPELSE:
-        return opelse()                                        
+        return opelse() 
+    elif word == OPDUP:
+        return opdup()                                                    
+    elif word == OPGT:
+        return opgt()          
+    elif word == OPLT:
+        return oplt()           
     else:
         try :
             number = int(word)
@@ -283,6 +318,15 @@ def get_OP_END():
 
 def get_OP_ELSE():
     return OP_ELSE
+
+def get_OP_DUP():
+    return OP_DUP
+
+def get_OP_GT():
+    return OP_GT
+
+def get_OP_LT():
+    return OP_LT
 
 def print_ast(ast):
     print("----------------------------------")

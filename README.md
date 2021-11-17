@@ -67,3 +67,5 @@ Example with simulation instead of compilation :
 1.0.2 adding ELSE statement
 
 1.0.3 adding a kind of AST Tree
+
+1.0.4 adding DUP, > and < operators
