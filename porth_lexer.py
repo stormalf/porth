@@ -60,11 +60,8 @@ def lex_file(filename):
 
 #tokenize a line
 def lex_line(line):
-    print(line)
     linewithoutcomments = split(line, COMMENTS)
-    print(linewithoutcomments)    
     tokens = linewithoutcomments[0].split()
-    print(tokens)
     coltok= [] 
     # to manage duplicated tokens in a line
     start = 0
@@ -404,6 +401,9 @@ def print_ast(ast):
         if tokentype == OP_IF:
             print("if-body")
             indent += 2
+        if tokentype == OP_DO:
+            print("do-body")
+            indent += 2            
         elif tokentype == OP_ELSE:
             print("else-body")
         elif tokentype == OP_END:
