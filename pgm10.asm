@@ -15,54 +15,58 @@ print:
 main:
 addr_0: 
 ; push 
-push 0
+push 100
 addr_1: 
-; if 
+; while 
+addr_2: 
+; dup 
+pop rax 
+push rax
+push rax
+addr_3: 
+; push 
+push 0
+addr_4: 
+; gt 
+mov    rcx, 0 
+mov    rdx, 1 
+pop    rbx 
+pop    rax 
+cmp    rax, rbx 
+cmovg  rcx, rdx 
+mov  rax, rcx 
+push    rax 
+addr_5: 
+; do 
 pop    rax 
 test    rax, rax 
-jz    addr_13 
-addr_2: 
+jz    addr_11 
+addr_6: 
+; dup 
+pop rax 
+push rax
+push rax
+addr_7: 
+pop rax 
+call print
+addr_8: 
 ; push 
 push 1
-addr_3: 
-; if 
-pop    rax 
-test    rax, rax 
-jz    addr_7 
-addr_4: 
-; push 
-push 10
-addr_5: 
-pop rax 
-call print
-addr_6: 
-; else 
-jmp    addr_9 
-addr_7: 
-; push 
-push 20
-addr_8: 
-pop rax 
-call print
 addr_9: 
-; end 
+; sub 
+pop    rbx 
+pop    rax 
+sub    rax, rbx 
+push    rax 
 addr_10: 
-; push 
-push 17
-addr_11: 
-pop rax 
-call print
-addr_12: 
-; else 
-jmp    addr_15 
-addr_13: 
-; push 
-push 40
-addr_14: 
-pop rax 
-call print
-addr_15: 
 ; end 
+jmp    addr_1 
+addr_11: 
+; push 
+push 100
+addr_12: 
+pop rax 
+call print
 mov rax, SYS_EXIT
 mov rdi, 69
 syscall

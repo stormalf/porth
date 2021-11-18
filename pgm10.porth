@@ -1,0 +1,6 @@
+100
+WHILE DUP 0 > DO
+    DUP .
+    1 -
+END 
+100 .

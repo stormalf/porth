@@ -69,3 +69,5 @@ Example with simulation instead of compilation :
 1.0.3 adding a kind of AST Tree
 
 1.0.4 adding DUP, > and < operators
+
+1.0.5 fixing GT/LT and adding WHILE/DO/END (Episode 3)

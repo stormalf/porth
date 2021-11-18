@@ -15,6 +15,8 @@ UNKNOWN= "unknown"
 OPDUP="DUP"
 OPGT = ">"
 OPLT = "<"
+OPWHILE = "WHILE"
+OPDO = "DO"
 
 LABEL_PLUS= "PLUS"
 LABEL_MINUS= "MINUS"
@@ -28,6 +30,8 @@ LABEL_UNKNOWN = "UNKNOWN"
 LABEL_DUP="DUPLICATE"
 LABEL_GT= "GREATER"
 LABEL_LT= "LESSER"
+LABEL_WHILE= "WHILE"
+LABEL_DO= "DO"
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
@@ -76,7 +80,11 @@ def get_token_type(token):
     elif token == OPGT:
         return OP_GT          
     elif token == OPLT:
-        return OP_LT           
+        return OP_LT    
+    elif token == OPWHILE:
+        return OP_WHILE   
+    elif token == OPDO:
+        return OP_DO                           
     else:       
         try:
             int(token)
@@ -110,6 +118,10 @@ def get_token_type_label(tokentype):
         return LABEL_GT        
     elif tokentype == OP_LT:
         return LABEL_LT   
+    elif tokentype == OP_WHILE:
+        return LABEL_WHILE
+    elif tokentype == OP_DO:
+        return LABEL_DO
 
 #enum function in python 
 def iota(reset=False):
@@ -133,6 +145,8 @@ OP_UNKNOWN=iota()
 OP_DUP=iota()
 OP_GT=iota()
 OP_LT=iota()
+OP_WHILE=iota()
+OP_DO=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -177,6 +191,11 @@ def opgt():
 def oplt():
     return (OP_LT,)    
 
+def opwhile():
+    return (OP_WHILE,)    
+
+def opdo():
+    return (OP_DO,)   
 
 #returns the list of forbidden tokens as first token in a line (probably need to be removed if we accept multilines for a single instruction)
 def check_first_token(token, forbidden_tokens):
@@ -210,7 +229,11 @@ def parse_word(token):
     elif word == OPGT:
         return opgt()          
     elif word == OPLT:
-        return oplt()           
+        return oplt()   
+    elif word == OPWHILE:
+        return opwhile() 
+    elif word == OPDO:
+        return opdo()                           
     else:
         try :
             number = int(word)
@@ -274,15 +297,34 @@ def cross_reference_block(program, tokens):
                 stack.append(ip)   
         elif op[0] == OP_END:
             #print(f"END {ip} {op}")
-            if len(ifarray) == 0:
-                print(f"Error Code {ERR_TOK_BLOCK} END without IF at line {line} column {col}, in file {filename}")
+            if len(ifarray) == 0 :
+                print(f"Error Code {ERR_TOK_BLOCK} END without IF/ELSE/DO at line {line} column {col}, in file {filename}")
                 error_counter += 1
             else:
                 ifarray.pop()
                 block_ip = stack.pop()
                 if program[block_ip][0] == OP_IF or program[block_ip][0] == OP_ELSE:
                     program[block_ip] = (program[block_ip][0], ip)
-
+                    program[ip] = (OP_END, ip + 1)
+                elif program[block_ip][0] == OP_DO:
+                    program[ip] = (OP_END, program[block_ip][1])
+                    program[block_ip] = (OP_DO, ip + 1)
+                else:
+                    print(f"Error Code {ERR_TOK_BLOCK} END without IF/ELSE/DO at line {line} column {col}, in file {filename}")
+                    error_counter += 1
+        elif op[0] == OP_WHILE:
+            #print(f"DO {ip} {op}")
+            stack.append(ip)
+        elif op[0] == OP_DO:
+            ifarray.append(ip)
+            #print(f"DO {ip} {op}")
+            if len(stack) == 0:
+                print(f"Error Code {ERR_TOK_BLOCK} DO without WHILE in file {filename}, line {line} column {col}")
+                error_counter += 1
+            else:
+                while_ip = stack.pop()
+                program[ip] = (OP_DO, while_ip)
+                stack.append(ip)
     if len(ifarray) > 0:
         print(f"Error Code {ERR_TOK_BLOCK} IF ELSE END missing one")
         error_counter += 1
@@ -327,6 +369,12 @@ def get_OP_GT():
 
 def get_OP_LT():
     return OP_LT
+
+def get_OP_WHILE():
+    return OP_WHILE
+
+def get_OP_DO():
+    return OP_DO
 
 def print_ast(ast):
     print("----------------------------------")

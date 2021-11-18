@@ -13,17 +13,23 @@ print:
         call    printf   WRT ..plt               ; printf(format, current_number)
         ret
 main:
+addr_0: 
+; push 
 push 40
+addr_1: 
+; push 
 push 17
+addr_2: 
 ; add 
 pop    rax 
 pop    rbx 
 add    rax, rbx 
 push    rax 
+addr_3: 
 pop rax 
 call print
 mov rax, SYS_EXIT
 mov rdi, 69
 syscall
 section .data
-format db  "%20ld", 10, 0
+format db  "%d", 10, 0

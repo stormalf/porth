@@ -3,7 +3,7 @@
 import os
 from porth_lexer import get_OP_ADD, get_OP_GT, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, \
     get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, \
-    get_OP_GT, get_OP_LT
+    get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO
 
 #header assembly that contains the printf call function
 HEADER = '''%define SYS_EXIT 60\n
@@ -30,7 +30,7 @@ format db  "%d", 10, 0
 '''
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 13
+MAX_OPS = 15
 
 #simulate the program execution without compiling it
 def simulate(program):
@@ -41,6 +41,7 @@ def simulate(program):
     #print(program)
     if not error:
         while ip < len(program):
+            #print(stack)
             op = program[ip]
             if op[0]==get_OP_PUSH():
                 ip += 1
@@ -92,11 +93,12 @@ def simulate(program):
                         ip = op[1]
                         pass
             elif op[0]==get_OP_ELSE():
-                ip += 1  
+                #ip += 1  
                 assert len(op) >= 2, "else instruction does not have an End instruction!"   
                 ip = op[1]                      
             elif op[0]==get_OP_END():
-                ip += 1
+                assert len(op) >= 2, "end instruction does not have next instruction to jump check the crossreferences!"                 
+                ip = op[1]
             elif op[0]==get_OP_DUP():
                 a = stack.pop()
                 stack.append(a)
@@ -109,7 +111,7 @@ def simulate(program):
                 else:                
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(int(b > a)) 
+                    stack.append(int(a > b)) 
                 ip += 1             
             elif op[0]==get_OP_LT():
                 if len(stack) < 2:
@@ -118,8 +120,19 @@ def simulate(program):
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(int(b < a))                 
-                ip += 1                                   
+                    stack.append(int(a < b))                 
+                ip += 1   
+            elif op[0]==get_OP_WHILE():
+                ip += 1                
+            elif op[0]==get_OP_DO():
+                #ip += 1
+                a = stack.pop()
+                if a == 0:
+                    assert len(op) >= 2, "end instruction does not have next instruction to jump, check the crossreferences!"    
+                    ip = op[1]
+                else:
+                    ip += 1    
+                                                            
             else:
                 ip += 1                
                 error = True
@@ -137,7 +150,9 @@ def compile(bytecode, outfile):
     #print(bytecode)
     for ip in range(len(bytecode)):
         op = bytecode[ip]
+        output.write(f"addr_{ip}: \n")
         if op[0]==get_OP_PUSH():
+            output.write("; push \n")             
             output.write(f"push {op[1]}\n")
         elif op[0]==get_OP_ADD():
             output.write("; add \n")
@@ -162,21 +177,21 @@ def compile(bytecode, outfile):
             output.write("mov  rax, rcx \n") 
             output.write("push    rax \n")           
         elif op[0]==get_OP_IF():
-            assert len(op) >= 2, f"compile error! if instruction does not have an End instruction! {op}"            
+            assert len(op) >= 2, f"compile error! IF instruction does not have an END instruction! {op}"            
             output.write("; if \n")
             output.write("pop    rax \n")
             output.write("test    rax, rax \n")
-            jumpaddress = op[1]
             output.write(f"jz    addr_{op[1]} \n")
         elif op[0]==get_OP_ELSE(): 
-            assert len(op) >= 2, f"compile error! else instruction does not have an End instruction! {op}"
-            jumpelse = op[1]
+            assert len(op) >= 2, f"compile error! ELSE instruction does not have an END instruction! {op}"
             output.write("; else \n")
             output.write(f"jmp    addr_{op[1]} \n")  
-            output.write(f"addr_{ip+1}: \n")    
+            #output.write(f"addr_{ip+1}: \n")    
         elif op[0]==get_OP_END():
             output.write("; end \n")
-            output.write(f"addr_{ip}: \n")
+            assert len(op) >= 2, f"compile error! END instruction does not have a next instruction to jump! {op}"  
+            if ip + 1 != op[1]:
+                output.write(f"jmp    addr_{op[1]} \n")          
         elif op[0]==get_OP_DUMP():
             output.write("pop rax \n")
             output.write("call print\n")   
@@ -205,6 +220,14 @@ def compile(bytecode, outfile):
             output.write("cmovl  rcx, rdx \n")  
             output.write("mov  rax, rcx \n") 
             output.write("push    rax \n")                  
+        elif op[0]==get_OP_WHILE():
+            output.write("; while \n")
+        elif op[0]==get_OP_DO():
+            output.write("; do \n") 
+            output.write("pop    rax \n")
+            output.write("test    rax, rax \n")
+            assert len(op) >= 2, f"compile error! DO instruction does not have an END instruction to jump! {op}"             
+            output.write(f"jz    addr_{op[1]} \n")                       
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True    
