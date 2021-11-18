@@ -35,11 +35,23 @@ LABEL_DO= "DO"
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
+#list of comments types probably I'll prefer the python comment syntax for myself
+COMMENTS = ["//", "#", ";"]
+
 iota_counter= 0
 error_counter = 0
 
 def get_counter_error():
     return error_counter
+
+#to manage list of comments types and not only one type of comment
+def split(txt, seps):
+    default_sep = seps[0]
+    # we skip seps[0] because that's the default separator
+    for sep in seps[1:]:
+        txt = txt.replace(sep, default_sep)
+    return [i.strip() for i in txt.split(default_sep)]
+
 
 # tokenize a file
 def lex_file(filename):
@@ -48,7 +60,11 @@ def lex_file(filename):
 
 #tokenize a line
 def lex_line(line):
-    tokens = line.split()
+    print(line)
+    linewithoutcomments = split(line, COMMENTS)
+    print(linewithoutcomments)    
+    tokens = linewithoutcomments[0].split()
+    print(tokens)
     coltok= [] 
     # to manage duplicated tokens in a line
     start = 0

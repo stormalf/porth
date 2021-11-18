@@ -71,3 +71,9 @@ Example with simulation instead of compilation :
 1.0.4 adding DUP, > and < operators
 
 1.0.5 fixing GT/LT and adding WHILE/DO/END (Episode 3)
+
+1.0.6 adding comment types // # ; (Episode 4) and refactoring files into separate folders
+
+## TODO
+
+Probably rewriting the print function to avoid printf and glibc (to be able to follow the episode about malloc and free)
