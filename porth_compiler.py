@@ -6,6 +6,47 @@ from porth_lexer import get_OP_ADD, get_OP_GT, get_OP_SUB, get_OP_PUSH, get_OP_D
     get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO
 
 #header assembly that contains the printf call function
+HEADER2 = '''%define SYS_EXIT 60
+BITS 64
+segment .text
+print:
+mov r9, -3689348814741910323
+sub rsp, 40
+mov BYTE [rsp+31], 10
+lea rcx, [rsp+30]
+.L2:
+mov rax, rdi
+lea r8, [rsp+32]
+mul r9
+mov rax, rdi
+sub r8, rcx
+shr rdx, 3
+lea rsi, [rdx+rdx*4]
+add rsi, rsi
+sub rax, rsi
+add eax, 48
+mov BYTE [rcx], al
+mov rax, rdi
+mov rdi, rdx
+mov rdx, rcx
+sub rcx, 1
+cmp rax, 9
+ja .L2
+lea rax, [rsp+32]
+mov edi, 1
+sub rdx, rax
+xor eax, eax
+lea rsi, [rsp+32+rdx]
+mov rdx, r8
+mov rax, 1
+syscall
+;call write
+add rsp, 40
+ret
+global _start
+_start:
+'''
+
 HEADER = '''%define SYS_EXIT 60\n
 BITS 64
 segment .text
@@ -141,11 +182,14 @@ def simulate(program):
 
 
 #compile the bytecode using nasm and gcc (for printf usage)
-def compile(bytecode, outfile):
+def compile(bytecode, outfile, libc=True):
     assert get_OPS() == MAX_OPS, "Max Opcode implemented!"    
     asmfile = outfile + ".asm"
     output = open(asmfile, "w") 
-    output.write(HEADER) 
+    if libc:
+        output.write(HEADER) 
+    else:
+        output.write(HEADER2)
     error = False    
     #print(bytecode)
     for ip in range(len(bytecode)):
@@ -193,7 +237,11 @@ def compile(bytecode, outfile):
             if ip + 1 != op[1]:
                 output.write(f"jmp    addr_{op[1]} \n")          
         elif op[0]==get_OP_DUMP():
-            output.write("pop rax \n")
+            output.write("; dump \n")
+            if libc:
+                output.write("pop rax \n")
+            else:
+                output.write("pop rdi \n")
             output.write("call print\n")   
         elif op[0]==get_OP_DUP():
             output.write("; dup \n")            
@@ -233,5 +281,8 @@ def compile(bytecode, outfile):
             error = True    
     output.write(FOOTER)
     output.close()
-    os.system(f"nasm -felf64 {asmfile} &&  gcc {outfile}.o -o {outfile} ")
+    if libc:
+        os.system(f"nasm -felf64 {asmfile} &&  gcc {outfile}.o -o {outfile} ")
+    else:
+        os.system(f"nasm -felf64 {asmfile} &&  ld {outfile}.o -o {outfile} ")
     return error

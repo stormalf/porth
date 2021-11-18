@@ -12,7 +12,7 @@ Youtube videos from Tsoding Daily
 import argparse
 from porth_lexer import get_counter_error, load_program, print_ast
 from porth_compiler import compile, simulate
-__version__ = "1.0.6"
+__version__ = "1.0.7"
 
 
 def porthVersion():
@@ -36,7 +36,11 @@ def main(args, filename):
             print("simulation failed!")
     if not error and args.compile:
         print("compiling...")
-        error = compile(program, args.outfile)
+        if args.libc != None:
+            libc = True
+        else:
+            libc = False
+        error = compile(program, args.outfile, libc)
         if not error:
             print("compilation done!")
         else:
@@ -61,6 +65,7 @@ if __name__=='__main__':
     parser.add_argument('-i', '--inputfile', help='intput file', required=True)
     parser.add_argument('-o', '--outfile', help='output file', default="output", required=False)
     parser.add_argument('-a', '--ast', help='ast tree', action="store_true", required=False)  
+    parser.add_argument('-l', '--libc', help='using gcc and libc', action="store_true", required=False)  
     args = parser.parse_args()
     #program=[push(51), push(32), add(), dump(), push(528), push(140), sub(), dump()]
     program = args.inputfile
