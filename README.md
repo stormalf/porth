@@ -58,6 +58,8 @@ Example with simulation instead of compilation :
     777
     simulation succeeded!
 
+Example after refactoring into folders : python3 porth.py -c -i tests/pgm11.porth -o bin/pgm11
+
 ## release notes
 
 1.0.0 initial version
