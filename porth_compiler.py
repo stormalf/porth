@@ -5,7 +5,7 @@ from porth_lexer import get_OP_ADD, get_OP_GT, get_OP_SUB, get_OP_PUSH, get_OP_D
     get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, \
     get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO
 
-#header assembly that contains the printf call function
+#header2 without printf but using syscall to write on the screen
 HEADER2 = '''%define SYS_EXIT 60
 BITS 64
 segment .text
@@ -47,6 +47,7 @@ global _start
 _start:
 '''
 
+#using printf standard function to print on the screen
 HEADER = '''%define SYS_EXIT 60\n
 BITS 64
 segment .text
