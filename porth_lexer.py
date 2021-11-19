@@ -259,6 +259,7 @@ def parse_word(token):
 #returns the program in the porth language after two passes : first tokenize and second calculate cross references for IF/END
 def load_program(filename):
     program, tokens, isOK = load_program_first_pass(filename)
+    program_xref = program
     if isOK:
         program_xref, error = cross_reference_block(program, tokens)
         if error:

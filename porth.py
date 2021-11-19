@@ -10,15 +10,19 @@ Youtube videos from Tsoding Daily
 '''
 
 import argparse
+import os
 from porth_lexer import get_counter_error, load_program, print_ast
 from porth_compiler import compile, simulate
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 
 
 def porthVersion():
     return f"porth version : {__version__}"
 
 
+def run_program(filename):
+    print(f"running {filename}...")
+    os.system(f"{filename}")
 
 def main(args, filename):   
     error = False
@@ -34,15 +38,21 @@ def main(args, filename):
             print("simulation succeeded!")
         else:
             print("simulation failed!")
-    if not error and args.compile:
+    if not error and (args.compile or args.run):
         print("compiling...")
         if args.libc != None:
             libc = True
         else:
             libc = False
+        if args.run != None:
+            run = True
+        else:
+            run = False
         error = compile(program, args.outfile, libc)
         if not error:
             print("compilation done!")
+            if run:
+                run_program(args.outfile)
         else:
             print("compilation failed!")    
     if error:
@@ -62,10 +72,11 @@ if __name__=='__main__':
     parser.add_argument('-c', '--compile', help='compile', action="store_true", required=False)
     parser.add_argument('-d', '--dump', help='dump', action="store_true", required=False)
     parser.add_argument('-s', '--simulate', help='simulate', action="store_true", required=False)
+    parser.add_argument('-r', '--run', help='compile and run', action="store_true", required=False)      
+    parser.add_argument('-a', '--ast', help='ast tree', action="store_true", required=False)  
+    parser.add_argument('-l', '--libc', help='using gcc and libc', action="store_true", required=False)      
     parser.add_argument('-i', '--inputfile', help='intput file', required=True)
     parser.add_argument('-o', '--outfile', help='output file', default="output", required=False)
-    parser.add_argument('-a', '--ast', help='ast tree', action="store_true", required=False)  
-    parser.add_argument('-l', '--libc', help='using gcc and libc', action="store_true", required=False)  
     args = parser.parse_args()
     #program=[push(51), push(32), add(), dump(), push(528), push(140), sub(), dump()]
     program = args.inputfile

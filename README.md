@@ -10,7 +10,7 @@ Youtube link for the first Tutorial : https://youtu.be/8QP2fDBIxjM?list=PLpM-Dvs
 
 python3 porth.py --help
 
-    usage: porth.py [-h] [-V] [-c] [-d] [-s] -i INPUTFILE [-o OUTFILE] [-a] [-l]
+    usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-a] [-l] -i INPUTFILE [-o OUTFILE]
 
     porth is a python3 forth language simulation
 
@@ -20,16 +20,21 @@ python3 porth.py --help
     -c, --compile         compile
     -d, --dump            dump
     -s, --simulate        simulate
+    -r, --run             compile and run
+    -a, --ast             ast tree
+    -l, --libc            using gcc and libc
     -i INPUTFILE, --inputfile INPUTFILE
                             intput file
     -o OUTFILE, --outfile OUTFILE
                             output file
-    -a, --ast             ast tree
-    -l, --libc            using gcc and libc
 
 Example to compile :
 
     python3 porth.py -c -i pgm1.porth -o pgm1
+
+Example after refactoring into folders :
+
+    python3 porth.py -c -i tests/pgm11.porth -o bin/pgm11
 
 ## Lexing
 
@@ -59,8 +64,6 @@ Example with simulation instead of compilation :
     777
     simulation succeeded!
 
-Example after refactoring into folders : python3 porth.py -c -i tests/pgm11.porth -o bin/pgm11
-
 ## release notes
 
 1.0.0 initial version
@@ -78,3 +81,5 @@ Example after refactoring into folders : python3 porth.py -c -i tests/pgm11.port
 1.0.6 adding comment types // # ; (Episode 4) and refactoring files into separate folders
 
 1.0.7 adding compilation with gcc and libc (printf) or without gcc (using ld and sycall) new parameter -l for that
+
+1.0.8 fixing a bug about xref_program assigned before reference and adding -r parameter to run automatically after a successful compilation
