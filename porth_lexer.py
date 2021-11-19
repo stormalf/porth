@@ -17,6 +17,7 @@ OPGT = ">"
 OPLT = "<"
 OPWHILE = "WHILE"
 OPDO = "DO"
+OPMEM = "MEM"
 
 LABEL_PLUS= "PLUS"
 LABEL_MINUS= "MINUS"
@@ -32,6 +33,9 @@ LABEL_GT= "GREATER"
 LABEL_LT= "LESSER"
 LABEL_WHILE= "WHILE"
 LABEL_DO= "DO"
+LABEL_MEMORY= "MEMORY"
+LABEL_KEYWORD="KEYWORD"
+LABEL_OPERATOR="OPERATOR"
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
@@ -97,7 +101,9 @@ def get_token_type(token):
     elif token == OPWHILE:
         return OP_WHILE   
     elif token == OPDO:
-        return OP_DO                           
+        return OP_DO        
+    elif token == OPMEM:
+        return OP_MEM                              
     else:       
         try:
             int(token)
@@ -108,33 +114,35 @@ def get_token_type(token):
 #returns the label for the token type
 def get_token_type_label(tokentype):
     if tokentype == OP_ADD:
-        return LABEL_PLUS
+        return LABEL_OPERATOR
     elif tokentype == OP_SUB:
-        return LABEL_MINUS
+        return LABEL_OPERATOR
     elif tokentype == OP_DUMP:
-        return LABEL_DUMP
+        return LABEL_OPERATOR
     elif tokentype == OP_EQUAL:
-        return LABEL_EQUAL
+        return LABEL_OPERATOR
     elif tokentype == OP_IF:
-        return LABEL_IF
+        return LABEL_KEYWORD
     elif tokentype == OP_END:
-        return LABEL_END
+        return LABEL_KEYWORD
     elif tokentype == OP_ELSE:
-        return LABEL_ELSE        
+        return LABEL_KEYWORD        
     elif tokentype == OP_NUMBER:
         return LABEL_NUMBER
     elif tokentype == OP_UNKNOWN:
         return LABEL_UNKNOWN
     elif tokentype == OP_DUP:
-        return LABEL_DUP
+        return LABEL_KEYWORD
     elif tokentype == OP_GT:
-        return LABEL_GT        
+        return LABEL_OPERATOR        
     elif tokentype == OP_LT:
-        return LABEL_LT   
+        return LABEL_OPERATOR   
     elif tokentype == OP_WHILE:
-        return LABEL_WHILE
+        return LABEL_KEYWORD
     elif tokentype == OP_DO:
-        return LABEL_DO
+        return LABEL_KEYWORD
+    elif tokentype == OP_MEM:
+        return LABEL_KEYWORD        
 
 #enum function in python 
 def iota(reset=False):
@@ -160,6 +168,7 @@ OP_GT=iota()
 OP_LT=iota()
 OP_WHILE=iota()
 OP_DO=iota()
+OP_MEM=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -170,45 +179,6 @@ ERR_TOK_FORBIDDEN = iota()
 ERR_TOK_BLOCK = iota()
 
 
-##functions for the porth language
-def push(value):
-    return (OP_PUSH, value)
-
-def add():
-    return (OP_ADD,)
-
-def sub():
-    return (OP_SUB,)
-
-def dump():
-    return (OP_DUMP,)
-
-def equal():
-    return (OP_EQUAL,)
-
-def opif():
-    return (OP_IF,)
-
-def opend():
-    return (OP_END,)    
-
-def opelse():
-    return (OP_ELSE,)    
-
-def opdup():
-    return (OP_DUP,)    
-
-def opgt():
-    return (OP_GT,)    
-
-def oplt():
-    return (OP_LT,)    
-
-def opwhile():
-    return (OP_WHILE,)    
-
-def opdo():
-    return (OP_DO,)   
 
 #returns the list of forbidden tokens as first token in a line (probably need to be removed if we accept multilines for a single instruction)
 def check_first_token(token, forbidden_tokens):
@@ -223,38 +193,41 @@ def parse_word(token):
     global error_counter
     #print(word)
     filename, line, column, _, word = token
+    loc = (filename, line, column)
     if word == PLUS:
-        return add()
+        return {'type': OP_ADD,  'loc': loc, 'value': None, 'jmp': None}
     elif word == MINUS:
-        return sub()
+        return {'type': OP_SUB, 'loc': loc, 'value': None, 'jmp': None}
     elif word == DUMP:
-        return dump()
+        return {'type': OP_DUMP, 'loc': loc , 'value': None, 'jmp': None}
     elif word == EQUAL:
-        return equal() 
+        return {'type': OP_EQUAL, 'loc': loc, 'value': None, 'jmp': None} 
     elif word == OPIF:
-        return opif()  
+        return {'type': OP_IF, 'loc': loc, 'value': None, 'jmp': None}  
     elif word == OPEND:
-        return opend() 
+        return {'type': OP_END, 'loc': loc, 'value': None, 'jmp': None} 
     elif word == OPELSE:
-        return opelse() 
+        return {'type': OP_ELSE, 'loc': loc, 'value': None, 'jmp': None} 
     elif word == OPDUP:
-        return opdup()                                                    
+        return {'type': OP_DUP, 'loc': loc, 'value': None, 'jmp': None}                                                    
     elif word == OPGT:
-        return opgt()          
+        return {'type': OP_GT, 'loc': loc, 'value': None, 'jmp': None}          
     elif word == OPLT:
-        return oplt()   
+        return {'type': OP_LT, 'loc': loc, 'value': None, 'jmp': None}   
     elif word == OPWHILE:
-        return opwhile() 
+        return {'type': OP_WHILE, 'loc': loc, 'value': None, 'jmp': None}
     elif word == OPDO:
-        return opdo()                           
+        return {'type': OP_DO, 'loc': loc, 'value': None, 'jmp': None} 
+    elif word == OPMEM:
+        return {'type': OP_MEM, 'loc': loc, 'value': None, 'jmp': None}                                     
     else:
         try :
             number = int(word)
-            return push(number)                    
+            return {'type': OP_PUSH, 'loc': loc, 'value': number,  'jmp': None}                    
         except ValueError:
             print(f"Error Code {ERR_TOK_UNKNOWN} Unknown word: {word} at line {line}, column {column} in file {filename}")
             error_counter += 1
-            return (None, None, None, None, None)
+            return {'type': None, 'loc': None, 'value': None, 'jmp': None}
 
 #returns the program in the porth language after two passes : first tokenize and second calculate cross references for IF/END
 def load_program(filename):
@@ -295,21 +268,22 @@ def cross_reference_block(program, tokens):
     for ip in range(len(program)):
         #print(stack)
         filename, line, col, *_ = tokens[ip]
+        loc = (filename, line, col)
         op = program[ip]
-        if op[0] == OP_IF:
+        if op['type'] == OP_IF:
             #print(f"IF {ip} {op}")
             stack.append(ip)
             ifarray.append(ip)
-        elif op[0] == OP_ELSE:    
+        elif op['type'] == OP_ELSE:    
             #print(f"ELSE {ip} {op}")        
             if len(ifarray) == 0:
                 print(f"Error Code {ERR_TOK_BLOCK} ELSE without IF in file {filename}, line {line} column {col}")
                 error_counter += 1
             else:
                 if_ip = stack.pop()
-                program[if_ip] = (OP_IF, ip + 1)
+                program[if_ip] = {'type': OP_IF, 'loc': loc, 'value': None, 'jmp': ip + 1}
                 stack.append(ip)   
-        elif op[0] == OP_END:
+        elif op['type'] == OP_END:
             #print(f"END {ip} {op}")
             if len(ifarray) == 0 :
                 print(f"Error Code {ERR_TOK_BLOCK} END without IF/ELSE/DO at line {line} column {col}, in file {filename}")
@@ -317,19 +291,19 @@ def cross_reference_block(program, tokens):
             else:
                 ifarray.pop()
                 block_ip = stack.pop()
-                if program[block_ip][0] == OP_IF or program[block_ip][0] == OP_ELSE:
-                    program[block_ip] = (program[block_ip][0], ip)
-                    program[ip] = (OP_END, ip + 1)
-                elif program[block_ip][0] == OP_DO:
-                    program[ip] = (OP_END, program[block_ip][1])
-                    program[block_ip] = (OP_DO, ip + 1)
+                if program[block_ip]['type'] == OP_IF or program[block_ip]['type'] == OP_ELSE:
+                    program[block_ip] = {'type': program[block_ip]['type'], 'loc': loc, 'value': None, 'jmp': ip}
+                    program[ip] = {'type': OP_END, 'loc': loc, 'value': None, 'jmp': ip + 1}
+                elif program[block_ip]['type'] == OP_DO:
+                    program[ip] = {'type': OP_END, 'loc': loc, 'value': None, 'jmp': program[block_ip]['jmp']}
+                    program[block_ip] = {'type': OP_DO, 'loc': loc, 'value': None, 'jmp': ip + 1}
                 else:
                     print(f"Error Code {ERR_TOK_BLOCK} END without IF/ELSE/DO at line {line} column {col}, in file {filename}")
                     error_counter += 1
-        elif op[0] == OP_WHILE:
+        elif op['type'] == OP_WHILE:
             #print(f"DO {ip} {op}")
             stack.append(ip)
-        elif op[0] == OP_DO:
+        elif op['type'] == OP_DO:
             ifarray.append(ip)
             #print(f"DO {ip} {op}")
             if len(stack) == 0:
@@ -337,7 +311,7 @@ def cross_reference_block(program, tokens):
                 error_counter += 1
             else:
                 while_ip = stack.pop()
-                program[ip] = (OP_DO, while_ip)
+                program[ip] = {'type': OP_DO, 'loc': loc, 'value': None, 'jmp': while_ip}
                 stack.append(ip)
     if len(ifarray) > 0:
         print(f"Error Code {ERR_TOK_BLOCK} IF ELSE END missing one")
@@ -394,7 +368,6 @@ def print_ast(ast):
     print("----------------------------------")
     print('------------ AST TREE ------------')
     print("----------------------------------")
-    #print(OP_PUSH, OP_ADD, OP_SUB, OP_DUMP, OP_EQUAL, OP_IF, OP_END, OP_ELSE)
     indent = 0
     for *_, tokentype, token in ast:
         tokenlabel = get_token_type_label(tokentype)
@@ -402,6 +375,8 @@ def print_ast(ast):
         if tokentype == OP_IF:
             print("if-body")
             indent += 2
+        if tokentype == OP_WHILE:
+            print("while-condition")
         if tokentype == OP_DO:
             print("do-body")
             indent += 2            
@@ -413,7 +388,7 @@ def print_ast(ast):
         for i in range(indent):
             print(" ", end="")
     print("----------------------------------")
-
+    print('------------ END AST -------------')
 
 
 # program, tokens, isOK = load_program("pgm8.porth")

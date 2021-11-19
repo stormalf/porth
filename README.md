@@ -83,3 +83,5 @@ Example with simulation instead of compilation :
 1.0.7 adding compilation with gcc and libc (printf) or without gcc (using ld and sycall) new parameter -l for that
 
 1.0.8 fixing a bug about xref_program assigned before reference and adding -r parameter to run automatically after a successful compilation
+
+1.0.9 Be careful big restructuration passing from tuples to dictionary! Not sure to keep the AST tree sample (not sure that it can be useful). (Episode 4 just the beginning!)
