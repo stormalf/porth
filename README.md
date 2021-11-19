@@ -64,6 +64,27 @@ Example with simulation instead of compilation :
     777
     simulation succeeded!
 
+## language features
+
+Keyword, operators, and constants are defined in the language.
+
+    NUMBER : is pushed to the stack
+    + : operator pops 2 values from the stack and push the sum of them
+    - : operator pops 2 values from the stack and push the difference of them
+    . : operator pops 1 value from the stack and print it
+    = : operator pops 2 values from the stack and push 1 if equality and 0 otherwise
+    > : operator pops 2 values from the stack and push 1 if the first one is greater than the second one and 0 otherwise
+    < : operator pops 2 values from the stack and push 1 if the first one is less than of second one and 0 otherwise
+    IF: keyword to create a conditional statement
+    ELSE: keyword to create a conditional statement if the condition is false
+    END: keyword to close a conditional statement
+    DUP: keyword to duplicate the top of the stack
+    WHILE: keyword to create a loop followed by a conditional statement
+    DO: keyword to open the loop if the condition is true
+    LOOP: keyword to close the loop
+    COMMENTS : are ignored by the compiler 3 possible comments allowed for now : //, # and ;
+    MEM: keyword to push the address of the beginning of the memory onto the stack
+
 ## release notes
 
 1.0.0 initial version
@@ -85,3 +106,5 @@ Example with simulation instead of compilation :
 1.0.8 fixing a bug about xref_program assigned before reference and adding -r parameter to run automatically after a successful compilation
 
 1.0.9 Be careful big restructuration passing from tuples to dictionary! Not sure to keep the AST tree sample (not sure that it can be useful). (Episode 4 just the beginning!)
+
+1.0.10 adding a new feature to the language : the memory. Issue with /usr/bin/ld: bin/mem1.o: relocation R_X86_64_32S against `.bss' can not be used when making a PIE object; recompile with -fPIE solved by adding -static to the gcc flags and ld flags

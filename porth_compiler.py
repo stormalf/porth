@@ -3,7 +3,15 @@
 import os
 from porth_lexer import get_OP_ADD, get_OP_GT, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, \
     get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, \
-    get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO
+    get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM
+
+
+
+#Need to increase the max_ops each time we add a new opcode
+MAX_OPS = 16
+
+#max memory size
+MEM_CAPACITY = 640_000
 
 #header2 without printf but using syscall to write on the screen
 HEADER2 = '''%define SYS_EXIT 60
@@ -67,12 +75,18 @@ main:\n'''
 FOOTER = '''mov rax, SYS_EXIT
 mov rdi, 69
 syscall
-section .data
+'''
+
+DATA='''
+segment .data 
 format db  "%d", 10, 0
 '''
 
-#Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 16
+BSS=f'''
+section .bss    ; uninitialized data section
+mem: resb {MEM_CAPACITY}
+'''
+
 
 #simulate the program execution without compiling it
 def simulate(program):
@@ -274,14 +288,19 @@ def compile(bytecode, outfile, libc=True):
             output.write("pop    rax \n")
             output.write("test    rax, rax \n")
             assert len(op) >= 2, f"compile error! DO instruction does not have an END instruction to jump! {op}"             
-            output.write(f"jz    addr_{op['jmp']} \n")                       
+            output.write(f"jz    addr_{op['jmp']} \n")    
+        elif op['type']==get_OP_MEM(): 
+            output.write("; mem \n")
+            output.write("push mem\n")                              
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True    
     output.write(FOOTER)
+    output.write(DATA)
+    output.write(BSS)
     output.close()
     if libc:
-        os.system(f"nasm -felf64 {asmfile} &&  gcc {outfile}.o -o {outfile} ")
+        os.system(f"nasm -felf64 {asmfile}  &&  gcc -static {outfile}.o -o {outfile} ")
     else:
-        os.system(f"nasm -felf64 {asmfile} &&  ld {outfile}.o -o {outfile} ")
+        os.system(f"nasm -felf64 {asmfile}  &&  ld -static {outfile}.o -o {outfile} ")
     return error

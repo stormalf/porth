@@ -13,7 +13,7 @@ import argparse
 import os
 from porth_lexer import get_counter_error, load_program, print_ast
 from porth_compiler import compile, simulate
-__version__ = "1.0.9"
+__version__ = "1.0.10"
 
 
 def porthVersion():
@@ -29,7 +29,7 @@ def main(args, filename):
     tokens=[]
     stack = []
     program, tokens, isOK = load_program(filename)
-    if program==None or program[0]==(None, None, None, None, None) or not isOK:
+    if not isOK:
         error = True
     if not error and args.simulate:
         print("simulating...")

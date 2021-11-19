@@ -364,6 +364,10 @@ def get_OP_WHILE():
 def get_OP_DO():
     return OP_DO
 
+def get_OP_MEM():
+    return OP_MEM
+
+
 def print_ast(ast):
     print("----------------------------------")
     print('------------ AST TREE ------------')
