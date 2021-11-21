@@ -97,6 +97,7 @@ def simulate(program):
     error = False
     isMem = False
     ip = 0
+    exit_code = 0
     mem = bytearray(MEM_CAPACITY)
     #print(program)
     if not error:
@@ -211,7 +212,7 @@ def simulate(program):
                 syscall_number = stack.pop()
                 exit_code = stack.pop()
                 if syscall_number == 60:
-                    sys.exit(exit_code)
+                    break
                 else:
                     print(f"unknown syscall3: {syscall_number}")
                     error = True                
@@ -243,7 +244,7 @@ def simulate(program):
                 print(f"Unknown opcode: {op}")  
         if isMem:
             print(f"memory dump {mem[:20]}")                
-    return stack, error  
+    return stack, error, exit_code  
 
 
 #compile the bytecode using nasm and gcc (for printf usage)

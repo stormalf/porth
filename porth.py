@@ -11,6 +11,7 @@ Youtube videos from Tsoding Daily
 
 import argparse
 import os
+import sys
 from porth_lexer import get_counter_error, load_program, print_ast
 from porth_compiler import compile, simulate
 __version__ = "1.0.11"
@@ -28,12 +29,15 @@ def main(args, filename):
     error = False
     tokens=[]
     stack = []
+    exit_code = 0
     program, tokens, isOK = load_program(filename)
     if not isOK:
         error = True
+    if args.ast and not error:
+        print_ast(tokens)        
     if not error and args.simulate:
         print("simulating...")
-        stack, error = simulate(program)
+        stack, error, exit_code = simulate(program)
         if not error:
             print("simulation succeeded!")
         else:
@@ -53,14 +57,13 @@ def main(args, filename):
             print("compilation failed!")    
     if error:
         print(f"Errors found in program {filename}: {get_counter_error()}")
-    if args.ast and not error:
-        print_ast(tokens)
     if args.dump:
         print(f"dumping...")
         print(f"tokens : {tokens}")
         print(f"stack : {stack}")
         print(f"errors : {get_counter_error()}")      
         print("dumping done!")
+    sys.exit(exit_code)   
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description="porth is a python3 forth language simulation")
