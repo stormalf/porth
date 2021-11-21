@@ -13,6 +13,7 @@ OPELSE= "ELSE"
 NUMBER= "number"
 UNKNOWN= "unknown"
 OPDUP="DUP"
+OPDUP2="2DUP"
 OPGT = ">"
 OPLT = "<"
 OPWHILE = "WHILE"
@@ -21,7 +22,12 @@ OPMEM = "MEM"
 OPLOAD= "$"
 OPSTORE="@"
 OPSYSCALL1="SYSCALL1"
+OPSYSCALL2="SYSCALL2"
 OPSYSCALL3="SYSCALL3"
+OPSYSCALL4="SYSCALL4"
+OPSYSCALL5="SYSCALL5"
+OPSYSCALL6="SYSCALL6"
+OPRETURN="RETURN"
 
 # LABEL_PLUS= "PLUS"
 # LABEL_MINUS= "MINUS"
@@ -98,7 +104,9 @@ def get_token_type(token):
     elif token == OPELSE:
         return OP_ELSE        
     elif token == OPDUP:
-        return OP_DUP     
+        return OP_DUP   
+    elif token == OPDUP2:
+        return OP_DUP2            
     elif token == OPGT:
         return OP_GT          
     elif token == OPLT:
@@ -115,8 +123,18 @@ def get_token_type(token):
         return OP_LOAD   
     elif token == OPSYSCALL1:
         return OP_SYSCALL1          
+    elif token == OPSYSCALL2:
+        return OP_SYSCALL2               
     elif token == OPSYSCALL3:
         return OP_SYSCALL3                                                       
+    elif token == OPSYSCALL4:
+        return OP_SYSCALL4          
+    elif token == OPSYSCALL5:
+        return OP_SYSCALL5               
+    elif token == OPSYSCALL6:
+        return OP_SYSCALL6                                                       
+    elif token == OPRETURN:
+        return OP_RETURN    
     else:       
         try:
             int(token)
@@ -146,6 +164,8 @@ def get_token_type_label(tokentype):
         return LABEL_UNKNOWN
     elif tokentype == OP_DUP:
         return LABEL_KEYWORD
+    elif tokentype == OP_DUP2:
+        return LABEL_KEYWORD        
     elif tokentype == OP_GT:
         return LABEL_OPERATOR        
     elif tokentype == OP_LT:
@@ -161,9 +181,19 @@ def get_token_type_label(tokentype):
     elif tokentype == OP_STORE:
         return LABEL_OPERATOR   
     elif tokentype == OP_SYSCALL1:
-        return LABEL_KEYWORD                                
+        return LABEL_KEYWORD  
+    elif tokentype == OP_SYSCALL2:
+        return LABEL_KEYWORD                                        
     elif tokentype == OP_SYSCALL3:
-        return LABEL_KEYWORD                                
+        return LABEL_KEYWORD      
+    elif tokentype == OP_SYSCALL4:
+        return LABEL_KEYWORD  
+    elif tokentype == OP_SYSCALL5:
+        return LABEL_KEYWORD                                        
+    elif tokentype == OP_SYSCALL6:
+        return LABEL_KEYWORD  
+    elif tokentype == OP_RETURN:
+        return LABEL_KEYWORD                                                
 
 #enum function in python 
 def iota(reset=False):
@@ -193,7 +223,13 @@ OP_MEM=iota()
 OP_LOAD=iota()
 OP_STORE=iota()
 OP_SYSCALL1=iota()
+OP_SYSCALL2=iota()
 OP_SYSCALL3=iota()
+OP_SYSCALL4=iota()
+OP_SYSCALL5=iota()
+OP_SYSCALL6=iota()
+OP_DUP2=iota()
+OP_RETURN=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -234,7 +270,9 @@ def parse_word(token):
     elif word == OPELSE:
         return {'type': OP_ELSE, 'loc': loc, 'value': None, 'jmp': None} 
     elif word == OPDUP:
-        return {'type': OP_DUP, 'loc': loc, 'value': None, 'jmp': None}                                                    
+        return {'type': OP_DUP, 'loc': loc, 'value': None, 'jmp': None}  
+    elif word == OPDUP2:
+        return {'type': OP_DUP2, 'loc': loc, 'value': None, 'jmp': None}                                                             
     elif word == OPGT:
         return {'type': OP_GT, 'loc': loc, 'value': None, 'jmp': None}          
     elif word == OPLT:
@@ -251,8 +289,18 @@ def parse_word(token):
         return {'type': OP_STORE, 'loc': loc, 'value': None, 'jmp': None}    
     elif word == OPSYSCALL1:
         return {'type': OP_SYSCALL1, 'loc': loc, 'value': None, 'jmp': None}           
+    elif word == OPSYSCALL2:
+        return {'type': OP_SYSCALL2, 'loc': loc, 'value': None, 'jmp': None}           
     elif word == OPSYSCALL3:
         return {'type': OP_SYSCALL3, 'loc': loc, 'value': None, 'jmp': None}                          
+    elif word == OPSYSCALL4:
+        return {'type': OP_SYSCALL4, 'loc': loc, 'value': None, 'jmp': None}   
+    elif word == OPSYSCALL5:
+        return {'type': OP_SYSCALL5, 'loc': loc, 'value': None, 'jmp': None}   
+    elif word == OPSYSCALL6:
+        return {'type': OP_SYSCALL6, 'loc': loc, 'value': None, 'jmp': None}                           
+    elif word == OPRETURN:
+        return {'type': OP_RETURN, 'loc': loc, 'value': None, 'jmp': None}             
     else:
         try :
             number = int(word)
@@ -314,7 +362,7 @@ def cross_reference_block(program, tokens):
                 error_counter += 1
             else:
                 if_ip = stack.pop()
-                program[if_ip] = {'type': OP_IF, 'loc': loc, 'value': None, 'jmp': ip + 1}
+                program[if_ip]['jmp'] = ip + 1
                 stack.append(ip)   
         elif op['type'] == OP_END:
             #print(f"END {ip} {op}")
@@ -325,11 +373,11 @@ def cross_reference_block(program, tokens):
                 ifarray.pop()
                 block_ip = stack.pop()
                 if program[block_ip]['type'] == OP_IF or program[block_ip]['type'] == OP_ELSE:
-                    program[block_ip] = {'type': program[block_ip]['type'], 'loc': loc, 'value': None, 'jmp': ip}
-                    program[ip] = {'type': OP_END, 'loc': loc, 'value': None, 'jmp': ip + 1}
+                    program[block_ip]['jmp'] =  ip
+                    program[ip]['jmp'] = ip + 1
                 elif program[block_ip]['type'] == OP_DO:
-                    program[ip] = {'type': OP_END, 'loc': loc, 'value': None, 'jmp': program[block_ip]['jmp']}
-                    program[block_ip] = {'type': OP_DO, 'loc': loc, 'value': None, 'jmp': ip + 1}
+                    program[ip]['jmp'] = program[block_ip]['jmp']
+                    program[block_ip]['jmp'] = ip + 1
                 else:
                     print(f"Error Code {ERR_TOK_BLOCK} END without IF/ELSE/DO at line {line} column {col}, in file {filename}")
                     error_counter += 1
@@ -344,7 +392,7 @@ def cross_reference_block(program, tokens):
                 error_counter += 1
             else:
                 while_ip = stack.pop()
-                program[ip] = {'type': OP_DO, 'loc': loc, 'value': None, 'jmp': while_ip}
+                program[ip]['jmp'] = while_ip
                 stack.append(ip)
     if len(ifarray) > 0:
         print(f"Error Code {ERR_TOK_BLOCK} IF ELSE END missing one")
@@ -385,6 +433,9 @@ def get_OP_ELSE():
 def get_OP_DUP():
     return OP_DUP
 
+def get_OP_DUP2():
+    return OP_DUP2
+
 def get_OP_GT():
     return OP_GT
 
@@ -409,8 +460,24 @@ def get_OP_STORE():
 def get_OP_SYSCALL1():
     return OP_SYSCALL1
 
+def get_OP_SYSCALL2():
+    return OP_SYSCALL2   
+
 def get_OP_SYSCALL3():
-    return OP_SYSCALL3   
+    return OP_SYSCALL3  
+
+
+def get_OP_SYSCALL4():
+    return OP_SYSCALL4
+
+def get_OP_SYSCALL5():
+    return OP_SYSCALL5   
+
+def get_OP_SYSCALL6():
+    return OP_SYSCALL6   
+
+def get_OP_RETURN():
+    return OP_RETURN   
 
 def print_ast(ast):
     print("----------------------------------")

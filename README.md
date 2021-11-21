@@ -112,3 +112,5 @@ Keyword, operators, and constants are defined in the language.
 1.0.10 adding a new feature to the language : the memory. Issue with /usr/bin/ld: bin/mem1.o: relocation R_X86_64_32S against `.bss' can not be used when making a PIE object; recompile with -fPIE solved by adding -static to the gcc flags and ld flags
 
 1.0.11 Not following the same operators for loading and storing memory : adding $ operator for loading and @ operator for storing and adding syscall3 (syscall with 3 parameters) and syscall1 (syscall with 1 parameter) for exit.
+
+1.0.12 Implementing 2DUP and RETURN keyword to exit the program with specific return value. Fixing issue with WHILE and "error: symbol `addr_39' undefined" and adding other syscall but only for compiling (not simulation mode)

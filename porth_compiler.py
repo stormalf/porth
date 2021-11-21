@@ -3,14 +3,14 @@
 import os
 import sys
 from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, \
-    get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, \
-    get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM, get_OP_LOAD, get_OP_STORE, \
-    get_OP_SYSCALL1, get_OP_SYSCALL3
+    get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, get_OP_DUP2, \
+    get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM, get_OP_LOAD, get_OP_STORE, get_OP_RETURN, \
+    get_OP_SYSCALL1, get_OP_SYSCALL2, get_OP_SYSCALL3, get_OP_SYSCALL4, get_OP_SYSCALL5, get_OP_SYSCALL6
 
 
-
+exit_code = 0
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 20
+MAX_OPS = 26
 
 #max memory size
 MEM_CAPACITY = 640_000
@@ -74,8 +74,8 @@ print:
 main:\n'''
 
 #footer assembly that exit function followed by data section with format
-FOOTER = '''mov rax, SYS_EXIT
-mov rdi, 69
+FOOTER = f'''mov rax, SYS_EXIT
+mov rdi, 0
 syscall
 '''
 
@@ -92,12 +92,13 @@ mem: resb {MEM_CAPACITY}
 
 #simulate the program execution without compiling it
 def simulate(program):
-    assert get_OPS() == MAX_OPS, "Max Opcode implemented!"
+    global exit_code
+    assert get_OPS() == MAX_OPS,  "Max Opcode implemented! expected " + str(MAX_OPS) + " but got " + str(get_OPS())  
     stack=[]
     error = False
     isMem = False
     ip = 0
-    exit_code = 0
+    #exit_code = 0
     mem = bytearray(MEM_CAPACITY)
     #print(program)
     if not error:
@@ -166,6 +167,14 @@ def simulate(program):
                 stack.append(a)
                 stack.append(a)
                 ip += 1 
+            elif op['type']==get_OP_DUP2():
+                b = stack.pop()
+                a = stack.pop()
+                stack.append(a)
+                stack.append(b)
+                stack.append(a)
+                stack.append(b)                
+                ip += 1                 
             elif op['type']==get_OP_GT():
                 if len(stack) < 2:
                     print("> impossible not enough element in stack")
@@ -208,6 +217,10 @@ def simulate(program):
                 addr = stack.pop()
                 mem[addr] = value & 0xFF
                 ip += 1   
+            elif op['type']==get_OP_RETURN():
+                syscall_number = 60
+                exit_code = stack.pop()
+                break
             elif op['type']==get_OP_SYSCALL1():
                 syscall_number = stack.pop()
                 exit_code = stack.pop()
@@ -216,7 +229,11 @@ def simulate(program):
                 else:
                     print(f"unknown syscall3: {syscall_number}")
                     error = True                
-                ip += 1                      
+                ip += 1 
+            elif op['type']==get_OP_SYSCALL2():
+                print("not implemented yet!")
+                error = True                
+                ip += 1                     
             elif op['type']==get_OP_SYSCALL3():
                 syscall_number = stack.pop()
                 arg1 = stack.pop()
@@ -237,7 +254,20 @@ def simulate(program):
                 else:
                     print(f"unknown syscall1: {syscall_number}")
                     error = True
-                ip += 1                                   
+                ip += 1    
+            elif op['type']==get_OP_SYSCALL4():
+                print("not implemented yet!")
+                error = True                
+                ip += 1                                                     
+            elif op['type']==get_OP_SYSCALL5():
+                print("not implemented yet!")
+                error = True                
+                ip += 1                                                     
+            elif op['type']==get_OP_SYSCALL6():
+                print("not implemented yet!")
+                error = True                
+                ip += 1                                                     
+
             else:
                 ip += 1                
                 error = True
@@ -249,7 +279,8 @@ def simulate(program):
 
 #compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode, outfile, libc=True):
-    assert get_OPS() == MAX_OPS, "Max Opcode implemented!"    
+    global exit_code
+    assert get_OPS() == MAX_OPS, "Max Opcode implemented! expected " + str(MAX_OPS) + " but got " + str(get_OPS())   
     asmfile = outfile + ".asm"
     output = open(asmfile, "w") 
     if libc:
@@ -283,8 +314,8 @@ def compile(bytecode, outfile, libc=True):
             output.write("pop    rbx \n")            
             output.write("cmp    rax, rbx \n")                
             output.write("cmove  rcx, rdx \n")  
-            output.write("mov  rax, rcx \n") 
-            output.write("push    rax \n")           
+            #output.write("mov  rax, rcx \n") 
+            output.write("push    rcx \n")           
         elif op['type']==get_OP_IF():
             assert len(op) >= 2, f"compile error! IF instruction does not have an END instruction! {op}"            
             output.write("; if \n")
@@ -312,7 +343,15 @@ def compile(bytecode, outfile, libc=True):
             output.write("; dup \n")            
             output.write("pop rax \n")
             output.write("push rax\n")               
-            output.write("push rax\n")                           
+            output.write("push rax\n")   
+        elif op['type']==get_OP_DUP2():
+            output.write("; 2dup \n")            
+            output.write("pop rbx \n")
+            output.write("pop rax \n")            
+            output.write("push rax\n")               
+            output.write("push rbx\n") 
+            output.write("push rax\n")               
+            output.write("push rbx\n")                           
         elif op['type']==get_OP_GT():
             output.write("; gt \n")
             output.write("mov    rcx, 0 \n")
@@ -321,8 +360,8 @@ def compile(bytecode, outfile, libc=True):
             output.write("pop    rax \n")            
             output.write("cmp    rax, rbx \n")                
             output.write("cmovg  rcx, rdx \n")  
-            output.write("mov  rax, rcx \n") 
-            output.write("push    rax \n")                
+            #output.write("mov  rax, rcx \n") 
+            output.write("push    rcx \n")                
         elif op['type']==get_OP_LT():
             output.write("; lt \n")
             output.write("mov    rcx, 0 \n")
@@ -331,8 +370,8 @@ def compile(bytecode, outfile, libc=True):
             output.write("pop    rax \n")            
             output.write("cmp    rax, rbx \n")                
             output.write("cmovl  rcx, rdx \n")  
-            output.write("mov  rax, rcx \n") 
-            output.write("push    rax \n")                  
+            #output.write("mov  rax, rcx \n") 
+            output.write("push    rcx \n")                  
         elif op['type']==get_OP_WHILE():
             output.write("; while \n")
         elif op['type']==get_OP_DO():
@@ -355,11 +394,22 @@ def compile(bytecode, outfile, libc=True):
             output.write("pop rbx\n")
             output.write("pop rax\n")
             output.write("mov [rax], bl\n")
+        elif op['type']==get_OP_RETURN(): 
+            output.write("; return \n")
+            output.write("mov rax, SYS_EXIT\n")
+            output.write("pop rdi\n")            
+            output.write("syscall\n")  
         elif op['type']==get_OP_SYSCALL1():    
             output.write("; syscall1 \n")
             output.write("pop rax\n")
             output.write("pop rdi\n")            
-            output.write("syscall\n")            
+            output.write("syscall\n")  
+        elif op['type']==get_OP_SYSCALL2():
+            output.write("; syscall2 \n")
+            output.write("pop rax\n")
+            output.write("pop rdi\n")
+            output.write("pop rsi\n")
+            output.write("syscall\n")
         elif op['type']==get_OP_SYSCALL3():    
             output.write("; syscall3 \n")
             output.write("pop rax\n")
@@ -367,9 +417,38 @@ def compile(bytecode, outfile, libc=True):
             output.write("pop rsi\n")
             output.write("pop rdx\n")            
             output.write("syscall\n")
+        elif op['type']==get_OP_SYSCALL4():
+            output.write("; syscall4 \n")
+            output.write("pop rax\n")
+            output.write("pop rdi\n")
+            output.write("pop rsi\n")
+            output.write("pop rdx\n")
+            output.write("pop r10\n")
+            output.write("syscall\n")
+        elif op['type']==get_OP_SYSCALL5():
+            output.write("; syscall5 \n")
+            output.write("pop rax\n")
+            output.write("pop rdi\n")
+            output.write("pop rsi\n")
+            output.write("pop rdx\n")
+            output.write("pop r10\n")
+            output.write("pop r8\n")
+            output.write("syscall\n")
+        elif op['type']==get_OP_SYSCALL6():
+            output.write("; syscall6 \n")
+            output.write("pop rax\n")
+            output.write("pop rdi\n")
+            output.write("pop rsi\n")
+            output.write("pop rdx\n")
+            output.write("pop r10\n")
+            output.write("pop r8\n")
+            output.write("pop r9\n")
+            output.write("syscall\n")
+
         else:
             print(f"Unknown bytecode op: {op}")    
-            error = True    
+            error = True 
+    output.write("addr_%d:\n" % len(bytecode))               
     output.write(FOOTER)
     output.write(DATA)
     output.write(BSS)
