@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import os
+import sys
 from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, \
     get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, \
     get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM, get_OP_LOAD, get_OP_STORE, \
@@ -206,16 +207,42 @@ def simulate(program):
                 addr = stack.pop()
                 mem[addr] = value & 0xFF
                 ip += 1   
-            elif op['type']==get_OP_SYSCALL3():
-                ip += 1                                   
             elif op['type']==get_OP_SYSCALL1():
-                ip += 1                  
+                syscall_number = stack.pop()
+                exit_code = stack.pop()
+                if syscall_number == 60:
+                    sys.exit(exit_code)
+                else:
+                    print(f"unknown syscall3: {syscall_number}")
+                    error = True                
+                ip += 1                      
+            elif op['type']==get_OP_SYSCALL3():
+                syscall_number = stack.pop()
+                arg1 = stack.pop()
+                arg2 = stack.pop()
+                arg3 = stack.pop()
+                if syscall_number == 1:
+                    fd = arg1
+                    buffer = arg2
+                    count = arg3
+                    s = mem[buffer:buffer+count].decode('utf-8')
+                    if fd == 1:
+                        print(s, end='')
+                    elif fd == 2:
+                        print(s, end='', file=sys.stderr)
+                    else:
+                        print(f"unknown file descriptor: {fd}")
+                        error = True
+                else:
+                    print(f"unknown syscall1: {syscall_number}")
+                    error = True
+                ip += 1                                   
             else:
                 ip += 1                
                 error = True
                 print(f"Unknown opcode: {op}")  
         if isMem:
-            print(f"memory dump {mem[:10]}")                
+            print(f"memory dump {mem[:20]}")                
     return stack, error  
 
 
@@ -339,8 +366,6 @@ def compile(bytecode, outfile, libc=True):
             output.write("pop rsi\n")
             output.write("pop rdx\n")            
             output.write("syscall\n")
-        elif op['type']==get_OP_SYSCALL1():    
-            output.write("; syscall1 \n")            
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True    

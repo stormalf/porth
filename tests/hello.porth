@@ -1,0 +1,51 @@
+// hello world hex 48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 0A
+// hello world 72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 10
+MEM 0 + 72 @
+MEM 1 + 101 @
+MEM 2 + 108 @
+MEM 3 + 108 @
+MEM 4 + 111 @
+MEM 5 + 44 @
+MEM 6 + 32 @
+MEM 7 + 87 @
+MEM 8 + 111 @
+MEM 9 + 114 @
+MEM 10 + 108 @
+MEM 11 + 100 @
+MEM 12 + 33 @
+MEM 13 + 10 @
+
+14 MEM 1 1 SYSCALL3
+
+MEM DUP 72 @
+1 + DUP 101 @
+1 + DUP 108 @
+1 + DUP 108 @
+1 + DUP 111 @
+1 + DUP 44 @
+1 + DUP 32 @
+1 + DUP 87 @
+1 + DUP 111 @
+1 + DUP 114 @
+1 + DUP 108 @
+1 + DUP 100 @
+1 + DUP 33 @
+1 + DUP 10 @
+14 MEM 1 1 SYSCALL3
+
+MEM DUP 72 @
+1 + DUP 101 @
+1 + DUP 108 @
+1 + DUP 108 @
+1 + DUP 111 @
+1 + DUP 44 @
+1 + DUP 32 @
+1 + DUP 87 @
+1 + DUP 111 @
+1 + DUP 114 @
+1 + DUP 108 @
+1 + DUP 100 @
+1 + DUP 33 @
+1 + DUP 10 @
+1 +
+MEM - MEM 1 1 SYSCALL3
