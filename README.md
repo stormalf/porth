@@ -84,6 +84,8 @@ Keyword, operators, and constants are defined in the language.
     LOOP: keyword to close the loop
     COMMENTS : are ignored by the compiler 3 possible comments allowed for now : //, # and ;
     MEM: keyword to push the address of the beginning of the memory onto the stack
+    @: operator loads value from the memory
+    $: operator stores value to the memory
 
 ## release notes
 
@@ -108,3 +110,5 @@ Keyword, operators, and constants are defined in the language.
 1.0.9 Be careful big restructuration passing from tuples to dictionary! Not sure to keep the AST tree sample (not sure that it can be useful). (Episode 4 just the beginning!)
 
 1.0.10 adding a new feature to the language : the memory. Issue with /usr/bin/ld: bin/mem1.o: relocation R_X86_64_32S against `.bss' can not be used when making a PIE object; recompile with -fPIE solved by adding -static to the gcc flags and ld flags
+
+1.0.11 Not following the same operators for loading and storing memory : adding $ operator for loading and @ operator for storing and adding syscall3 (syscall with 3 parameters) and syscall1 (syscall with 1 parameter) for exit.

@@ -13,7 +13,7 @@ import argparse
 import os
 from porth_lexer import get_counter_error, load_program, print_ast
 from porth_compiler import compile, simulate
-__version__ = "1.0.10"
+__version__ = "1.0.11"
 
 
 def porthVersion():
@@ -44,14 +44,10 @@ def main(args, filename):
             libc = True
         else:
             libc = False
-        if args.run != None:
-            run = True
-        else:
-            run = False
         error = compile(program, args.outfile, libc)
         if not error:
             print("compilation done!")
-            if run:
+            if args.run:
                 run_program(args.outfile)
         else:
             print("compilation failed!")    

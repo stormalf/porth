@@ -18,24 +18,29 @@ OPLT = "<"
 OPWHILE = "WHILE"
 OPDO = "DO"
 OPMEM = "MEM"
+OPLOAD= "$"
+OPSTORE="@"
+OPSYSCALL1="SYSCALL1"
+OPSYSCALL3="SYSCALL3"
 
-LABEL_PLUS= "PLUS"
-LABEL_MINUS= "MINUS"
-LABEL_DUMP= "PRINT"
-LABEL_EQUAL= "EQUAL"
-LABEL_IF= "IF"
-LABEL_ELSE= "ELSE"
-LABEL_END= "END"
+# LABEL_PLUS= "PLUS"
+# LABEL_MINUS= "MINUS"
+# LABEL_DUMP= "PRINT"
+# LABEL_EQUAL= "EQUAL"
+# LABEL_IF= "IF"
+# LABEL_ELSE= "ELSE"
+# LABEL_END= "END"
 LABEL_NUMBER = "NUMBER"
 LABEL_UNKNOWN = "UNKNOWN"
-LABEL_DUP="DUPLICATE"
-LABEL_GT= "GREATER"
-LABEL_LT= "LESSER"
-LABEL_WHILE= "WHILE"
-LABEL_DO= "DO"
-LABEL_MEMORY= "MEMORY"
+# LABEL_DUP="DUPLICATE"
+# LABEL_GT= "GREATER"
+# LABEL_LT= "LESSER"
+# LABEL_WHILE= "WHILE"
+# LABEL_DO= "DO"
+# LABEL_MEMORY= "MEMORY"
 LABEL_KEYWORD="KEYWORD"
 LABEL_OPERATOR="OPERATOR"
+
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
@@ -103,7 +108,15 @@ def get_token_type(token):
     elif token == OPDO:
         return OP_DO        
     elif token == OPMEM:
-        return OP_MEM                              
+        return OP_MEM  
+    elif token == OPSTORE:
+        return OP_STORE
+    elif token == OPLOAD:
+        return OP_LOAD   
+    elif token == OPSYSCALL1:
+        return OP_SYSCALL1          
+    elif token == OPSYSCALL3:
+        return OP_SYSCALL3                                                       
     else:       
         try:
             int(token)
@@ -142,7 +155,15 @@ def get_token_type_label(tokentype):
     elif tokentype == OP_DO:
         return LABEL_KEYWORD
     elif tokentype == OP_MEM:
-        return LABEL_KEYWORD        
+        return LABEL_KEYWORD
+    elif tokentype == OP_LOAD:
+        return LABEL_OPERATOR
+    elif tokentype == OP_STORE:
+        return LABEL_OPERATOR   
+    elif tokentype == OP_SYSCALL1:
+        return LABEL_KEYWORD                                
+    elif tokentype == OP_SYSCALL3:
+        return LABEL_KEYWORD                                
 
 #enum function in python 
 def iota(reset=False):
@@ -169,6 +190,10 @@ OP_LT=iota()
 OP_WHILE=iota()
 OP_DO=iota()
 OP_MEM=iota()
+OP_LOAD=iota()
+OP_STORE=iota()
+OP_SYSCALL1=iota()
+OP_SYSCALL3=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -220,6 +245,14 @@ def parse_word(token):
         return {'type': OP_DO, 'loc': loc, 'value': None, 'jmp': None} 
     elif word == OPMEM:
         return {'type': OP_MEM, 'loc': loc, 'value': None, 'jmp': None}                                     
+    elif word == OPLOAD:
+        return {'type': OP_LOAD, 'loc': loc, 'value': None, 'jmp': None}  
+    elif word == OPSTORE:
+        return {'type': OP_STORE, 'loc': loc, 'value': None, 'jmp': None}    
+    elif word == OPSYSCALL1:
+        return {'type': OP_SYSCALL1, 'loc': loc, 'value': None, 'jmp': None}           
+    elif word == OPSYSCALL3:
+        return {'type': OP_SYSCALL3, 'loc': loc, 'value': None, 'jmp': None}                          
     else:
         try :
             number = int(word)
@@ -367,6 +400,17 @@ def get_OP_DO():
 def get_OP_MEM():
     return OP_MEM
 
+def get_OP_LOAD():
+    return OP_LOAD
+
+def get_OP_STORE():
+    return OP_STORE    
+
+def get_OP_SYSCALL1():
+    return OP_SYSCALL1
+
+def get_OP_SYSCALL3():
+    return OP_SYSCALL3   
 
 def print_ast(ast):
     print("----------------------------------")

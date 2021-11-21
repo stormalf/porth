@@ -1,14 +1,15 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import os
-from porth_lexer import get_OP_ADD, get_OP_GT, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, \
+from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, \
     get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, \
-    get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM
+    get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM, get_OP_LOAD, get_OP_STORE, \
+    get_OP_SYSCALL1, get_OP_SYSCALL3
 
 
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 16
+MAX_OPS = 20
 
 #max memory size
 MEM_CAPACITY = 640_000
@@ -93,7 +94,9 @@ def simulate(program):
     assert get_OPS() == MAX_OPS, "Max Opcode implemented!"
     stack=[]
     error = False
+    isMem = False
     ip = 0
+    mem = bytearray(MEM_CAPACITY)
     #print(program)
     if not error:
         while ip < len(program):
@@ -132,8 +135,9 @@ def simulate(program):
             elif op['type']==get_OP_DUMP():
                 ip += 1                
                 if len(stack) == 0:
-                    print("stack is empty impossible to dump")
-                    error = True
+                    # print("stack is empty impossible to dump")
+                    # error = True
+                    pass
                 else:
                     a = stack.pop()
                     print(a)
@@ -188,10 +192,30 @@ def simulate(program):
                     ip = op['jmp']
                 else:
                     ip += 1    
+            elif op['type']==get_OP_MEM():
+                isMem = True
+                stack.append(0)
+                ip += 1   
+            elif op['type']==get_OP_LOAD():
+                addr = stack.pop()
+                byte = mem[addr]
+                stack.append(byte)
+                ip += 1                    
+            elif op['type']==get_OP_STORE():
+                value = stack.pop()
+                addr = stack.pop()
+                mem[addr] = value & 0xFF
+                ip += 1   
+            elif op['type']==get_OP_SYSCALL3():
+                ip += 1                                   
+            elif op['type']==get_OP_SYSCALL1():
+                ip += 1                  
             else:
                 ip += 1                
                 error = True
                 print(f"Unknown opcode: {op}")  
+        if isMem:
+            print(f"memory dump {mem[:10]}")                
     return stack, error  
 
 
@@ -291,7 +315,32 @@ def compile(bytecode, outfile, libc=True):
             output.write(f"jz    addr_{op['jmp']} \n")    
         elif op['type']==get_OP_MEM(): 
             output.write("; mem \n")
-            output.write("push mem\n")                              
+            output.write("push mem\n")   
+        elif op['type']==get_OP_LOAD(): 
+            output.write("; load \n")
+            output.write("pop rax\n")    
+            output.write("xor rbx, rbx\n")           
+            output.write("mov bl, [rax]\n")
+            output.write("push rbx\n")
+        elif op['type']==get_OP_STORE(): 
+            output.write("; store \n")
+            output.write("pop rbx\n")
+            output.write("pop rax\n")
+            output.write("mov [rax], bl\n")
+        elif op['type']==get_OP_SYSCALL1():    
+            output.write("; syscall1 \n")
+            output.write("pop rax\n")
+            output.write("pop rdi\n")            
+            output.write("syscall\n")            
+        elif op['type']==get_OP_SYSCALL3():    
+            output.write("; syscall3 \n")
+            output.write("pop rax\n")
+            output.write("pop rdi\n")            
+            output.write("pop rsi\n")
+            output.write("pop rdx\n")            
+            output.write("syscall\n")
+        elif op['type']==get_OP_SYSCALL1():    
+            output.write("; syscall1 \n")            
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True    
