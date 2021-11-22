@@ -10,7 +10,7 @@ Youtube link for the first Tutorial : https://youtu.be/8QP2fDBIxjM?list=PLpM-Dvs
 
 python3 porth.py --help
 
-    usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-a] [-l] -i INPUTFILE [-o OUTFILE]
+    usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-l] -i INPUTFILE [-o OUTFILE]
 
     porth is a python3 forth language simulation
 
@@ -21,7 +21,6 @@ python3 porth.py --help
     -d, --dump            dump
     -s, --simulate        simulate
     -r, --run             compile and run
-    -a, --ast             ast tree
     -l, --libc            using gcc and libc
     -i INPUTFILE, --inputfile INPUTFILE
                             intput file
@@ -86,6 +85,10 @@ Keyword, operators, and constants are defined in the language.
     MEM: keyword to push the address of the beginning of the memory onto the stack
     @: operator loads value from the memory
     $: operator stores value to the memory
+    2DUP: keyword to duplicate the top 2 values of the stack
+    SWAP: keyword to swap the top 2 values of the stack
+    DROP: keyword to drop the top value of the stack
+    RETURN: keyword to end the program (calls syscall1)
 
 ## release notes
 
@@ -114,3 +117,5 @@ Keyword, operators, and constants are defined in the language.
 1.0.11 Not following the same operators for loading and storing memory : adding $ operator for loading and @ operator for storing and adding syscall3 (syscall with 3 parameters) and syscall1 (syscall with 1 parameter) for exit.
 
 1.0.12 Implementing 2DUP and RETURN keyword to exit the program with specific return value. Fixing issue with WHILE and "error: symbol `addr_39' undefined" and adding other syscall but only for compiling (not simulation mode)
+
+1.0.13 Removing -a option and adding new keyword DROP, SWAP, refactoring code to separate simulate and compile functions into different files

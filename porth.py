@@ -12,9 +12,11 @@ Youtube videos from Tsoding Daily
 import argparse
 import os
 import sys
-from porth_lexer import get_counter_error, load_program, print_ast
-from porth_compiler import compile, simulate
-__version__ = "1.0.12"
+from porth_lexer import get_counter_error, load_program #, print_ast
+from porth_compiler import compile
+from porth_interpreter import simulate
+
+__version__ = "1.0.13"
 
 
 def porthVersion():
@@ -33,8 +35,8 @@ def main(args, filename):
     program, tokens, isOK = load_program(filename)
     if not isOK:
         error = True
-    if args.ast and not error:
-        print_ast(tokens)        
+    # if args.ast and not error:
+    #     print_ast(tokens)        
     if not error and args.simulate:
         print("simulating...")
         stack, error, exit_code = simulate(program)
@@ -72,11 +74,10 @@ if __name__=='__main__':
     parser.add_argument('-d', '--dump', help='dump', action="store_true", required=False)
     parser.add_argument('-s', '--simulate', help='simulate', action="store_true", required=False)
     parser.add_argument('-r', '--run', help='compile and run', action="store_true", required=False)      
-    parser.add_argument('-a', '--ast', help='ast tree', action="store_true", required=False)  
+    #parser.add_argument('-a', '--ast', help='ast tree', action="store_true", required=False)  
     parser.add_argument('-l', '--libc', help='using gcc and libc', action="store_true", required=False)      
     parser.add_argument('-i', '--inputfile', help='intput file', required=True)
     parser.add_argument('-o', '--outfile', help='output file', default="output", required=False)
     args = parser.parse_args()
-    #program=[push(51), push(32), add(), dump(), push(528), push(140), sub(), dump()]
     program = args.inputfile
     main(args, program)

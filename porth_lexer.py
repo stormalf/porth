@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+#Need to increase the max_ops each time we add a new opcode
+MAX_OPS = 28
+
+#max memory size
+MEM_CAPACITY = 640_000
+
+exit_code = 0
 
 #tokens digits and 3 operators for now
 PLUS= "+"
@@ -28,24 +35,8 @@ OPSYSCALL4="SYSCALL4"
 OPSYSCALL5="SYSCALL5"
 OPSYSCALL6="SYSCALL6"
 OPRETURN="RETURN"
-
-# LABEL_PLUS= "PLUS"
-# LABEL_MINUS= "MINUS"
-# LABEL_DUMP= "PRINT"
-# LABEL_EQUAL= "EQUAL"
-# LABEL_IF= "IF"
-# LABEL_ELSE= "ELSE"
-# LABEL_END= "END"
-LABEL_NUMBER = "NUMBER"
-LABEL_UNKNOWN = "UNKNOWN"
-# LABEL_DUP="DUPLICATE"
-# LABEL_GT= "GREATER"
-# LABEL_LT= "LESSER"
-# LABEL_WHILE= "WHILE"
-# LABEL_DO= "DO"
-# LABEL_MEMORY= "MEMORY"
-LABEL_KEYWORD="KEYWORD"
-LABEL_OPERATOR="OPERATOR"
+OPSWAP="SWAP"
+OPDROP="DROP"
 
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
@@ -135,6 +126,10 @@ def get_token_type(token):
         return OP_SYSCALL6                                                       
     elif token == OPRETURN:
         return OP_RETURN    
+    elif token == OPSWAP:
+        return OP_SWAP 
+    elif token == OPDROP:
+        return OP_DROP                    
     else:       
         try:
             int(token)
@@ -142,58 +137,6 @@ def get_token_type(token):
         except ValueError:
             return OP_UNKNOWN
 
-#returns the label for the token type
-def get_token_type_label(tokentype):
-    if tokentype == OP_ADD:
-        return LABEL_OPERATOR
-    elif tokentype == OP_SUB:
-        return LABEL_OPERATOR
-    elif tokentype == OP_DUMP:
-        return LABEL_OPERATOR
-    elif tokentype == OP_EQUAL:
-        return LABEL_OPERATOR
-    elif tokentype == OP_IF:
-        return LABEL_KEYWORD
-    elif tokentype == OP_END:
-        return LABEL_KEYWORD
-    elif tokentype == OP_ELSE:
-        return LABEL_KEYWORD        
-    elif tokentype == OP_NUMBER:
-        return LABEL_NUMBER
-    elif tokentype == OP_UNKNOWN:
-        return LABEL_UNKNOWN
-    elif tokentype == OP_DUP:
-        return LABEL_KEYWORD
-    elif tokentype == OP_DUP2:
-        return LABEL_KEYWORD        
-    elif tokentype == OP_GT:
-        return LABEL_OPERATOR        
-    elif tokentype == OP_LT:
-        return LABEL_OPERATOR   
-    elif tokentype == OP_WHILE:
-        return LABEL_KEYWORD
-    elif tokentype == OP_DO:
-        return LABEL_KEYWORD
-    elif tokentype == OP_MEM:
-        return LABEL_KEYWORD
-    elif tokentype == OP_LOAD:
-        return LABEL_OPERATOR
-    elif tokentype == OP_STORE:
-        return LABEL_OPERATOR   
-    elif tokentype == OP_SYSCALL1:
-        return LABEL_KEYWORD  
-    elif tokentype == OP_SYSCALL2:
-        return LABEL_KEYWORD                                        
-    elif tokentype == OP_SYSCALL3:
-        return LABEL_KEYWORD      
-    elif tokentype == OP_SYSCALL4:
-        return LABEL_KEYWORD  
-    elif tokentype == OP_SYSCALL5:
-        return LABEL_KEYWORD                                        
-    elif tokentype == OP_SYSCALL6:
-        return LABEL_KEYWORD  
-    elif tokentype == OP_RETURN:
-        return LABEL_KEYWORD                                                
 
 #enum function in python 
 def iota(reset=False):
@@ -230,6 +173,8 @@ OP_SYSCALL5=iota()
 OP_SYSCALL6=iota()
 OP_DUP2=iota()
 OP_RETURN=iota()
+OP_SWAP=iota()
+OP_DROP=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -300,7 +245,11 @@ def parse_word(token):
     elif word == OPSYSCALL6:
         return {'type': OP_SYSCALL6, 'loc': loc, 'value': None, 'jmp': None}                           
     elif word == OPRETURN:
-        return {'type': OP_RETURN, 'loc': loc, 'value': None, 'jmp': None}             
+        return {'type': OP_RETURN, 'loc': loc, 'value': None, 'jmp': None} 
+    elif word == OPSWAP:
+        return {'type': OP_SWAP, 'loc': loc, 'value': None, 'jmp': None}   
+    elif word == OPDROP:
+        return {'type': OP_DROP, 'loc': loc, 'value': None, 'jmp': None}                             
     else:
         try :
             number = int(word)
@@ -402,6 +351,11 @@ def cross_reference_block(program, tokens):
         error= True
     return program, error
 
+def get_MAX_OPS():
+    return MAX_OPS    
+
+def get_MEM_CAPACITY():
+    return MEM_CAPACITY    
 
 def get_OPS():
     return COUNT_OPS    
@@ -479,32 +433,11 @@ def get_OP_SYSCALL6():
 def get_OP_RETURN():
     return OP_RETURN   
 
-def print_ast(ast):
-    print("----------------------------------")
-    print('------------ AST TREE ------------')
-    print("----------------------------------")
-    indent = 0
-    for *_, tokentype, token in ast:
-        tokenlabel = get_token_type_label(tokentype)
-        print(tokenlabel, token)        
-        if tokentype == OP_IF:
-            print("if-body")
-            indent += 2
-        if tokentype == OP_WHILE:
-            print("while-condition")
-        if tokentype == OP_DO:
-            print("do-body")
-            indent += 2            
-        elif tokentype == OP_ELSE:
-            print("else-body")
-        elif tokentype == OP_END:
-            print("end-body")
-            indent -= 2
-        for i in range(indent):
-            print(" ", end="")
-    print("----------------------------------")
-    print('------------ END AST -------------')
+def get_OP_SWAP():
+    return OP_SWAP   
 
+def get_OP_DROP():
+    return OP_DROP   
 
 # program, tokens, isOK = load_program("pgm8.porth")
 # print(cross_reference_block(program, tokens))
