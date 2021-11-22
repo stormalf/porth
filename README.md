@@ -97,6 +97,12 @@ Keyword, operators, and constants are defined in the language.
     SHL: shift left bits
     ORB: bitwise or
     ANDB: bitwise and
+    DIV: integer division
+    MUL: integer multiplication
+    MOD: integer modulo
+    !=: operator pops 2 values from the stack and push 1 if not equality and 0 otherwise
+    >=: operator pops 2 values from the stack and push 1 if the first one is greater or equal than the second one and 0 otherwise
+    <=: operator pops 2 values from the stack and push 1 if the first one is less or equal than the second one and 0 otherwise
 
 ## release notes
 
@@ -129,6 +135,8 @@ Keyword, operators, and constants are defined in the language.
 1.0.13 Removing -a option and adding new keyword DROP, SWAP, refactoring code to separate simulate and compile functions into different files
 
 1.0.14 Adding OVER keyword and rule110 example (end episode 5)
+
+1.0.15 Adding >=, <=, !=, MOD, MUL and DIV operators
 
 ## TODO
 

@@ -5,7 +5,8 @@ from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, get_OP
     get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, get_OP_DUP2, get_MEM_CAPACITY, \
     get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM, get_OP_LOAD, get_OP_STORE, get_OP_RETURN, \
     get_OP_SYSCALL1, get_OP_SYSCALL2, get_OP_SYSCALL3, get_OP_SYSCALL4, get_OP_SYSCALL5, get_OP_SYSCALL6, \
-    get_OP_DROP, get_OP_SHL, get_OP_SHR, get_OP_ORB, get_OP_ANDB, get_OP_OVER, exit_code
+    get_OP_DROP, get_OP_SHL, get_OP_SHR, get_OP_ORB, get_OP_ANDB, get_OP_OVER, get_OP_MOD, get_ERR_DIV_ZERO, \
+    get_OP_GE, get_OP_LE, get_OP_NE, get_OP_DIV, get_OP_MUL, exit_code
 
 
 #header2 without printf but using syscall to write on the screen
@@ -56,6 +57,11 @@ BITS 64
 segment .text
 global main
 extern printf
+print2:
+    mov rdi, divby0
+    mov rsi, 18
+    call printf WRT ..plt
+    ret
 print:
         mov     rdi, format             ; set 1st parameter (format)
         mov     rsi, rax                ; set 2nd parameter (current_number)
@@ -75,6 +81,7 @@ syscall
 DATA='''
 segment .data 
 format db  "%d", 10, 0
+divby0 db "Division by zero!", 10, 0
 '''
 
 BSS=f'''
@@ -176,7 +183,64 @@ def compile(bytecode, outfile, libc=True):
             output.write("cmp    rax, rbx \n")                
             output.write("cmovl  rcx, rdx \n")  
             #output.write("mov  rax, rcx \n") 
-            output.write("push    rcx \n")                  
+            output.write("push    rcx \n")  
+        elif op['type']==get_OP_GE():
+            output.write("; ge \n")
+            output.write("mov    rcx, 0 \n")
+            output.write("mov    rdx, 1 \n")
+            output.write("pop    rbx \n")
+            output.write("pop    rax \n")            
+            output.write("cmp    rax, rbx \n")                
+            output.write("cmovge rcx, rdx \n")  
+            output.write("push    rcx \n")
+        elif op['type']==get_OP_LE():
+            output.write("; le \n")
+            output.write("mov    rcx, 0 \n")
+            output.write("mov    rdx, 1 \n")
+            output.write("pop    rbx \n")
+            output.write("pop    rax \n")            
+            output.write("cmp    rax, rbx \n")                
+            output.write("cmovle rcx, rdx \n")  
+            output.write("push    rcx \n")
+        elif op['type']==get_OP_NE():
+            output.write("; ne \n")
+            output.write("mov    rcx, 0 \n")
+            output.write("mov    rdx, 1 \n")
+            output.write("pop    rbx \n")
+            output.write("pop    rax \n")            
+            output.write("cmp    rax, rbx \n")                
+            output.write("cmovne rcx, rdx \n")  
+            output.write("push    rcx \n")
+        elif op['type']==get_OP_DIV():
+            output.write("; div \n")
+            output.write("pop    rbx \n")
+            output.write("pop    rax \n")
+            output.write("mov    rdx, 0 \n")
+            output.write("cmp rbx, 0\n")
+            output.write(f"je addr_div_zero_{ip}\n")
+            output.write("div rbx\n")
+            output.write("push rax\n")
+            output.write(f"jmp addr_div_end_{ip}\n")
+            output.write(f"addr_div_zero_{ip}:\n")
+            #print the error message using printf if libc
+            if libc:
+                output.write("call print2\n")
+            #otherwise print using write syscall
+            else:
+                output.write("; syscall1 \n")
+                output.write("mov rax, 4\n")
+                output.write("mov rdi, divby0\n")            
+                output.write("syscall\n")  
+            output.write("mov rax, SYS_EXIT\n")
+            output.write(f"mov rdi, {get_ERR_DIV_ZERO()}\n")            
+            output.write("syscall\n")  
+            output.write(f"addr_div_end_{ip}:\n")  
+        elif op['type']==get_OP_MUL(): 
+            output.write("; mul \n")
+            output.write("pop    rbx \n")
+            output.write("pop    rax \n")
+            output.write("imul   rbx \n")
+            output.write("push    rax \n")
         elif op['type']==get_OP_WHILE():
             output.write("; while \n")
         elif op['type']==get_OP_DO():
@@ -239,6 +303,30 @@ def compile(bytecode, outfile, libc=True):
             output.write("push rbx\n")
             output.write("push rax\n")
             output.write("push rbx\n")
+        elif op['type']==get_OP_MOD():
+            output.write("; mod \n")
+            output.write("xor rdx, rdx\n")
+            output.write("pop rbx\n")
+            output.write("pop rax\n")
+            output.write("cmp rbx, 0\n")
+            output.write(f"je addr_mod_zero_{ip}\n")
+            output.write("div rbx\n")
+            output.write("push rdx\n")
+            output.write(f"jmp addr_mod_end_{ip}\n")
+            output.write(f"addr_mod_zero_{ip}:\n")
+            #print the error message using printf if libc
+            if libc:
+                output.write("call print2\n")
+            #otherwise print using write syscall
+            else:
+                output.write("; syscall1 \n")
+                output.write("mov rax, 4\n")
+                output.write("mov rdi, divby0\n")            
+                output.write("syscall\n")  
+            output.write("mov rax, SYS_EXIT\n")
+            output.write(f"mov rdi, {get_ERR_DIV_ZERO()}\n")            
+            output.write("syscall\n")  
+            output.write(f"addr_mod_end_{ip}:\n")
         elif op['type']==get_OP_RETURN(): 
             output.write("; return \n")
             output.write("mov rax, SYS_EXIT\n")

@@ -16,7 +16,7 @@ from porth_lexer import get_counter_error, load_program #, print_ast
 from porth_compiler import compile
 from porth_interpreter import simulate
 
-__version__ = "1.0.14"
+__version__ = "1.0.15"
 
 
 def porthVersion():

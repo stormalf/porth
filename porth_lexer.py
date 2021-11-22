@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 33
+MAX_OPS = 39
 
 #max memory size
 MEM_CAPACITY = 640_000
@@ -23,6 +23,11 @@ OPDUP="DUP"
 OPDUP2="2DUP"
 OPGT = ">"
 OPLT = "<"
+OPGE=">="
+OPLE="<="
+OPNE="!="
+OPDIV= "DIV"
+OPMUL="MUL"
 OPWHILE = "WHILE"
 OPDO = "DO"
 OPMEM = "MEM"
@@ -42,7 +47,7 @@ OPSHR="SHR"
 OPORB= "ORB"
 OPANDB="ANDB"
 OPOVER="OVER"
-
+OPMOD="MOD"
 
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
@@ -146,6 +151,18 @@ def get_token_type(token):
         return OP_ANDB                                                    
     elif token == OPOVER:
         return OP_OVER
+    elif token == OPMOD:
+        return OP_MOD  
+    elif token == OPGE:
+        return OP_GE  
+    elif token == OPLE:
+        return OP_LE
+    elif token == OPNE:
+        return OP_NE  
+    elif token == OPDIV:
+        return OP_DIV  
+    elif token == OPMUL:
+        return OP_MUL                                                
     else:       
         try:
             int(token)
@@ -176,6 +193,11 @@ OP_UNKNOWN=iota()
 OP_DUP=iota()
 OP_GT=iota()
 OP_LT=iota()
+OP_GE=iota()
+OP_LE=iota()
+OP_NE=iota()
+OP_DIV=iota()
+OP_MUL=iota()
 OP_WHILE=iota()
 OP_DO=iota()
 OP_MEM=iota()
@@ -196,6 +218,7 @@ OP_SHR=iota()
 OP_ORB=iota()
 OP_ANDB=iota()
 OP_OVER=iota()
+OP_MOD=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -204,6 +227,7 @@ NO_ERROR=iota(True)
 ERR_TOK_UNKNOWN = iota()
 ERR_TOK_FORBIDDEN = iota()
 ERR_TOK_BLOCK = iota()
+ERR_DIV_ZERO = iota()
 
 
 
@@ -243,6 +267,16 @@ def parse_word(token):
         return {'type': OP_GT, 'loc': loc, 'value': None, 'jmp': None}          
     elif word == OPLT:
         return {'type': OP_LT, 'loc': loc, 'value': None, 'jmp': None}   
+    elif word == OPGE:
+        return {'type': OP_GE, 'loc': loc, 'value': None, 'jmp': None}   
+    elif word == OPLE:
+        return {'type': OP_LE, 'loc': loc, 'value': None, 'jmp': None}                   
+    elif word == OPNE:
+        return {'type': OP_NE, 'loc': loc, 'value': None, 'jmp': None}    
+    elif word == OPDIV:
+        return {'type': OP_DIV, 'loc': loc, 'value': None, 'jmp': None}  
+    elif word == OPMUL:
+        return {'type': OP_MUL, 'loc': loc, 'value': None, 'jmp': None}                                
     elif word == OPWHILE:
         return {'type': OP_WHILE, 'loc': loc, 'value': None, 'jmp': None}
     elif word == OPDO:
@@ -281,6 +315,8 @@ def parse_word(token):
         return {'type': OP_ANDB, 'loc': loc, 'value': None, 'jmp': None}
     elif word == OPOVER:
         return {'type': OP_OVER, 'loc': loc, 'value': None, 'jmp': None}
+    elif word == OPMOD:
+        return {'type': OP_MOD, 'loc': loc, 'value': None, 'jmp': None}
     else:
         try :
             number = int(word)
@@ -427,6 +463,21 @@ def get_OP_GT():
 def get_OP_LT():
     return OP_LT
 
+def get_OP_GE():
+    return OP_GE
+
+def get_OP_LE():
+    return OP_LE    
+
+def get_OP_NE():
+    return OP_NE
+
+def get_OP_DIV():
+    return OP_DIV
+
+def get_OP_MUL():
+    return OP_MUL
+
 def get_OP_WHILE():
     return OP_WHILE
 
@@ -485,6 +536,12 @@ def get_OP_ANDB():
 def get_OP_OVER():
     return OP_OVER
 
+def get_OP_MOD():
+    return OP_MOD
+
+def get_ERR_DIV_ZERO():
+    return ERR_DIV_ZERO
+    
 # program, tokens, isOK = load_program("pgm8.porth")
 # print(cross_reference_block(program, tokens))
 # print_ast(tokens)
