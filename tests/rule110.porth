@@ -1,0 +1,33 @@
+//MEM 1 + 1 @
+MEM 98 + 1 @
+
+0 WHILE DUP 98 < DO
+    0 WHILE DUP 100 < DO
+        DUP MEM + $ IF
+                MEM 100 + 42 @
+            ELSE
+                MEM 100 + 32 @
+            END
+            1 MEM 100 + 1 1 SYSCALL3
+            1 + 
+        END
+        DROP 
+        MEM 100 + 10 @
+        1 MEM 100 + 1 1 SYSCALL3
+        //pattern
+        MEM $ 1 SHL
+        MEM 1 + $
+        ORB
+
+        1 WHILE DUP 98 < DO
+        SWAP 1 SHL 7 ANDB
+        OVER MEM + 1 + $ ORB
+        2DUP 110 SWAP SHR 1 ANDB
+        SWAP MEM + SWAP @
+        SWAP
+        1 +
+        END
+        DROP DROP
+        1 + 
+    END
+    DROP

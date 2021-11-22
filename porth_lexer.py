@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 28
+MAX_OPS = 33
 
 #max memory size
 MEM_CAPACITY = 640_000
@@ -37,6 +37,12 @@ OPSYSCALL6="SYSCALL6"
 OPRETURN="RETURN"
 OPSWAP="SWAP"
 OPDROP="DROP"
+OPSHL="SHL"
+OPSHR="SHR"
+OPORB= "ORB"
+OPANDB="ANDB"
+OPOVER="OVER"
+
 
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
@@ -129,7 +135,17 @@ def get_token_type(token):
     elif token == OPSWAP:
         return OP_SWAP 
     elif token == OPDROP:
-        return OP_DROP                    
+        return OP_DROP   
+    elif token == OPSHL:
+        return OP_SHL   
+    elif token == OPSHR:
+        return OP_SHR   
+    elif token == OPORB:
+        return OP_ORB   
+    elif token == OPANDB:
+        return OP_ANDB                                                    
+    elif token == OPOVER:
+        return OP_OVER
     else:       
         try:
             int(token)
@@ -175,6 +191,11 @@ OP_DUP2=iota()
 OP_RETURN=iota()
 OP_SWAP=iota()
 OP_DROP=iota()
+OP_SHL=iota()
+OP_SHR=iota()
+OP_ORB=iota()
+OP_ANDB=iota()
+OP_OVER=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -249,7 +270,17 @@ def parse_word(token):
     elif word == OPSWAP:
         return {'type': OP_SWAP, 'loc': loc, 'value': None, 'jmp': None}   
     elif word == OPDROP:
-        return {'type': OP_DROP, 'loc': loc, 'value': None, 'jmp': None}                             
+        return {'type': OP_DROP, 'loc': loc, 'value': None, 'jmp': None}    
+    elif word == OPSHL:
+        return {'type': OP_SHL, 'loc': loc, 'value': None, 'jmp': None}    
+    elif word == OPSHR:
+        return {'type': OP_SHR, 'loc': loc, 'value': None, 'jmp': None}
+    elif word == OPORB:
+        return {'type': OP_ORB, 'loc': loc, 'value': None, 'jmp': None}
+    elif word == OPANDB:
+        return {'type': OP_ANDB, 'loc': loc, 'value': None, 'jmp': None}
+    elif word == OPOVER:
+        return {'type': OP_OVER, 'loc': loc, 'value': None, 'jmp': None}
     else:
         try :
             number = int(word)
@@ -438,6 +469,21 @@ def get_OP_SWAP():
 
 def get_OP_DROP():
     return OP_DROP   
+
+def get_OP_SHL():
+    return OP_SHL
+
+def get_OP_SHR():
+    return OP_SHR
+
+def get_OP_ORB():
+    return OP_ORB
+
+def get_OP_ANDB():
+    return OP_ANDB
+
+def get_OP_OVER():
+    return OP_OVER
 
 # program, tokens, isOK = load_program("pgm8.porth")
 # print(cross_reference_block(program, tokens))

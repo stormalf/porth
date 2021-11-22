@@ -1,10 +1,14 @@
 # porth
 
-python3 forth language following youtube tutorial from Tsoding Daily
+python3 forth language following youtube tutorial from Tsoding Daily.
+Many thanks to him for his tutorial and youtube videos very interesting and helpful.
 
 Link to the gitlab repo : https://gitlab.com/tsoding/porth/-/blob/master/porth.py
 
 Youtube link for the first Tutorial : https://youtu.be/8QP2fDBIxjM?list=PLpM-Dvs8t0VbMZA7wW9aR3EtBqe2kinu4
+
+Note that I'm using Github Copilot that helps a lot to reduce the need of copy/paste by suggesting often the correct way to write code.
+It uses often the same syntax that I used in the current code. Sometimes it still suggests a code already implemented but probably it will be improved later to correct this behaviour. Very cool!
 
 ## porth compiler usage
 
@@ -89,6 +93,10 @@ Keyword, operators, and constants are defined in the language.
     SWAP: keyword to swap the top 2 values of the stack
     DROP: keyword to drop the top value of the stack
     RETURN: keyword to end the program (calls syscall1)
+    SHR: shift right bits
+    SHL: shift left bits
+    ORB: bitwise or
+    ANDB: bitwise and
 
 ## release notes
 
@@ -119,3 +127,9 @@ Keyword, operators, and constants are defined in the language.
 1.0.12 Implementing 2DUP and RETURN keyword to exit the program with specific return value. Fixing issue with WHILE and "error: symbol `addr_39' undefined" and adding other syscall but only for compiling (not simulation mode)
 
 1.0.13 Removing -a option and adding new keyword DROP, SWAP, refactoring code to separate simulate and compile functions into different files
+
+1.0.14 Adding OVER keyword and rule110 example (end episode 5)
+
+## TODO
+
+Trying to implement similar language but using ANTLR4.

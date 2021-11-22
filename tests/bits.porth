@@ -1,0 +1,11 @@
+#shift left
+1 3 SHL .
+
+//shift right
+32 3 SHR .
+
+//bit or 
+1 2 ORB .
+
+//bit and
+1 2 ANDB .

@@ -6,7 +6,7 @@ from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, get_OP
     get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, get_OP_DUP2, get_MEM_CAPACITY, \
     get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM, get_OP_LOAD, get_OP_STORE, get_OP_RETURN, \
     get_OP_SYSCALL1, get_OP_SYSCALL2, get_OP_SYSCALL3, get_OP_SYSCALL4, get_OP_SYSCALL5, get_OP_SYSCALL6, \
-    get_OP_DROP, exit_code
+    get_OP_DROP, get_OP_SHL, get_OP_SHR, get_OP_ORB, get_OP_ANDB, get_OP_OVER, exit_code
 
 
 
@@ -142,9 +142,52 @@ def simulate(program):
                 b = stack.pop()
                 stack.append(a)
                 stack.append(b)
-                ip += 1                   
+                ip += 1        
+            elif op['type']==get_OP_SHL():
+                if len(stack) < 2:
+                    print("SHL impossible not enough element in stack")
+                    error = True
+                else:
+                    b = stack.pop()
+                    a = stack.pop()
+                    stack.append(a << b)
+                ip += 1      
+            elif op['type']==get_OP_SHR():
+                if len(stack) < 2:
+                    print("SHR impossible not enough element in stack")
+                    error = True
+                else:
+                    b = stack.pop()
+                    a = stack.pop()
+                    stack.append(a >> b)
+                ip += 1
+            elif op['type']==get_OP_ORB():
+                if len(stack) < 2:
+                    print("ORB impossible not enough element in stack")
+                    error = True
+                else:
+                    b = stack.pop()
+                    a = stack.pop()
+                    stack.append(a | b)
+                ip += 1
+            elif op['type']==get_OP_ANDB():
+                if len(stack) < 2:
+                    print("ANDB impossible not enough element in stack")
+                    error = True
+                else:
+                    b = stack.pop()
+                    a = stack.pop()
+                    stack.append(a & b)
+                ip += 1         
             elif op['type']==get_OP_DROP():
                 stack.pop()
+                ip += 1
+            elif op['type']==get_OP_OVER():
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(b)
+                stack.append(a)
+                stack.append(b)
                 ip += 1
             elif op['type']==get_OP_RETURN():
                 syscall_number = 60

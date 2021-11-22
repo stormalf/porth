@@ -5,7 +5,7 @@ from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, get_OP
     get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, get_OP_DUP2, get_MEM_CAPACITY, \
     get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM, get_OP_LOAD, get_OP_STORE, get_OP_RETURN, \
     get_OP_SYSCALL1, get_OP_SYSCALL2, get_OP_SYSCALL3, get_OP_SYSCALL4, get_OP_SYSCALL5, get_OP_SYSCALL6, \
-    get_OP_DROP, exit_code
+    get_OP_DROP, get_OP_SHL, get_OP_SHR, get_OP_ORB, get_OP_ANDB, get_OP_OVER, exit_code
 
 
 #header2 without printf but using syscall to write on the screen
@@ -208,6 +208,37 @@ def compile(bytecode, outfile, libc=True):
         elif op['type']==get_OP_DROP():
             output.write("; drop \n")
             output.write("pop rax\n")
+        elif op['type']==get_OP_SHL():
+            output.write("; shl \n")
+            output.write("pop rcx\n")
+            output.write("pop rax\n")
+            output.write("shl rax, cl\n")
+            output.write("push rax\n")
+        elif op['type']==get_OP_SHR():
+            output.write("; shr \n")
+            output.write("pop rcx\n")
+            output.write("pop rax\n")
+            output.write("shr rax, cl\n")
+            output.write("push rax\n")
+        elif op['type']==get_OP_ORB():
+            output.write("; orb \n")
+            output.write("pop rbx\n")
+            output.write("pop rax\n")
+            output.write("or rax, rbx\n")
+            output.write("push rax\n")
+        elif op['type']==get_OP_ANDB():
+            output.write("; andb \n")
+            output.write("pop rbx\n")
+            output.write("pop rax\n")
+            output.write("and rax, rbx\n")
+            output.write("push rax\n")
+        elif op['type']==get_OP_OVER():
+            output.write("; over \n")
+            output.write("pop rax\n")
+            output.write("pop rbx\n")
+            output.write("push rbx\n")
+            output.write("push rax\n")
+            output.write("push rbx\n")
         elif op['type']==get_OP_RETURN(): 
             output.write("; return \n")
             output.write("mov rax, SYS_EXIT\n")
