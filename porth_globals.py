@@ -326,3 +326,43 @@ def get_token_type(token):
             return OP_NUMBER
         except ValueError:
             return OP_UNKNOWN    
+
+keyword_table = {
+    PLUS: OP_ADD,
+    MINUS: OP_SUB,
+    DUMP: OP_DUMP,
+    EQUAL: OP_EQUAL,
+    OPIF: OP_IF,
+    OPEND: OP_END,
+    OPELSE: OP_ELSE,
+    OPDUP: OP_DUP,
+    OPDUP2: OP_DUP2,
+    OPGT: OP_GT,
+    OPLT: OP_LT,
+    OPWHILE: OP_WHILE,
+    OPDO: OP_DO,
+    OPMEM: OP_MEM,
+    OPSTORE: OP_STORE,
+    OPLOAD: OP_LOAD,
+    OPSYSCALL1: OP_SYSCALL1,
+    OPSYSCALL2: OP_SYSCALL2,
+    OPSYSCALL3: OP_SYSCALL3,
+    OPSYSCALL4: OP_SYSCALL4,
+    OPSYSCALL5: OP_SYSCALL5,
+    OPSYSCALL6: OP_SYSCALL6,
+    OPRETURN: OP_RETURN,
+    OPSWAP: OP_SWAP,
+    OPDROP: OP_DROP,
+    OPSHL: OP_SHL,
+    OPSHR: OP_SHR,
+    OPORB: OP_ORB,
+    OPANDB: OP_ANDB,
+    OPOVER: OP_OVER,
+    OPMOD: OP_MOD,
+    OPGE: OP_GE,
+    OPLE: OP_LE,
+    OPNE: OP_NE,
+    OPDIV: OP_DIV,
+    OPMUL: OP_MUL
+    
+}

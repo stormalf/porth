@@ -48,78 +48,8 @@ def parse_word(token):
     filename, line, column = token['loc']
     word = token['value']
     loc = (filename, line, column)
-    if word == PLUS:
-        return {'type': OP_ADD,  'loc': loc, 'value': None, 'jmp': None}
-    elif word == MINUS:
-        return {'type': OP_SUB, 'loc': loc, 'value': None, 'jmp': None}
-    elif word == DUMP:
-        return {'type': OP_DUMP, 'loc': loc , 'value': None, 'jmp': None}
-    elif word == EQUAL:
-        return {'type': OP_EQUAL, 'loc': loc, 'value': None, 'jmp': None} 
-    elif word == OPIF:
-        return {'type': OP_IF, 'loc': loc, 'value': None, 'jmp': None}  
-    elif word == OPEND:
-        return {'type': OP_END, 'loc': loc, 'value': None, 'jmp': None} 
-    elif word == OPELSE:
-        return {'type': OP_ELSE, 'loc': loc, 'value': None, 'jmp': None} 
-    elif word == OPDUP:
-        return {'type': OP_DUP, 'loc': loc, 'value': None, 'jmp': None}  
-    elif word == OPDUP2:
-        return {'type': OP_DUP2, 'loc': loc, 'value': None, 'jmp': None}                                                             
-    elif word == OPGT:
-        return {'type': OP_GT, 'loc': loc, 'value': None, 'jmp': None}          
-    elif word == OPLT:
-        return {'type': OP_LT, 'loc': loc, 'value': None, 'jmp': None}   
-    elif word == OPGE:
-        return {'type': OP_GE, 'loc': loc, 'value': None, 'jmp': None}   
-    elif word == OPLE:
-        return {'type': OP_LE, 'loc': loc, 'value': None, 'jmp': None}                   
-    elif word == OPNE:
-        return {'type': OP_NE, 'loc': loc, 'value': None, 'jmp': None}    
-    elif word == OPDIV:
-        return {'type': OP_DIV, 'loc': loc, 'value': None, 'jmp': None}  
-    elif word == OPMUL:
-        return {'type': OP_MUL, 'loc': loc, 'value': None, 'jmp': None}                                
-    elif word == OPWHILE:
-        return {'type': OP_WHILE, 'loc': loc, 'value': None, 'jmp': None}
-    elif word == OPDO:
-        return {'type': OP_DO, 'loc': loc, 'value': None, 'jmp': None} 
-    elif word == OPMEM:
-        return {'type': OP_MEM, 'loc': loc, 'value': None, 'jmp': None}                                     
-    elif word == OPLOAD:
-        return {'type': OP_LOAD, 'loc': loc, 'value': None, 'jmp': None}  
-    elif word == OPSTORE:
-        return {'type': OP_STORE, 'loc': loc, 'value': None, 'jmp': None}    
-    elif word == OPSYSCALL1:
-        return {'type': OP_SYSCALL1, 'loc': loc, 'value': None, 'jmp': None}           
-    elif word == OPSYSCALL2:
-        return {'type': OP_SYSCALL2, 'loc': loc, 'value': None, 'jmp': None}           
-    elif word == OPSYSCALL3:
-        return {'type': OP_SYSCALL3, 'loc': loc, 'value': None, 'jmp': None}                          
-    elif word == OPSYSCALL4:
-        return {'type': OP_SYSCALL4, 'loc': loc, 'value': None, 'jmp': None}   
-    elif word == OPSYSCALL5:
-        return {'type': OP_SYSCALL5, 'loc': loc, 'value': None, 'jmp': None}   
-    elif word == OPSYSCALL6:
-        return {'type': OP_SYSCALL6, 'loc': loc, 'value': None, 'jmp': None}                           
-    elif word == OPRETURN:
-        return {'type': OP_RETURN, 'loc': loc, 'value': None, 'jmp': None} 
-    elif word == OPSWAP:
-        return {'type': OP_SWAP, 'loc': loc, 'value': None, 'jmp': None}   
-    elif word == OPDROP:
-        return {'type': OP_DROP, 'loc': loc, 'value': None, 'jmp': None}    
-    elif word == OPSHL:
-        return {'type': OP_SHL, 'loc': loc, 'value': None, 'jmp': None}    
-    elif word == OPSHR:
-        return {'type': OP_SHR, 'loc': loc, 'value': None, 'jmp': None}
-    elif word == OPORB:
-        return {'type': OP_ORB, 'loc': loc, 'value': None, 'jmp': None}
-    elif word == OPANDB:
-        return {'type': OP_ANDB, 'loc': loc, 'value': None, 'jmp': None}
-    elif word == OPOVER:
-        return {'type': OP_OVER, 'loc': loc, 'value': None, 'jmp': None}
-    elif word == OPMOD:
-        return {'type': OP_MOD, 'loc': loc, 'value': None, 'jmp': None}
+    if word in keyword_table:
+        return {'type': keyword_table[word], 'loc': token['loc']}
     else:
         try :
             number = int(word)
