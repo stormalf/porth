@@ -245,3 +245,84 @@ def get_OP_MOD():
 def get_ERR_DIV_ZERO():
     return ERR_DIV_ZERO
     
+
+#returns the type of the token
+def get_token_type(token):
+    if token == PLUS:
+        return OP_ADD
+    elif token == MINUS:
+        return OP_SUB
+    elif token == DUMP:
+        return OP_DUMP
+    elif token == EQUAL:
+        return OP_EQUAL
+    elif token == OPIF:
+        return OP_IF
+    elif token == OPEND:
+        return OP_END
+    elif token == OPELSE:
+        return OP_ELSE        
+    elif token == OPDUP:
+        return OP_DUP   
+    elif token == OPDUP2:
+        return OP_DUP2            
+    elif token == OPGT:
+        return OP_GT          
+    elif token == OPLT:
+        return OP_LT    
+    elif token == OPWHILE:
+        return OP_WHILE   
+    elif token == OPDO:
+        return OP_DO        
+    elif token == OPMEM:
+        return OP_MEM  
+    elif token == OPSTORE:
+        return OP_STORE
+    elif token == OPLOAD:
+        return OP_LOAD   
+    elif token == OPSYSCALL1:
+        return OP_SYSCALL1          
+    elif token == OPSYSCALL2:
+        return OP_SYSCALL2               
+    elif token == OPSYSCALL3:
+        return OP_SYSCALL3                                                       
+    elif token == OPSYSCALL4:
+        return OP_SYSCALL4          
+    elif token == OPSYSCALL5:
+        return OP_SYSCALL5               
+    elif token == OPSYSCALL6:
+        return OP_SYSCALL6                                                       
+    elif token == OPRETURN:
+        return OP_RETURN    
+    elif token == OPSWAP:
+        return OP_SWAP 
+    elif token == OPDROP:
+        return OP_DROP   
+    elif token == OPSHL:
+        return OP_SHL   
+    elif token == OPSHR:
+        return OP_SHR   
+    elif token == OPORB:
+        return OP_ORB   
+    elif token == OPANDB:
+        return OP_ANDB                                                    
+    elif token == OPOVER:
+        return OP_OVER
+    elif token == OPMOD:
+        return OP_MOD  
+    elif token == OPGE:
+        return OP_GE  
+    elif token == OPLE:
+        return OP_LE
+    elif token == OPNE:
+        return OP_NE  
+    elif token == OPDIV:
+        return OP_DIV  
+    elif token == OPMUL:
+        return OP_MUL                                                
+    else:       
+        try:
+            int(token)
+            return OP_NUMBER
+        except ValueError:
+            return OP_UNKNOWN    
