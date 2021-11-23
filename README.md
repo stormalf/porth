@@ -138,6 +138,8 @@ Keyword, operators, and constants are defined in the language.
 
 1.0.15 Adding >=, <=, !=, MOD, MUL and DIV operators
 
+1.0.16 Refactoring code, using dictionary and creating a global file porth_globals.py to store global variables and functions
+
 ## TODO
 
 Trying to implement similar language but using ANTLR4.

@@ -1,13 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import os
-from porth_lexer import get_OP_ADD, get_OP_SUB, get_OP_PUSH, get_OP_DUMP, get_OP_SWAP, get_MAX_OPS,\
-    get_OP_EQUAL, get_OPS, get_OP_IF, get_OP_END, get_OP_ELSE, get_OP_DUP, get_OP_DUP2, get_MEM_CAPACITY, \
-    get_OP_GT, get_OP_LT, get_OP_WHILE, get_OP_DO, get_OP_MEM, get_OP_LOAD, get_OP_STORE, get_OP_RETURN, \
-    get_OP_SYSCALL1, get_OP_SYSCALL2, get_OP_SYSCALL3, get_OP_SYSCALL4, get_OP_SYSCALL5, get_OP_SYSCALL6, \
-    get_OP_DROP, get_OP_SHL, get_OP_SHR, get_OP_ORB, get_OP_ANDB, get_OP_OVER, get_OP_MOD, get_ERR_DIV_ZERO, \
-    get_OP_GE, get_OP_LE, get_OP_NE, get_OP_DIV, get_OP_MUL, exit_code
-
+from porth_globals import *
 
 #header2 without printf but using syscall to write on the screen
 HEADER2 = '''%define SYS_EXIT 60
