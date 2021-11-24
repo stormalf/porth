@@ -5,9 +5,14 @@ from porth_globals import *
 
 DIV_BY_0="Division by zero!"
 #header2 without printf but using syscall to write on the screen
-# HEADER2='''%define SYS_EXIT 60
+# HEADER='''%define SYS_EXIT 60
 # BITS 64
 # segment .text
+# print2:
+#     mov rdi, divby0
+#     mov rsi, 18
+#     call printf ;;WRT ..plt
+#     ret
 # print:
 # mov rax, 1
 # mov rdi, 1
@@ -71,16 +76,12 @@ print2:
     call printf ;;WRT ..plt
     ret
 print:
-        push    rbp
         mov     rdi, format             ; set 1st parameter (format)
         mov     rsi, rax                ; set 2nd parameter (current_number)
         xor     rax, rax                ; because printf is varargs
 
         ; Stack is already aligned because we pushed three 8 byte registers
         call    printf  ;;WRT ..plt               ; printf(format, current_number)
-        pop     rbp
-        mov rbx, 0
-        mov     rax, 1
         ret
 main:\n'''
 
@@ -240,9 +241,11 @@ def compile(bytecode, outfile, libc=True):
                 output.write("call print2\n")
             #otherwise print using write syscall
             else:
-                output.write("; syscall1 \n")
-                output.write("mov rax, 4\n")
-                output.write("mov rdi, divby0\n")            
+                output.write("; syscall3 \n")
+                output.write("mov rax, 1\n")
+                output.write("mov rdi, 1\n")
+                output.write("mov rsi, divby0\n")            
+                output.write(f"mov rdx, {len(DIV_BY_0)+1}\n")            
                 output.write("syscall\n")  
             output.write("mov rax, SYS_EXIT\n")
             output.write(f"mov rdi, {get_ERR_DIV_ZERO()}\n")            
