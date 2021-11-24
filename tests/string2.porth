@@ -1,0 +1,14 @@
+//push int
+10 20 30 . . . 
+10 . 20 . 30 .
+
+//push str 
+"Hello, World\n" 1 1 SYSCALL3
+//1 1 SYSCALL3
+
+10 0 WHILE 2DUP > DO
+ "Hi!" 
+ 1 1 SYSCALL3
+ 1 +
+END
+"\n" 1 1 SYSCALL3

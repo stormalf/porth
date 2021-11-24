@@ -2,18 +2,25 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 from porth_globals import *
+
+runtime_error_counter = 0
+
+def get_runtime_error():
+    global runtime_error_counter
+    return runtime_error_counter
 
 #simulate the program execution without compiling it
 def simulate(program):
-    global exit_code
+    global exit_code, runtime_error_counter
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
     stack=[]
     error = False
     isMem = False
     ip = 0
-    #exit_code = 0
-    mem = bytearray(get_MEM_CAPACITY())
+    str_size= 0
+    mem = bytearray( get_STR_CAPACITY() + get_MEM_CAPACITY())
     #print(program)
     if not error:
         while ip < len(program):
@@ -26,6 +33,7 @@ def simulate(program):
                 ip += 1                
                 if len(stack) < 2:
                     print("ADD impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     a = stack.pop()
@@ -35,6 +43,7 @@ def simulate(program):
                 ip += 1                
                 if len(stack) < 2:
                     print("SUB impossible not enough element in stack")
+                    runtime_error_counter += 1                    
                     error = True
                 else:
                     a = stack.pop()
@@ -44,6 +53,7 @@ def simulate(program):
                 ip += 1                
                 if len(stack) < 2:
                     print("EQUAL impossible not enough element in stack")
+                    runtime_error_counter += 1                    
                     error = True
                 else:
                     a = stack.pop()
@@ -52,9 +62,9 @@ def simulate(program):
             elif op['type']==get_OP_DUMP():
                 ip += 1                
                 if len(stack) == 0:
-                    # print("stack is empty impossible to dump")
-                    # error = True
-                    pass
+                    runtime_error_counter += 1                    
+                    print("stack is empty impossible to dump")
+                    error = True
                 else:
                     a = stack.pop()
                     print(a)
@@ -62,36 +72,58 @@ def simulate(program):
                 ip += 1                
                 if len(stack) == 0:
                     print("stack is empty impossible to execute if statement")
+                    runtime_error_counter += 1                    
                     error = True
                 else:
                     a = stack.pop()
                     if a == 0:
-                        assert len(op) >= 2, "if instruction does not have an End instruction!"
-                        ip = op['jmp']
-                        pass
+                        if len(op) >= 2:
+                            ip = op['jmp']
+                        else:
+                            print("if statement without jmp")
+                            runtime_error_counter += 1                    
+                            error = True
             elif op['type']==get_OP_ELSE():
-                #ip += 1  
-                assert len(op) >= 2, "else instruction does not have an End instruction!"   
-                ip = op['jmp']                      
+                if len(op) >= 2:
+                    ip = op['jmp']
+                else:
+                    print("else statement without jmp")
+                    runtime_error_counter += 1                    
+                    error = True
             elif op['type']==get_OP_END():
-                assert len(op) >= 2, "end instruction does not have next instruction to jump check the crossreferences!"                 
-                ip = op['jmp']
+                if len(op) >= 2:
+                    ip = op['jmp']
+                else:
+                    print("end statement without jmp")
+                    runtime_error_counter += 1                    
+                    error = True
             elif op['type']==get_OP_DUP():
-                a = stack.pop()
-                stack.append(a)
-                stack.append(a)
+                if len(stack) == 0:
+                    print("stack is empty impossible to duplicate")
+                    runtime_error_counter += 1                    
+                    error = True
+                else:
+                    a = stack.pop()
+                    stack.append(a)
+                    stack.append(a)
                 ip += 1 
             elif op['type']==get_OP_DUP2():
-                b = stack.pop()
-                a = stack.pop()
-                stack.append(a)
-                stack.append(b)
-                stack.append(a)
-                stack.append(b)                
+                if len(stack) < 2:
+                    print("2DUP impossible not enough element in stack")
+                    runtime_error_counter += 1                    
+                    error = True
+                else:
+                    b = stack.pop()
+                    a = stack.pop()
+                    stack.append(a)
+                    stack.append(b)
+                    stack.append(a)
+                    stack.append(b)
                 ip += 1                 
             elif op['type']==get_OP_GT():
                 if len(stack) < 2:
                     print("> impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:                
                     b = stack.pop()
@@ -101,6 +133,7 @@ def simulate(program):
             elif op['type']==get_OP_LT():
                 if len(stack) < 2:
                     print("< impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
@@ -110,6 +143,7 @@ def simulate(program):
             elif op['type']==get_OP_GE():                
                 if len(stack) < 2:
                     print(">= impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
@@ -119,6 +153,7 @@ def simulate(program):
             elif op['type']==get_OP_LE():
                 if len(stack) < 2:
                     print("<= impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
@@ -128,6 +163,7 @@ def simulate(program):
             elif op['type']==get_OP_NE():
                 if len(stack) < 2:
                     print("!= impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
@@ -137,19 +173,23 @@ def simulate(program):
             elif op['type']==get_OP_DIV():
                 if len(stack) < 2:
                     print("/ impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
                     a = stack.pop()
                     if b == 0:
-                        print("DIV by zero")
+                        print("Division by zero!")
+                        runtime_error_counter += 1
                         error = True
+                        sys.exit(ERR_DIV_ZERO)
                     else:
                         stack.append(int(a / b))                 
                 ip += 1
             elif op['type']==get_OP_MUL():
                 if len(stack) < 2:
                     print("MUL impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     #print(stack)
@@ -163,13 +203,17 @@ def simulate(program):
                 #ip += 1
                 a = stack.pop()
                 if a == 0:
-                    assert len(op) >= 2, "end instruction does not have next instruction to jump, check the crossreferences!"    
-                    ip = op['jmp']
+                    if len(op) >= 2:
+                        ip = op['jmp']
+                    else:
+                        print("do statement without jmp")
+                        runtime_error_counter += 1                    
+                        error = True
                 else:
                     ip += 1    
             elif op['type']==get_OP_MEM():
                 isMem = True
-                stack.append(0)
+                stack.append(STR_CAPACITY)
                 ip += 1   
             elif op['type']==get_OP_LOAD():
                 addr = stack.pop()
@@ -182,14 +226,20 @@ def simulate(program):
                 mem[addr] = value & 0xFF
                 ip += 1   
             elif op['type']==get_OP_SWAP():
-                a = stack.pop()
-                b = stack.pop()
-                stack.append(a)
-                stack.append(b)
+                if len(stack) < 2:
+                    print("SWAP impossible not enough element in stack")
+                    runtime_error_counter += 1
+                    error = True
+                else:
+                    a = stack.pop()
+                    b = stack.pop()
+                    stack.append(a)
+                    stack.append(b)
                 ip += 1        
             elif op['type']==get_OP_SHL():
                 if len(stack) < 2:
                     print("SHL impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
@@ -199,6 +249,7 @@ def simulate(program):
             elif op['type']==get_OP_SHR():
                 if len(stack) < 2:
                     print("SHR impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
@@ -208,6 +259,7 @@ def simulate(program):
             elif op['type']==get_OP_ORB():
                 if len(stack) < 2:
                     print("ORB impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
@@ -217,6 +269,7 @@ def simulate(program):
             elif op['type']==get_OP_ANDB():
                 if len(stack) < 2:
                     print("ANDB impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
@@ -236,13 +289,16 @@ def simulate(program):
             elif op['type']==get_OP_MOD():
                 if len(stack) < 2:
                     print("MOD impossible not enough element in stack")
+                    runtime_error_counter += 1
                     error = True
                 else:
                     b = stack.pop()
                     a = stack.pop()
                     if b == 0:
-                        print("MOD by zero")
+                        print("Division by zero!")
+                        runtime_error_counter += 1
                         error = True
+                        sys.exit(ERR_DIV_ZERO)                        
                     else:
                         stack.append(a % b)
                 ip += 1
@@ -250,38 +306,54 @@ def simulate(program):
                 syscall_number = 60
                 exit_code = stack.pop()
                 break
+            elif op['type']==get_OP_SYSCALL0():
+                syscall_number = stack.pop()
+                if syscall_number == 39:
+                    stack.append(os.getpid())
+                else:
+                    print(f"unknown syscall0 number: {syscall_number}")
+                    runtime_error_counter += 1
+                    error = True                
+                ip += 1
             elif op['type']==get_OP_SYSCALL1():
                 syscall_number = stack.pop()
                 exit_code = stack.pop()
                 if syscall_number == 60:
                     break
                 else:
-                    print(f"unknown syscall3: {syscall_number}")
+                    print(f"unknown syscall1: {syscall_number}")
+                    runtime_error_counter += 1
                     error = True                
                 ip += 1 
             elif op['type']==get_OP_SYSCALL2():
                 print("not implemented yet!")
+                runtime_error_counter += 1
                 error = True                
                 ip += 1                     
             elif op['type']==get_OP_SYSCALL3():
+                #print(stack)
                 syscall_number = stack.pop()
                 arg1 = stack.pop()
                 arg2 = stack.pop()
                 arg3 = stack.pop()
+                #print(f"syscall3: {syscall_number} {arg1} {arg2} {arg3}")
                 if syscall_number == 1:
                     fd = arg1
                     buffer = arg2
                     count = arg3
                     s = mem[buffer:buffer+count].decode('utf-8')
+                    #print(s, buffer, buffer+count)
                     if fd == 1:
                         print(s, end='')
                     elif fd == 2:
                         print(s, end='', file=sys.stderr)
                     else:
                         print(f"unknown file descriptor: {fd}")
+                        runtime_error_counter += 1
                         error = True
                 else:
-                    print(f"unknown syscall1: {syscall_number}")
+                    print(f"unknown syscall3: {syscall_number}")
+                    runtime_error_counter += 1
                     error = True
                 ip += 1    
             elif op['type']==get_OP_SYSCALL4():
@@ -295,11 +367,25 @@ def simulate(program):
             elif op['type']==get_OP_SYSCALL6():
                 print("not implemented yet!")
                 error = True                
-                ip += 1                                                     
+                ip += 1  
+            elif op['type']==get_OP_STRING():
+                #n = len(op['value'])
+                bstr = bytes(op['value'], 'utf-8')
+                strlen = len(bstr)
+                stack.append(strlen)
+                if 'addr' not in op:
+                    op['addr'] = str_size
+                    mem[str_size:str_size+strlen] = bstr
+                    str_size += strlen
+                    assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
+                stack.append(op['addr'])
+                #print(stack)
+                ip += 1
             else:
                 ip += 1                
                 error = True
                 print(f"Unknown opcode: {op}")  
-        if isMem:
-            print(f"memory dump {mem[:20]}")                
+        # if isMem:
+        #     print()
+        #     print(f"memory dump {mem[:20]}")    
     return stack, error, exit_code  

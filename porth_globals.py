@@ -2,19 +2,26 @@
 # -*- coding: utf-8 -*-
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 39
+MAX_OPS = 41
 
 #max memory size
 MEM_CAPACITY = 640_000
+STR_CAPACITY = 640_000
 
 exit_code = 0
 
 
 #list of comments types probably I'll prefer the python comment syntax for myself
-COMMENTS = ["//", "#", ";"]
+#I keep only two // and # I removed the ; perhaps we need it later for other operation code
+#COMMENTS = ["//", "#", ";"]
+COMMENTS = ["//", "#"]
+
+SINGLE_QUOTE = "'"
+DOUBLE_QUOTE = '"'
+STRING_LITERAL = [DOUBLE_QUOTE]
 
 iota_counter= 0
-error_counter = 0
+
 
 #enum function in python 
 def iota(reset=False):
@@ -25,8 +32,7 @@ def iota(reset=False):
         iota_counter+=1
     return iota_counter
 
-def get_counter_error():
-    return error_counter
+
     
 OP_PUSH=iota(True)    
 OP_ADD=iota()
@@ -51,6 +57,7 @@ OP_DO=iota()
 OP_MEM=iota()
 OP_LOAD=iota()
 OP_STORE=iota()
+OP_SYSCALL0=iota()
 OP_SYSCALL1=iota()
 OP_SYSCALL2=iota()
 OP_SYSCALL3=iota()
@@ -67,6 +74,7 @@ OP_ORB=iota()
 OP_ANDB=iota()
 OP_OVER=iota()
 OP_MOD=iota()
+OP_STRING=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -76,6 +84,7 @@ ERR_TOK_UNKNOWN = iota()
 ERR_TOK_FORBIDDEN = iota()
 ERR_TOK_BLOCK = iota()
 ERR_DIV_ZERO = iota()
+ERR_TOK_STRING=iota()
 
 
 #tokens digits and 3 operators for now
@@ -88,6 +97,7 @@ OPEND = "END"
 OPELSE= "ELSE"
 NUMBER= "number"
 UNKNOWN= "unknown"
+STRING= "string"
 OPDUP="DUP"
 OPDUP2="2DUP"
 OPGT = ">"
@@ -102,6 +112,7 @@ OPDO = "DO"
 OPMEM = "MEM"
 OPLOAD= "$"
 OPSTORE="@"
+OPSYSCALL0= "SYSCALL0"
 OPSYSCALL1="SYSCALL1"
 OPSYSCALL2="SYSCALL2"
 OPSYSCALL3="SYSCALL3"
@@ -126,6 +137,9 @@ def get_MAX_OPS():
 
 def get_MEM_CAPACITY():
     return MEM_CAPACITY    
+
+def get_STR_CAPACITY():
+    return STR_CAPACITY    
 
 def get_OPS():
     return COUNT_OPS    
@@ -194,7 +208,10 @@ def get_OP_LOAD():
     return OP_LOAD
 
 def get_OP_STORE():
-    return OP_STORE    
+    return OP_STORE   
+
+def get_OP_SYSCALL0():
+    return OP_SYSCALL0
 
 def get_OP_SYSCALL1():
     return OP_SYSCALL1
@@ -245,6 +262,9 @@ def get_OP_MOD():
 def get_ERR_DIV_ZERO():
     return ERR_DIV_ZERO
     
+def get_OP_STRING():
+    return OP_STRING
+
 keyword_table = {
     PLUS: OP_ADD,
     MINUS: OP_SUB,
@@ -262,6 +282,7 @@ keyword_table = {
     OPMEM: OP_MEM,
     OPSTORE: OP_STORE,
     OPLOAD: OP_LOAD,
+    OPSYSCALL0: OP_SYSCALL0,
     OPSYSCALL1: OP_SYSCALL1,
     OPSYSCALL2: OP_SYSCALL2,
     OPSYSCALL3: OP_SYSCALL3,

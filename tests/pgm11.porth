@@ -1,6 +1,5 @@
 //comment
 # other comment
-; other comment
 10 .    //comment1
 20 .    # comment2
-30 .    ; comment3
+30 .    #### comment3

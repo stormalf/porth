@@ -3,7 +3,21 @@
 import os
 from porth_globals import *
 
+DIV_BY_0="Division by zero!"
 #header2 without printf but using syscall to write on the screen
+# HEADER2='''%define SYS_EXIT 60
+# BITS 64
+# segment .text
+# print:
+# mov rax, 1
+# mov rdi, 1
+# mov rsi, format
+# mov rdx, 32
+# syscall
+# ret
+# global _start
+# _start:
+# '''
 HEADER2 = '''%define SYS_EXIT 60
 BITS 64
 segment .text
@@ -54,15 +68,19 @@ extern printf
 print2:
     mov rdi, divby0
     mov rsi, 18
-    call printf WRT ..plt
+    call printf ;;WRT ..plt
     ret
 print:
+        push    rbp
         mov     rdi, format             ; set 1st parameter (format)
         mov     rsi, rax                ; set 2nd parameter (current_number)
         xor     rax, rax                ; because printf is varargs
 
         ; Stack is already aligned because we pushed three 8 byte registers
-        call    printf   WRT ..plt               ; printf(format, current_number)
+        call    printf  ;;WRT ..plt               ; printf(format, current_number)
+        pop     rbp
+        mov rbx, 0
+        mov     rax, 1
         ret
 main:\n'''
 
@@ -72,10 +90,10 @@ mov rdi, 0
 syscall
 '''
 
-DATA='''
+DATA=f'''
 segment .data 
 format db  "%d", 10, 0
-divby0 db "Division by zero!", 10, 0
+divby0 db "{DIV_BY_0}", 10, 0
 '''
 
 BSS=f'''
@@ -86,6 +104,7 @@ mem: resb {get_MEM_CAPACITY()}
 #compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode, outfile, libc=True):
     global exit_code
+    strs = []
     assert get_OPS() == get_MAX_OPS(), "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())   
     asmfile = outfile + ".asm"
     output = open(asmfile, "w") 
@@ -313,9 +332,11 @@ def compile(bytecode, outfile, libc=True):
                 output.write("call print2\n")
             #otherwise print using write syscall
             else:
-                output.write("; syscall1 \n")
-                output.write("mov rax, 4\n")
-                output.write("mov rdi, divby0\n")            
+                output.write("; syscall3 \n")
+                output.write("mov rax, 1\n")
+                output.write("mov rdi, 1\n")
+                output.write("mov rsi, divby0\n")            
+                output.write(f"mov rdx, {len(DIV_BY_0)+1}\n")            
                 output.write("syscall\n")  
             output.write("mov rax, SYS_EXIT\n")
             output.write(f"mov rdi, {get_ERR_DIV_ZERO()}\n")            
@@ -325,7 +346,12 @@ def compile(bytecode, outfile, libc=True):
             output.write("; return \n")
             output.write("mov rax, SYS_EXIT\n")
             output.write("pop rdi\n")            
-            output.write("syscall\n")  
+            output.write("syscall\n") 
+        elif op['type']==get_OP_SYSCALL0():
+            output.write("; syscall0 \n")
+            output.write("pop rax\n")
+            output.write("syscall\n")
+            output.write("push rax\n")
         elif op['type']==get_OP_SYSCALL1():    
             output.write("; syscall1 \n")
             output.write("pop rax\n")
@@ -371,13 +397,22 @@ def compile(bytecode, outfile, libc=True):
             output.write("pop r8\n")
             output.write("pop r9\n")
             output.write("syscall\n")
-
+        elif op['type']==get_OP_STRING():
+            output.write("; string \n")
+            output.write(f"mov rax, {len(op['value'])}\n")
+            #print(len(op['value']), strs)
+            output.write("push rax\n")
+            output.write(f"push str_{len(strs)}\n")
+            strs.append(op['value'])
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True 
     output.write("addr_%d:\n" % len(bytecode))               
     output.write(FOOTER)
     output.write(DATA)
+    for index, s in enumerate(strs):
+        output.write(f"str_{index}: db {','.join(map(hex, list(bytes(s, 'utf-8'))))}, 0\n")
+
     output.write(BSS)
     output.close()
     if libc:

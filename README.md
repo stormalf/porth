@@ -103,6 +103,7 @@ Keyword, operators, and constants are defined in the language.
     !=: operator pops 2 values from the stack and push 1 if not equality and 0 otherwise
     >=: operator pops 2 values from the stack and push 1 if the first one is greater or equal than the second one and 0 otherwise
     <=: operator pops 2 values from the stack and push 1 if the first one is less or equal than the second one and 0 otherwise
+    ": starts and end a string, not that for now it doesn't allow a // or a # in the string due to the fact that they are comments
 
 ## release notes
 
@@ -139,6 +140,9 @@ Keyword, operators, and constants are defined in the language.
 1.0.15 Adding >=, <=, !=, MOD, MUL and DIV operators
 
 1.0.16 Refactoring code, using dictionary and creating a global file porth_globals.py to store global variables and functions
+
+1.0.17 Adding strings for now only " are allowed and recognized as strings. Removing ";" as comment I didn't use it really.
+Adding also global runtime counter error. Adding test.py file to test the language. Still one issue with -l the exe generated with libc has strange behaviour it seems to work but no stdout or stderr!!!! To solve later if I found why ?
 
 ## TODO
 

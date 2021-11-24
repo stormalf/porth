@@ -1,0 +1,24 @@
+     " another long string, with ' "
+100
+WHILE DUP 0 > DO
+    DUP .
+    1 -
+END 
+100 .
+// comment
+"    hello world" 
+"    test "
+'    test boen    f'
+"  dsfkfdkj    dsdfkjkj   "
+' tetstskfjkjsqf
+  " kjfqfjqjfdkj 
+' sqfdjq qdsfdjkdqsjf'
+
+"hellow world\n" 10 15 SWAP . . "hello world" 
+   " another long string, with ' "
+"l'article"
+1 IF
+    "l'article" 
+ELSE
+    "les articles" 
+END

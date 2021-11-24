@@ -12,11 +12,11 @@ Youtube videos from Tsoding Daily
 import argparse
 import os
 import sys
-from porth_lexer import get_counter_error, load_program #, print_ast
+from porth_lexer import get_counter_error, load_program 
 from porth_compiler import compile
-from porth_interpreter import simulate
+from porth_interpreter import simulate, get_runtime_error
 
-__version__ = "1.0.16"
+__version__ = "1.0.17"
 
 
 def porthVersion():
@@ -24,7 +24,7 @@ def porthVersion():
 
 
 def run_program(filename):
-    print(f"running {filename}...")
+    #print(f"running {filename}...")
     os.system(f"{filename}")
 
 def main(args, filename):   
@@ -38,27 +38,25 @@ def main(args, filename):
     # if args.ast and not error:
     #     print_ast(tokens)        
     if not error and args.simulate:
-        print("simulating...")
+        #print("simulating...")
         stack, error, exit_code = simulate(program)
         if not error:
-            print("simulation succeeded!")
+            #print("simulation succeeded!")
+            pass
         else:
             print("simulation failed!")
+            print(f"Errors found during runtime simulation: {get_runtime_error()}")
     if not error and (args.compile or args.run):
-        print("compiling...")
-        if args.libc != None:
-            libc = True
-        else:
-            libc = False
-        error = compile(program, args.outfile, libc)
+        #print("compiling...")
+        error = compile(program, args.outfile, args.libc)
         if not error:
-            print("compilation done!")
+            #print("compilation done!")
             if args.run:
                 run_program(args.outfile)
         else:
             print("compilation failed!")    
     if error:
-        print(f"Errors found in program {filename}: {get_counter_error()}")
+        print(f"Errors found in program {filename} : {get_counter_error()}")
     if args.dump:
         print(f"dumping...")
         print(f"tokens : {tokens}")
