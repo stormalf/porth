@@ -144,6 +144,9 @@ Keyword, operators, and constants are defined in the language.
 1.0.17 Adding strings for now only " are allowed and recognized as strings. Removing ";" as comment I didn't use it really.
 Adding also global runtime counter error. Adding test.py file to test the language. Still one issue with -l the exe generated with libc has strange behaviour it seems to work but no stdout or stderr!!!! To solve later if I found why ?
 
+1.0.18 finally found how to solve the empty output when compiling with libc! full information in this link :
+https://coderedirect.com/questions/239430/printf-without-newline-in-assembly explain that you have to flush! After adding the flush it works now for both gcc and without gcc! (2 days lose of time for this issue!)
+
 ## TODO
 
 Trying to implement similar language but using ANTLR4.

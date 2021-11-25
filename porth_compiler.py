@@ -4,25 +4,7 @@ import os
 from porth_globals import *
 
 DIV_BY_0="Division by zero!"
-#header2 without printf but using syscall to write on the screen
-# HEADER='''%define SYS_EXIT 60
-# BITS 64
-# segment .text
-# print2:
-#     mov rdi, divby0
-#     mov rsi, 18
-#     call printf ;;WRT ..plt
-#     ret
-# print:
-# mov rax, 1
-# mov rdi, 1
-# mov rsi, format
-# mov rdx, 32
-# syscall
-# ret
-# global _start
-# _start:
-# '''
+
 HEADER2 = '''%define SYS_EXIT 60
 BITS 64
 segment .text
@@ -63,17 +45,37 @@ ret
 global _start
 _start:
 '''
+# HEADER='''
+# %define SYS_EXIT 60
+# BITS 64
+# default rel
+# extern printf, exit
+# section .text
+# global main
+# print:
+# sub rsp, 8
+# mov rsi, 0x123456789
+# lea rdi, [rel format]
+# xor rax, rax
+# call printf
+# xor rax, rax
+# add rsp, 8
+
+# ret
+# main:\n
+# '''
 
 #using printf standard function to print on the screen
 HEADER = '''%define SYS_EXIT 60\n
 BITS 64
 segment .text
 global main
-extern printf
+extern printf, fflush 
 print2:
     mov rdi, divby0
     mov rsi, 18
     call printf ;;WRT ..plt
+    add rsp, 16
     ret
 print:
         mov     rdi, format             ; set 1st parameter (format)
@@ -82,8 +84,12 @@ print:
 
         ; Stack is already aligned because we pushed three 8 byte registers
         call    printf  ;;WRT ..plt               ; printf(format, current_number)
+        xor     rax, rax                ; clear rax
+        xor    rdi, rdi                ; clear rdi
+        call    fflush  ;;WRT ..plt               ; fflush(stdout) without it, the output is not printed!!!!!
         ret
-main:\n'''
+main:
+'''
 
 #footer assembly that exit function followed by data section with format
 FOOTER = f'''mov rax, SYS_EXIT
