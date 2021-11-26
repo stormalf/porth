@@ -3,7 +3,7 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 41
+MAX_OPS = 42
 
 #max memory size
 MEM_CAPACITY = 640_000
@@ -66,7 +66,8 @@ OP_SYSCALL4=iota()
 OP_SYSCALL5=iota()
 OP_SYSCALL6=iota()
 OP_DUP2=iota()
-OP_RETURN=iota()
+OP_EXIT=iota()
+OP_WRITE=iota()
 OP_SWAP=iota()
 OP_DROP=iota()
 OP_SHL=iota()
@@ -79,13 +80,22 @@ OP_STRING=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
-#error codes
-NO_ERROR=iota(True)
-ERR_TOK_UNKNOWN = iota()
-ERR_TOK_FORBIDDEN = iota()
-ERR_TOK_BLOCK = iota()
-ERR_DIV_ZERO = iota()
+#error code parsing
+ERR_TOK_NOERROR=iota(True)
+ERR_TOK_UNKNOWN=iota()
+ERR_TOK_FORBIDDEN=iota()
+ERR_TOK_BLOCK=iota()
 ERR_TOK_STRING=iota()
+
+#error codes runtime
+RUN_NO_ERROR=iota(True)
+RUN_DIV_ZERO=iota()
+RUN_UNKNOWN=iota()
+
+RUNTIME_ERROR = {
+    RUN_DIV_ZERO: "Division by zero!",
+    RUN_UNKNOWN: "Unknown error!"
+} 
 
 
 #tokens digits and 3 operators for now
@@ -120,7 +130,8 @@ OPSYSCALL3="SYSCALL3"
 OPSYSCALL4="SYSCALL4"
 OPSYSCALL5="SYSCALL5"
 OPSYSCALL6="SYSCALL6"
-OPRETURN="RETURN"
+OPEXIT="EXIT"
+OPWRITE="WRITE"
 OPSWAP="SWAP"
 OPDROP="DROP"
 OPSHL="SHL"
@@ -233,8 +244,11 @@ def get_OP_SYSCALL5() -> int:
 def get_OP_SYSCALL6() -> int:
     return OP_SYSCALL6   
 
-def get_OP_RETURN() -> int:
-    return OP_RETURN   
+def get_OP_EXIT() -> int:
+    return OP_EXIT   
+
+def get_OP_WRITE() -> int:
+    return OP_WRITE
 
 def get_OP_SWAP() -> int:
     return OP_SWAP   
@@ -260,8 +274,6 @@ def get_OP_OVER() -> int:
 def get_OP_MOD() -> int:
     return OP_MOD
 
-def get_ERR_DIV_ZERO() -> int:
-    return ERR_DIV_ZERO
     
 def get_OP_STRING() -> int:
     return OP_STRING
@@ -290,7 +302,8 @@ keyword_table: Dict = {
     OPSYSCALL4: OP_SYSCALL4,
     OPSYSCALL5: OP_SYSCALL5,
     OPSYSCALL6: OP_SYSCALL6,
-    OPRETURN: OP_RETURN,
+    OPEXIT: OP_EXIT,
+    OPWRITE: OP_WRITE,
     OPSWAP: OP_SWAP,
     OPDROP: OP_DROP,
     OPSHL: OP_SHL,

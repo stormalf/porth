@@ -24,4 +24,4 @@ END
     DUP .
     1 -
 END    
-1 RETURN //exit with error code 1 same as syscall1 
+1 EXIT //exit with error code 1 same as syscall1 

@@ -92,7 +92,7 @@ Keyword, operators, and constants are defined in the language.
     2DUP: keyword to duplicate the top 2 values of the stack
     SWAP: keyword to swap the top 2 values of the stack
     DROP: keyword to drop the top value of the stack
-    RETURN: keyword to end the program (calls syscall1)
+    EXIT: keyword to end the program (calls syscall1)
     SHR: shift right bits
     SHL: shift left bits
     ORB: bitwise or
@@ -104,6 +104,7 @@ Keyword, operators, and constants are defined in the language.
     >=: operator pops 2 values from the stack and push 1 if the first one is greater or equal than the second one and 0 otherwise
     <=: operator pops 2 values from the stack and push 1 if the first one is less or equal than the second one and 0 otherwise
     ": starts and end a string, not that for now it doesn't allow a // or a # in the string due to the fact that they are comments
+    WRITE: keyword to write a string to the output file (do internally a 1 1 SYSCALL3 at each WRITE)
 
 ## release notes
 
@@ -149,6 +150,8 @@ https://coderedirect.com/questions/239430/printf-without-newline-in-assembly exp
 
 1.0.19 adding annotations to the code using typing. And taken in account into test the compilation with libc and without libc.
 And adding the possibility to generate the .txt automatically (to use carefully and probably in a new folder)
+
+1.0.20 refactoring the error during runtime. Adding new keyword WRITE that executes internally the "1 1 SYSCALL3" instruction. It prints the string on the stdout (no need anymore to specify "string" 1 1 SYSCALL3). It's done internally.
 
 ## TODO
 

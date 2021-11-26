@@ -3,7 +3,8 @@
 import os
 from porth_globals import *
 
-DIV_BY_0="Division by zero!"
+#DIV_BY_0="Division by zero!"
+
 
 HEADER2 = '''%define SYS_EXIT 60
 BITS 64
@@ -53,9 +54,7 @@ BITS 64
 segment .text
 global main
 extern printf, fflush 
-print2:
-    mov rdi, divby0
-    mov rsi, {len(DIV_BY_0)}
+print_error:
     call printf 
     xor    rdi, rdi                ; clear rdi
     call    fflush             
@@ -82,7 +81,7 @@ syscall
 DATA=f'''
 segment .data 
 format db  "%d", 10, 0
-divby0 db "{DIV_BY_0}", 10, 0
+
 '''
 
 BSS=f'''
@@ -226,17 +225,21 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write(f"addr_div_zero_{ip}:\n")
             #print the error message using printf if libc
             if libc:
-                output.write("call print2\n")
+                output.write(f"mov rsi, {len(RUNTIME_ERROR[RUN_DIV_ZERO])}\n")
+                output.write(f"mov rdi, error_message_{RUN_DIV_ZERO}\n")    
+                output.write("push rdi\n")      
+                output.write("push rsi\n")
+                output.write("call print_error\n")
             #otherwise print using write syscall
             else:
                 output.write("; syscall3 \n")
                 output.write("mov rax, 1\n")
                 output.write("mov rdi, 1\n")
-                output.write("mov rsi, divby0\n")            
-                output.write(f"mov rdx, {len(DIV_BY_0)+1}\n")            
+                output.write(f"mov rdx, {len(RUNTIME_ERROR[RUN_DIV_ZERO]) + 1}\n")            
+                output.write(f"mov rsi, error_message_{RUN_DIV_ZERO}\n")            
                 output.write("syscall\n")  
             output.write("mov rax, SYS_EXIT\n")
-            output.write(f"mov rdi, {get_ERR_DIV_ZERO()}\n")            
+            output.write(f"mov rdi, {RUN_DIV_ZERO()}\n")            
             output.write("syscall\n")  
             output.write(f"addr_div_end_{ip}:\n")  
         elif op['type']==get_OP_MUL(): 
@@ -320,24 +323,43 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write(f"addr_mod_zero_{ip}:\n")
             #print the error message using printf if libc
             if libc:
-                output.write("call print2\n")
+                output.write(f"mov rsi, {len(RUNTIME_ERROR[RUN_DIV_ZERO])}\n")
+                output.write(f"mov rdi, error_message_{RUN_DIV_ZERO}\n")    
+                output.write("push rdi\n")      
+                output.write("push rsi\n")                
+                output.write("call print_error\n")
             #otherwise print using write syscall
             else:
+         
                 output.write("; syscall3 \n")
                 output.write("mov rax, 1\n")
                 output.write("mov rdi, 1\n")
-                output.write("mov rsi, divby0\n")            
-                output.write(f"mov rdx, {len(DIV_BY_0)+1}\n")            
+                output.write(f"mov rdx, {len(RUNTIME_ERROR[RUN_DIV_ZERO]) + 1}\n")            
+                output.write(f"mov rsi, error_message_{RUN_DIV_ZERO}\n")            
                 output.write("syscall\n")  
             output.write("mov rax, SYS_EXIT\n")
-            output.write(f"mov rdi, {get_ERR_DIV_ZERO()}\n")            
+            output.write(f"mov rdi, {RUN_DIV_ZERO}\n")            
             output.write("syscall\n")  
             output.write(f"addr_mod_end_{ip}:\n")
-        elif op['type']==get_OP_RETURN(): 
-            output.write("; return \n")
+        elif op['type']==get_OP_EXIT(): 
+            output.write("; exit \n")
             output.write("mov rax, SYS_EXIT\n")
             output.write("pop rdi\n")            
             output.write("syscall\n") 
+        elif op['type']==get_OP_WRITE():
+            output.write("; write \n")
+            output.write("mov rax, 1\n")
+            output.write("mov rdi, 1\n")
+            output.write("pop rsi\n")
+            output.write("pop rdx\n")
+            output.write("lea rcx, [rsi]\n")
+            output.write("mov rsi, rcx\n")
+            # output.write("pop rdx\n")
+            # output.write("pop rsi\n")
+            # output.write("mov rcx, rsi\n")
+            # output.write("lea rsi, [rdx]\n")
+            # output.write("mov rdx, rcx\n")
+            output.write("syscall\n")
         elif op['type']==get_OP_SYSCALL0():
             output.write("; syscall0 \n")
             output.write("pop rax\n")
@@ -403,7 +425,8 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
     output.write(DATA)
     for index, s in enumerate(strs):
         output.write(f"str_{index}: db {','.join(map(hex, list(bytes(s, 'utf-8'))))}, 0\n")
-
+    for i in RUNTIME_ERROR:
+        output.write(f'error_message_{i} db "{RUNTIME_ERROR[i]}", 10, 0\n')
     output.write(BSS)
     output.close()
     if libc:

@@ -22,6 +22,7 @@ def simulate(program: List) -> Tuple[List,bool, int]:
     isMem = False
     ip = 0
     str_size= 0
+    read_mem= 0
     mem = bytearray( get_STR_CAPACITY() + get_MEM_CAPACITY())
     #print(program)
     if not error:
@@ -181,10 +182,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     b = stack.pop()
                     a = stack.pop()
                     if b == 0:
-                        print("Division by zero!")
+                        print(RUNTIME_ERROR[RUN_DIV_ZERO])
                         runtime_error_counter += 1
                         error = True
-                        sys.exit(ERR_DIV_ZERO)
+                        sys.exit(RUN_DIV_ZERO)
                     else:
                         stack.append(int(a / b))                 
                 ip += 1
@@ -297,17 +298,29 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     b = stack.pop()
                     a = stack.pop()
                     if b == 0:
-                        print("Division by zero!")
+                        print(RUNTIME_ERROR[RUN_DIV_ZERO])
                         runtime_error_counter += 1
                         error = True
-                        sys.exit(ERR_DIV_ZERO)                        
+                        sys.exit(RUN_DIV_ZERO)                        
                     else:
                         stack.append(a % b)
                 ip += 1
-            elif op['type']==get_OP_RETURN():
+            elif op['type']==get_OP_EXIT():
                 syscall_number = 60
                 exit_code = stack.pop()
                 break
+            elif op['type']==get_OP_WRITE():
+                if len(stack) < 2:
+                    print("WRITE impossible not enough element in stack")
+                    runtime_error_counter += 1
+                    error = True
+                else:
+                    b = stack.pop() #addr
+                    a = stack.pop() #length
+                    s = mem[b:str_size].decode('utf-8')
+                    print(s, end='')
+                    read_mem +=a
+                ip += 1
             elif op['type']==get_OP_SYSCALL0():
                 syscall_number = stack.pop()
                 if syscall_number == 39:
