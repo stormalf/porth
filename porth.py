@@ -15,19 +15,20 @@ import sys
 from porth_lexer import get_counter_error, load_program 
 from porth_compiler import compile
 from porth_interpreter import simulate, get_runtime_error
+from typing import *
 
-__version__ = "1.0.18"
+__version__ = "1.0.19"
 
 
-def porthVersion():
+def porthVersion()->str:
     return f"porth version : {__version__}"
 
 
-def run_program(filename):
+def run_program(filename: str) -> None:
     #print(f"running {filename}...")
     os.system(f"{filename}")
 
-def main(args, filename):   
+def main(args, filename: str) -> None:   
     error = False
     tokens=[]
     stack = []

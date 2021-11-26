@@ -45,49 +45,31 @@ ret
 global _start
 _start:
 '''
-# HEADER='''
-# %define SYS_EXIT 60
-# BITS 64
-# default rel
-# extern printf, exit
-# section .text
-# global main
-# print:
-# sub rsp, 8
-# mov rsi, 0x123456789
-# lea rdi, [rel format]
-# xor rax, rax
-# call printf
-# xor rax, rax
-# add rsp, 8
 
-# ret
-# main:\n
-# '''
 
 #using printf standard function to print on the screen
-HEADER = '''%define SYS_EXIT 60\n
+HEADER = f'''%define SYS_EXIT 60\n
 BITS 64
 segment .text
 global main
 extern printf, fflush 
 print2:
     mov rdi, divby0
-    mov rsi, 18
-    call printf ;;WRT ..plt
-    add rsp, 16
+    mov rsi, {len(DIV_BY_0)}
+    call printf 
+    xor    rdi, rdi                ; clear rdi
+    call    fflush             
     ret
 print:
-        mov     rdi, format             ; set 1st parameter (format)
-        mov     rsi, rax                ; set 2nd parameter (current_number)
-        xor     rax, rax                ; because printf is varargs
+    mov     rdi, format             ; set 1st parameter (format)
+    mov     rsi, rax                ; set 2nd parameter (current_number)
+    xor     rax, rax                ; because printf is varargs
 
-        ; Stack is already aligned because we pushed three 8 byte registers
-        call    printf  ;;WRT ..plt               ; printf(format, current_number)
-        xor     rax, rax                ; clear rax
-        xor    rdi, rdi                ; clear rdi
-        call    fflush  ;;WRT ..plt               ; fflush(stdout) without it, the output is not printed!!!!!
-        ret
+    call    printf                ; printf(format, current_number)
+    xor     rax, rax                ; clear rax
+    xor    rdi, rdi                ; clear rdi
+    call    fflush             ; fflush(stdout) without it, the output is not printed!!!!!
+    ret
 main:
 '''
 
@@ -109,7 +91,7 @@ mem: resb {get_MEM_CAPACITY()}
 '''
 
 #compile the bytecode using nasm and gcc (for printf usage)
-def compile(bytecode, outfile, libc=True):
+def compile(bytecode: List, outfile: str, libc: bool = True):
     global exit_code
     strs = []
     assert get_OPS() == get_MAX_OPS(), "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())   

@@ -15,13 +15,35 @@ def cmd_run_echoed(cmd, **kwargs):
 
     return run
 
-def test():
-    sim_failed = 0
-    com_failed = 0
+def gentxt():
     for entry in os.scandir("tests/"):
         porth_ext = '.porth'
         if entry.is_file() and entry.path.endswith(porth_ext):
-            print('[INFO] Testing %s' % entry.path)
+            print(f'[INFO] generating txt file for {entry.path}')
+            txt_path = entry.path[:-len(porth_ext)].replace("tests/", "bin/gentxt/") + ".txt"
+            exe_path = entry.path[:-len(porth_ext)].replace("tests/", "bin/gentxt/")
+            f= open(txt_path, "wb")
+            cmd_run_echoed(["./porth.py", "-r", "-i", entry.path, "-o",  exe_path], check=True)
+            com_output = cmd_run_echoed([exe_path], capture_output=True, check=True).stdout
+            f.write(com_output)
+            f.close()
+    for entry in os.scandir("bin/gentxt"):
+        txt_ext = ".txt"
+        if entry.is_file() and not entry.path.endswith(txt_ext):
+            os.system(f"rm {entry.path}")
+            
+
+            
+
+
+def test():
+    sim_failed = 0
+    com_failed = 0
+    com_libc_failed = 0
+    for entry in os.scandir("tests/"):
+        porth_ext = '.porth'
+        if entry.is_file() and entry.path.endswith(porth_ext):
+            print(f'[INFO] Testing {entry.path}')
 
             txt_path = entry.path[:-len(porth_ext)].replace("tests/", "bin/") + ".txt"
             exe_path = entry.path[:-len(porth_ext)].replace("tests/", "./bin/")
@@ -33,9 +55,9 @@ def test():
                 sim_failed += 1
                 print("[ERROR] Unexpected simulation output")
                 print("  Expected:")
-                print("    %s" % expected_output)
+                print(f"   {expected_output}")
                 print("  Actual:")
-                print("    %s" % sim_output)
+                print(f"    {sim_output}")
                 # exit(1)
             
 
@@ -46,15 +68,25 @@ def test():
                 com_failed += 1
                 print("[ERROR] Unexpected compilation output 1 ")
                 print("  Expected:")
-                print("    %s" % expected_output)
+                print(f"    {expected_output}")
                 print("  Actual:")
-                print("    %s" % com_output)
+                print(f"    {com_output}")
+
+            #compilation with libc
+            cmd_run_echoed(["./porth.py", "-c", "-l", "-i", entry.path, "-o",  exe_path], check=True)
+            com_output = cmd_run_echoed([exe_path], capture_output=True, check=True).stdout
+            print('______________')            
+            if com_output != expected_output:
+                com_libc_failed += 1
+                print("[ERROR] Unexpected compilation with libc output 1 ")
+                print("  Expected:")
+                print(f"    {expected_output}")
+                print("  Actual:")
+                print(f"    {com_output}")
 
     print()
-    print("Simulation failed: %d, Compilation failed: %d" % (sim_failed, com_failed))
-    if sim_failed != 0 or com_failed != 0:
-        #exit(1)
-        pass
+    print(f"Simulation failed: {sim_failed}, Compilation failed: {com_failed}, Compilation with libc failed: {com_libc_failed}")
+
 
 def record():
     for entry in os.scandir("tests/"):
@@ -63,7 +95,7 @@ def record():
         if entry.is_file() and entry.path.endswith(porth_ext):
             sim_output = cmd_run_echoed(["./porth.py", "-s", "-i", entry.path, "-o", exe_path], capture_output=True, check=True).stdout
             txt_path = entry.path[:-len(porth_ext)] + ".txt"
-            print("[INFO] Saving output to %s" % txt_path)
+            print(f"[INFO] Saving output to {txt_path}")
             with open(txt_path, "wb") as txt_file:
                 txt_file.write(sim_output)
 
@@ -86,10 +118,12 @@ if __name__ == '__main__':
             record()
         elif subcmd == 'test':
             test()
+        elif subcmd == 'gentxt':
+            gentxt()            
         elif subcmd == 'help':
             usage(exe_name)
          
         else:
             usage(exe_name)
-            print("[ERROR] unknown subcommand `%s`" % subcmd, file=sys.stderr)
+            print(f"[ERROR] unknown subcommand `{subcmd}`", file=sys.stderr)
             exit(1)

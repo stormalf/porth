@@ -147,6 +147,9 @@ Adding also global runtime counter error. Adding test.py file to test the langua
 1.0.18 finally found how to solve the empty output when compiling with libc! full information in this link :
 https://coderedirect.com/questions/239430/printf-without-newline-in-assembly explain that you have to flush! After adding the flush it works now for both gcc and without gcc! (2 days lose of time for this issue!)
 
+1.0.19 adding annotations to the code using typing. And taken in account into test the compilation with libc and without libc.
+And adding the possibility to generate the .txt automatically (to use carefully and probably in a new folder)
+
 ## TODO
 
 Trying to implement similar language but using ANTLR4.

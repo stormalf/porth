@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
 MAX_OPS = 41
@@ -24,7 +25,7 @@ iota_counter= 0
 
 
 #enum function in python 
-def iota(reset=False):
+def iota(reset=False) -> int:
     global iota_counter
     if reset:
         iota_counter=0
@@ -132,140 +133,140 @@ OPMOD="MOD"
 
 forbidden_tokens = [PLUS, MINUS, DUMP]
 
-def get_MAX_OPS():
+def get_MAX_OPS() -> int:
     return MAX_OPS    
 
-def get_MEM_CAPACITY():
+def get_MEM_CAPACITY() -> int:
     return MEM_CAPACITY    
 
-def get_STR_CAPACITY():
+def get_STR_CAPACITY() -> int:
     return STR_CAPACITY    
 
-def get_OPS():
+def get_OPS() -> int: 
     return COUNT_OPS    
 
-def get_OP_PUSH():
+def get_OP_PUSH() -> int:
     return OP_PUSH
 
-def get_OP_ADD():
+def get_OP_ADD() -> int:
     return OP_ADD
     
-def get_OP_SUB():
+def get_OP_SUB() -> int:
     return OP_SUB
 
-def get_OP_DUMP():
+def get_OP_DUMP() -> int:
     return OP_DUMP
 
-def get_OP_EQUAL():
+def get_OP_EQUAL() -> int:
     return OP_EQUAL
 
-def get_OP_IF():
+def get_OP_IF() -> int:
     return OP_IF
 
-def get_OP_END():    
+def get_OP_END() -> int:    
     return OP_END
 
-def get_OP_ELSE():
+def get_OP_ELSE() -> int:
     return OP_ELSE
 
-def get_OP_DUP():
+def get_OP_DUP() -> int:
     return OP_DUP
 
-def get_OP_DUP2():
+def get_OP_DUP2() -> int:
     return OP_DUP2
 
-def get_OP_GT():
+def get_OP_GT() -> int:
     return OP_GT
 
-def get_OP_LT():
+def get_OP_LT() -> int:
     return OP_LT
 
-def get_OP_GE():
+def get_OP_GE() -> int:
     return OP_GE
 
-def get_OP_LE():
+def get_OP_LE() -> int:
     return OP_LE    
 
-def get_OP_NE():
+def get_OP_NE() -> int:
     return OP_NE
 
-def get_OP_DIV():
+def get_OP_DIV() -> int:
     return OP_DIV
 
-def get_OP_MUL():
+def get_OP_MUL() -> int:
     return OP_MUL
 
-def get_OP_WHILE():
+def get_OP_WHILE() -> int:
     return OP_WHILE
 
-def get_OP_DO():
+def get_OP_DO() -> int:
     return OP_DO
 
-def get_OP_MEM():
+def get_OP_MEM() -> int:
     return OP_MEM
 
-def get_OP_LOAD():
+def get_OP_LOAD() -> int:
     return OP_LOAD
 
-def get_OP_STORE():
+def get_OP_STORE() -> int:
     return OP_STORE   
 
-def get_OP_SYSCALL0():
+def get_OP_SYSCALL0() -> int:
     return OP_SYSCALL0
 
-def get_OP_SYSCALL1():
+def get_OP_SYSCALL1() -> int:
     return OP_SYSCALL1
 
-def get_OP_SYSCALL2():
+def get_OP_SYSCALL2() -> int:
     return OP_SYSCALL2   
 
-def get_OP_SYSCALL3():
+def get_OP_SYSCALL3() -> int:
     return OP_SYSCALL3  
 
 
-def get_OP_SYSCALL4():
+def get_OP_SYSCALL4() -> int:
     return OP_SYSCALL4
 
-def get_OP_SYSCALL5():
+def get_OP_SYSCALL5() -> int:
     return OP_SYSCALL5   
 
-def get_OP_SYSCALL6():
+def get_OP_SYSCALL6() -> int:
     return OP_SYSCALL6   
 
-def get_OP_RETURN():
+def get_OP_RETURN() -> int:
     return OP_RETURN   
 
-def get_OP_SWAP():
+def get_OP_SWAP() -> int:
     return OP_SWAP   
 
-def get_OP_DROP():
+def get_OP_DROP() -> int:
     return OP_DROP   
 
-def get_OP_SHL():
+def get_OP_SHL() -> int:
     return OP_SHL
 
-def get_OP_SHR():
+def get_OP_SHR() -> int:
     return OP_SHR
 
-def get_OP_ORB():
+def get_OP_ORB() -> int:
     return OP_ORB
 
-def get_OP_ANDB():
+def get_OP_ANDB() -> int:
     return OP_ANDB
 
-def get_OP_OVER():
+def get_OP_OVER() -> int:
     return OP_OVER
 
-def get_OP_MOD():
+def get_OP_MOD() -> int:
     return OP_MOD
 
-def get_ERR_DIV_ZERO():
+def get_ERR_DIV_ZERO() -> int:
     return ERR_DIV_ZERO
     
-def get_OP_STRING():
+def get_OP_STRING() -> int:
     return OP_STRING
 
-keyword_table = {
+keyword_table: Dict = {
     PLUS: OP_ADD,
     MINUS: OP_SUB,
     DUMP: OP_DUMP,
@@ -308,7 +309,7 @@ keyword_table = {
 
 
 #returns the type of the token
-def get_token_type(token):
+def get_token_type(token) -> int:
     if token in keyword_table:
         return keyword_table[token]
     else:

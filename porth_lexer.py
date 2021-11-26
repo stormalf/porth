@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 from porth_globals import * 
+from typing import *
 
 error_counter = 0
-def get_counter_error():
+def get_counter_error() -> int:
     global error_counter
     return error_counter
 
 #to manage list of comments types and not only one type of comment
-def split(txt, seps):
+def split(txt: str, seps:List) -> List:
     default_sep = seps[0]
     # we skip seps[0] because that's the default separator
     for sep in seps[1:]:
@@ -18,7 +19,7 @@ def split(txt, seps):
 
 
 # tokenize a file
-def lex_file(filename):
+def lex_file(filename: str) -> List[Dict]:
     with open(filename, "r") as f:
         return [{'loc': (filename, row, col), 'type': token_type, 'value': token } for (row, line) in enumerate(f.readlines(), 1) for (col, token_type, token) in lex_line(row, line)]
 
@@ -26,7 +27,7 @@ def lex_file(filename):
 #separate a line into strings and non strings, calculate the start and end of each token and returns the list of tokens
 #line here represents a subset(without comments) of the line
 #probably to improve this part later
-def separate_line(startline, line, sep):
+def separate_line(startline: int, line: str, sep: Literal) -> Tuple[List, List]:
     strings = []
     notstrings = []
     start = 0
@@ -46,7 +47,7 @@ def separate_line(startline, line, sep):
     return strings, notstrings
 
 #returns the list of tokens for non strings tokens, here line is the line of the original file
-def parse_not_string(line, tokens):
+def parse_not_string(line: str, tokens: List) -> List[Tuple]:
     start = 0
     coltok= []
     for token in tokens:
@@ -58,7 +59,7 @@ def parse_not_string(line, tokens):
 
 
 #tokenize a line. Ignore comments Not that you can't use Detects if double quotes to parse strings
-def lex_line(row, line):
+def lex_line(row, line) -> List[Tuple]:
     global error_counter
     coltok= [] 
     strings= []
@@ -89,7 +90,7 @@ def lex_line(row, line):
 
 
 #returns the list of forbidden tokens as first token in a line (probably need to be removed if we accept multilines for a single instruction)
-def check_first_token(token, forbidden_tokens):
+def check_first_token(token: Any, forbidden_tokens: List) -> bool:
     isOK = False
     if token in forbidden_tokens:
         isOK = True
@@ -97,7 +98,7 @@ def check_first_token(token, forbidden_tokens):
 
 
 #returns the function corresponding to the token found
-def parse_word(token):
+def parse_word(token: Dict) -> Dict:
     global error_counter
     filename, line, column = token['loc']
     word = token['value']
@@ -106,7 +107,7 @@ def parse_word(token):
     if word in keyword_table:
         return {'type': keyword_table[word], 'loc': token['loc'], 'value': word, 'jmp': None}
     elif tokentype==OP_STRING:
-        return {'type': tokentype, 'value': str(bytes(word, "utf-8").decode("unicode_escape")), 'loc': token['loc']}
+        return {'type': tokentype, 'value': bytes(word, "utf-8").decode("unicode_escape"), 'loc': token['loc']}
     else:
         try :
             number = int(word)
@@ -118,7 +119,7 @@ def parse_word(token):
 
 
 #returns the program in the porth language after two passes : first tokenize and second calculate cross references for IF/END
-def load_program(filename):
+def load_program(filename: str) -> Tuple[List, List, bool]:
     program, tokens, isOK = load_program_first_pass(filename)
     program_xref = program
     if isOK:
@@ -129,7 +130,7 @@ def load_program(filename):
 
 
 #do a first pass  to parse tokens and check for errors
-def load_program_first_pass(filename):
+def load_program_first_pass(filename: str) -> Tuple[List, List, bool]:
     global error_counter
     tokens = lex_file(filename)
     isOK = True
@@ -152,7 +153,7 @@ def load_program_first_pass(filename):
 
 
 #cross references to store the link between a IF and this corresponding END operation!
-def cross_reference_block(program, tokens):
+def cross_reference_block(program: List, tokens: List) -> Tuple[List, bool]:
     global error_counter
     error_xrefs = 0
     stack = []
@@ -160,7 +161,7 @@ def cross_reference_block(program, tokens):
     error = False
     for ip in range(len(program)):
         filename, line, col, *_ = tokens[ip]
-        loc = (filename, line, col)
+        #loc = (filename, line, col)
         op = program[ip]
         if op['type'] == OP_IF:
             stack.append(ip)

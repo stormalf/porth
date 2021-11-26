@@ -3,16 +3,18 @@
 
 import sys
 import os
+from typing import Tuple
 from porth_globals import *
+from typing import *
 
 runtime_error_counter = 0
 
-def get_runtime_error():
+def get_runtime_error() -> int:
     global runtime_error_counter
     return runtime_error_counter
 
 #simulate the program execution without compiling it
-def simulate(program):
+def simulate(program: List) -> Tuple[List,bool, int]:
     global exit_code, runtime_error_counter
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
     stack=[]
