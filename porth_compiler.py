@@ -354,11 +354,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop rdx\n")
             output.write("lea rcx, [rsi]\n")
             output.write("mov rsi, rcx\n")
-            # output.write("pop rdx\n")
-            # output.write("pop rsi\n")
-            # output.write("mov rcx, rsi\n")
-            # output.write("lea rsi, [rdx]\n")
-            # output.write("mov rdx, rcx\n")
             output.write("syscall\n")
         elif op['type']==get_OP_SYSCALL0():
             output.write("; syscall0 \n")
