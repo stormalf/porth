@@ -19,7 +19,7 @@ COMMENTS = ["//", "#"]
 
 SINGLE_QUOTE = "'"
 DOUBLE_QUOTE = '"'
-STRING_LITERAL = [DOUBLE_QUOTE]
+STRING_LITERAL = [DOUBLE_QUOTE, " "]
 
 iota_counter= 0
 
