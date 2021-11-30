@@ -29,21 +29,30 @@ def lex_file(filename: str) -> List[Dict]:
 #probably to improve this part later
 def separate_line(startline: int, line: str, sep: Literal) -> Tuple[List, List]:
     strings = []
+    notstrings_temp = []
     notstrings = []
     start = 0
+    nstart = 0
+    nend = 0
     end = 0
+    nb_quotes = 0
     for i in range(len(line)):
         if line[i] == sep:
-            if start == 0:
-                start = i + 1 
-            else:
-                end = i
+            nb_quotes += 1
+            #start new string or end new string
+            if nb_quotes % 2 == 0:
+                nstart = i + 1
+                end = i 
                 strings.append((startline + start, OP_STRING, line[start:end]))
-                start = 0
-                end = 0
-    #remove the strings from the line to parse the rest as tokens
-    for (*_, string) in strings:
-        notstrings.extend(line.replace(string, '').replace(DOUBLE_QUOTE, '').split())
+            else:
+                nend = i-1
+                if nend < 0:
+                    nend = 0
+                notstrings_temp.extend(line[nstart:nend].split())
+                #print(line[nstart:nend])
+            start = i + 1
+    notstrings_temp.extend(line[nstart:].split())
+    notstrings.extend(parse_not_string(line, notstrings_temp))
     return strings, notstrings
 
 #returns the list of tokens for non strings tokens, here line is the line of the original file
@@ -57,6 +66,17 @@ def parse_not_string(line: str, tokens: List) -> List[Tuple]:
         coltok.append((start, token_type, token)) 
     return coltok
 
+def reorganize_tokens(strings: List, notstrings: List) -> List:
+    #print(strings, notstrings)
+    organized_tokens = []
+    temp_tokens = []
+    #print(strings, notstrings)
+    temp_tokens.extend(strings)
+    temp_tokens.extend(notstrings)
+    if len(temp_tokens) != 0:
+        organized_tokens = sorted(temp_tokens, key=lambda tup: tup[0])
+    #print(organized_tokens)
+    return organized_tokens
 
 #tokenize a line. Ignore comments Not that you can't use Detects if double quotes to parse strings
 def lex_line(row, line) -> List[Tuple]:
@@ -68,20 +88,14 @@ def lex_line(row, line) -> List[Tuple]:
     if linewithoutcomments[0].count(DOUBLE_QUOTE) % 2 != 0:
         print(f"Error Code {ERR_TOK_STRING} Unbalanced quotes in line {row} ")
         error_counter += 1
-        isOK = False
         return coltok
     if DOUBLE_QUOTE in line:
         stringline = linewithoutcomments[0] 
         #print(stringline)
         strings, notstrings= separate_line(startline, stringline, DOUBLE_QUOTE)
+        organized_tokens = reorganize_tokens(strings, notstrings)
         #print(strings, notstrings)
-        coltok.extend(strings)
-        if len(notstrings) == 0:
-            return coltok
-        for i, _ in enumerate(notstrings):
-            tokens = notstrings[i].split()
-            notstrings_result = parse_not_string(line, tokens)
-            coltok.append(notstrings_result[0])
+        coltok.extend(organized_tokens)
     else:
         tokens = linewithoutcomments[0].split()
         token_not_string = parse_not_string(line, tokens)
@@ -132,8 +146,11 @@ def load_program(filename: str) -> Tuple[List, List, bool]:
 #do a first pass  to parse tokens and check for errors
 def load_program_first_pass(filename: str) -> Tuple[List, List, bool]:
     global error_counter
-    tokens = lex_file(filename)
     isOK = True
+    tokens = lex_file(filename)
+    if error_counter > 0:
+        isOK = False
+        print(f"Error found during parsing ! {error_counter}")
     current_line = 0
     first_token = False
     for token in tokens:

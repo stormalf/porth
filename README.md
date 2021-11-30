@@ -153,6 +153,8 @@ And adding the possibility to generate the .txt automatically (to use carefully 
 
 1.0.20 refactoring the error during runtime. Adding new keyword WRITE that executes internally the "1 1 SYSCALL3" instruction. It prints the string on the stdout (no need anymore to specify "string" 1 1 SYSCALL3). It's done internally.
 
+1.0.21 refactoring the function that separates line into strings and not strings.
+
 ## TODO
 
 Trying to implement similar language but using ANTLR4.
