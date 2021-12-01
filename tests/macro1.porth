@@ -1,0 +1,32 @@
+hello
+// test macros
+MACRO hello 
+"Hello World!\n" WRITE
+ENDM
+MACRO test
+"Test\n" WRITE
+ENDM
+
+MACRO N1
+13
+ENDM
+
+MACRO N2
+12
+ENDM 
+
+MACRO test2
+N1 N2 < IF
+"test2 number 1  < number 2\n" WRITE
+ELSE
+"test2 number 1 >= number 2\n" WRITE
+END
+ENDM
+
+//MACRO test3
+//ENDM
+
+hello
+test
+test2
+hello

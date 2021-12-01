@@ -22,12 +22,9 @@ def simulate(program: List) -> Tuple[List,bool, int]:
     isMem = False
     ip = 0
     str_size= 0
-    read_mem= 0
     mem = bytearray( get_STR_CAPACITY() + get_MEM_CAPACITY())
-    #print(program)
     if not error:
         while ip < len(program):
-            #print(stack)
             op = program[ip]
             if op['type']==get_OP_PUSH():
                 ip += 1
@@ -317,9 +314,9 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop() #addr
                     a = stack.pop() #length
-                    s = mem[b:str_size].decode('utf-8')
+                    offset = (b+a) 
+                    s = mem[b:offset].decode('utf-8')
                     print(s, end='')
-                    read_mem +=a
                 ip += 1
             elif op['type']==get_OP_SYSCALL0():
                 syscall_number = stack.pop()
@@ -402,5 +399,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 print(f"Unknown opcode: {op}")  
         # if isMem:
         #     print()
-        #     print(f"memory dump {mem[:20]}")    
+        #     print(f"memory dump {mem[:20]}")  
+    #print("----------------------------------")  
     return stack, error, exit_code  
+
+# program = [{'type': 41, 'value': 'Hello World!\n', 'loc': ('./tests/macro1.porth', 4, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 4, 18), 'value': 'WRITE', 'jmp': None}, {'type': 41, 'value': 'Hello World!\n', 'loc': ('./tests/macro1.porth', 4, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 4, 18), 'value': 'WRITE', 'jmp': None}, {'type': 41, 'value': 'Test\n', 'loc': ('./tests/macro1.porth', 7, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 7, 10), 'value': 'WRITE', 'jmp': None}, {'type': 0, 'loc': ('./tests/macro1.porth', 11, 1), 'value': 13, 'jmp': None}, {'type': 0, 'loc': ('./tests/macro1.porth', 15, 1), 'value': 12, 'jmp': None}, {'type': 12, 'loc': ('./tests/macro1.porth', 19, 7), 'value': '<', 'jmp': None}, {'type': 5, 'loc': ('./tests/macro1.porth', 19, 9), 'value': 'IF', 'jmp': None}, {'type': 41, 'value': 'test2 number 1  < number 2\n', 'loc': ('./tests/macro1.porth', 20, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 20, 32), 'value': 'WRITE', 'jmp': None}, {'type': 7, 'loc': ('./tests/macro1.porth', 21, 1), 'value': 'ELSE', 'jmp': None}, {'type': 41, 'value': 'test2 number 1 >= number 2\n', 'loc': ('./tests/macro1.porth', 22, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 22, 32), 'value': 'WRITE', 'jmp': None}, {'type': 6, 'loc': ('./tests/macro1.porth', 23, 1), 'value': 'END', 'jmp': None}, {'type': 41, 'value': 'Hello World!\n', 'loc': ('./tests/macro1.porth', 4, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 4, 18), 'value': 'WRITE', 'jmp': None}]
+# print(len(program))
+# simulate(program)

@@ -62,10 +62,7 @@ python3 porth.py -c -i pgm4.porth -o pgm4
 Example with simulation instead of compilation :
 
     python3 porth.py -s -i pgm7.porth -o pgm7
-
-    simulating...
     777
-    simulation succeeded!
 
 ## language features
 
@@ -105,6 +102,8 @@ Keyword, operators, and constants are defined in the language.
     <=: operator pops 2 values from the stack and push 1 if the first one is less or equal than the second one and 0 otherwise
     ": starts and end a string, not that for now it doesn't allow a // or a # in the string due to the fact that they are comments
     WRITE: keyword to write a string to the output file (do internally a 1 1 SYSCALL3 at each WRITE)
+    MACRO: keyword to create a macro for now inlining definition of a macro is not allowed but macro inside macro is allowed except itself (recursive macro it crashes for now)
+    ENDM: keyword to close a macro
 
 ## release notes
 
@@ -155,6 +154,9 @@ And adding the possibility to generate the .txt automatically (to use carefully 
 
 1.0.21 refactoring the function that separates line into strings and not strings.
 
+1.0.22 introducing macros management (not following the same rules as in the episode 8). Fixing some issue with wrong line information fixing also the write function in simulation. Removing the check of the first token of the line.
+
 ## TODO
 
+Refactoring code to be simpler and more readable.
 Trying to implement similar language but using ANTLR4.

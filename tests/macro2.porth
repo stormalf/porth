@@ -1,0 +1,3 @@
+INCLUDE "tests/io.porth"
+
+"it works!\n" io_write

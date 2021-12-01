@@ -3,7 +3,7 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 42
+MAX_OPS = 46
 
 #max memory size
 MEM_CAPACITY = 640_000
@@ -19,7 +19,7 @@ COMMENTS = ["//", "#"]
 
 SINGLE_QUOTE = "'"
 DOUBLE_QUOTE = '"'
-STRING_LITERAL = [DOUBLE_QUOTE, " "]
+#STRING_LITERAL = [DOUBLE_QUOTE, " "]
 
 iota_counter= 0
 
@@ -77,15 +77,24 @@ OP_ANDB=iota()
 OP_OVER=iota()
 OP_MOD=iota()
 OP_STRING=iota()
+OP_MACRO=iota()
+OP_IDMACRO=iota()
+OP_ENDM=iota()
+OP_INCLUDE=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
 #error code parsing
 ERR_TOK_NOERROR=iota(True)
 ERR_TOK_UNKNOWN=iota()
-ERR_TOK_FORBIDDEN=iota()
+#ERR_TOK_FORBIDDEN=iota()
 ERR_TOK_BLOCK=iota()
 ERR_TOK_STRING=iota()
+ERR_TOK_MACRO=iota()
+ERR_TOK_MACRO_ID=iota()
+ERR_MACRO_EMPTY=iota()
+ERR_MACRO_ENDM=iota()
+ERR_TOK_INCLUDE=iota()
 
 #error codes runtime
 RUN_NO_ERROR=iota(True)
@@ -140,9 +149,13 @@ OPORB= "ORB"
 OPANDB="ANDB"
 OPOVER="OVER"
 OPMOD="MOD"
+OPMACRO="MACRO"
+OPIDMACRO="identifier"
+OPENDM="ENDM"
+OPINCLUDE="INCLUDE"
 
 
-forbidden_tokens = [PLUS, MINUS, DUMP]
+#forbidden_tokens = [PLUS, MINUS, DUMP]
 
 def get_MAX_OPS() -> int:
     return MAX_OPS    
@@ -316,7 +329,10 @@ keyword_table: Dict = {
     OPLE: OP_LE,
     OPNE: OP_NE,
     OPDIV: OP_DIV,
-    OPMUL: OP_MUL
+    OPMUL: OP_MUL,
+    OPMACRO: OP_MACRO,
+    OPENDM: OP_ENDM,
+    OPINCLUDE: OP_INCLUDE
 
 }
 
