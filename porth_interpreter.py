@@ -19,7 +19,7 @@ def simulate(program: List) -> Tuple[List,bool, int]:
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
     stack=[]
     error = False
-    isMem = False
+    #isMem = False
     ip = 0
     str_size= 0
     mem = bytearray( get_STR_CAPACITY() + get_MEM_CAPACITY())
@@ -107,6 +107,7 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     stack.append(a)
                     stack.append(a)
                 ip += 1 
+                #print(stack)
             elif op['type']==get_OP_DUP2():
                 if len(stack) < 2:
                     print("2DUP impossible not enough element in stack")
@@ -307,10 +308,13 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 exit_code = stack.pop()
                 break
             elif op['type']==get_OP_WRITE():
-                if len(stack) < 2:
-                    print("WRITE impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
+                #print(stack)
+                if program[ip-1]['type']==get_OP_CHAR():
+                    print(chr(program[ip - 1]['value']), end="")
+                elif len(stack) < 2:
+                        print("WRITE impossible not enough element in stack")
+                        runtime_error_counter += 1
+                        error = True
                 else:
                     b = stack.pop() #addr
                     a = stack.pop() #length
@@ -318,6 +322,7 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     s = mem[b:offset].decode('utf-8')
                     print(s, end='')
                 ip += 1
+                #print(stack)
             elif op['type']==get_OP_SYSCALL0():
                 syscall_number = stack.pop()
                 if syscall_number == 39:
@@ -343,12 +348,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 error = True                
                 ip += 1                     
             elif op['type']==get_OP_SYSCALL3():
-                #print(stack)
                 syscall_number = stack.pop()
                 arg1 = stack.pop()
                 arg2 = stack.pop()
                 arg3 = stack.pop()
-                #print(f"syscall3: {syscall_number} {arg1} {arg2} {arg3}")
                 if syscall_number == 1:
                     fd = arg1
                     buffer = arg2
@@ -380,6 +383,9 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 print("not implemented yet!")
                 error = True                
                 ip += 1  
+            elif op['type']==get_OP_CHAR():
+                stack.append(op['value'])
+                ip += 1
             elif op['type']==get_OP_STRING():
                 #n = len(op['value'])
                 bstr = bytes(op['value'], 'utf-8')
@@ -391,7 +397,8 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     str_size += strlen
                     assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
                 stack.append(op['addr'])
-                #print(stack)
+                #print(op)
+                #print(stack, op, str_size, strlen)
                 ip += 1
             else:
                 ip += 1                
@@ -400,7 +407,9 @@ def simulate(program: List) -> Tuple[List,bool, int]:
         # if isMem:
         #     print()
         #     print(f"memory dump {mem[:20]}")  
-    #print("----------------------------------")  
+    # print("----------------------------------")  
+    # print(stack)
+    # print("----------------------------------")  
     return stack, error, exit_code  
 
 # program = [{'type': 41, 'value': 'Hello World!\n', 'loc': ('./tests/macro1.porth', 4, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 4, 18), 'value': 'WRITE', 'jmp': None}, {'type': 41, 'value': 'Hello World!\n', 'loc': ('./tests/macro1.porth', 4, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 4, 18), 'value': 'WRITE', 'jmp': None}, {'type': 41, 'value': 'Test\n', 'loc': ('./tests/macro1.porth', 7, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 7, 10), 'value': 'WRITE', 'jmp': None}, {'type': 0, 'loc': ('./tests/macro1.porth', 11, 1), 'value': 13, 'jmp': None}, {'type': 0, 'loc': ('./tests/macro1.porth', 15, 1), 'value': 12, 'jmp': None}, {'type': 12, 'loc': ('./tests/macro1.porth', 19, 7), 'value': '<', 'jmp': None}, {'type': 5, 'loc': ('./tests/macro1.porth', 19, 9), 'value': 'IF', 'jmp': None}, {'type': 41, 'value': 'test2 number 1  < number 2\n', 'loc': ('./tests/macro1.porth', 20, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 20, 32), 'value': 'WRITE', 'jmp': None}, {'type': 7, 'loc': ('./tests/macro1.porth', 21, 1), 'value': 'ELSE', 'jmp': None}, {'type': 41, 'value': 'test2 number 1 >= number 2\n', 'loc': ('./tests/macro1.porth', 22, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 22, 32), 'value': 'WRITE', 'jmp': None}, {'type': 6, 'loc': ('./tests/macro1.porth', 23, 1), 'value': 'END', 'jmp': None}, {'type': 41, 'value': 'Hello World!\n', 'loc': ('./tests/macro1.porth', 4, 2)}, {'type': 32, 'loc': ('./tests/macro1.porth', 4, 18), 'value': 'WRITE', 'jmp': None}]

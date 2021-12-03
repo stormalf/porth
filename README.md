@@ -104,6 +104,8 @@ Keyword, operators, and constants are defined in the language.
     WRITE: keyword to write a string to the output file (do internally a 1 1 SYSCALL3 at each WRITE)
     MACRO: keyword to create a macro for now inlining definition of a macro is not allowed but macro inside macro is allowed except itself (recursive macro it crashes for now)
     ENDM: keyword to close a macro
+    INCLUDE: keyword to include a file but recursive include are not allowed
+    '_': single quotes to create a char (1 character allowed except for some special characters see special_chars dictionary). It's possible to print some chars like '\n' or '\t' but some issues still yet with unicode characters that are coded in more than one byte.
 
 ## release notes
 
@@ -155,6 +157,10 @@ And adding the possibility to generate the .txt automatically (to use carefully 
 1.0.21 refactoring the function that separates line into strings and not strings.
 
 1.0.22 introducing macros management (not following the same rules as in the episode 8). Fixing some issue with wrong line information fixing also the write function in simulation. Removing the check of the first token of the line.
+
+1.0.23 introducing the possibility to include files. Including char management using single quotes. Writing Fizzbuzz example.
+An issue still remains with the strings management if you define some strings with different sizes it doesn't work inside a loop!
+Not found why perhaps caused by OVER keyword. Probably need to review the string management later.
 
 ## TODO
 

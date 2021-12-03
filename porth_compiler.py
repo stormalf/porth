@@ -10,39 +10,53 @@ HEADER2 = '''%define SYS_EXIT 60
 BITS 64
 segment .text
 print:
-mov r9, -3689348814741910323
-sub rsp, 40
-mov BYTE [rsp+31], 10
-lea rcx, [rsp+30]
+    mov r9, -3689348814741910323
+    sub rsp, 40
+    mov BYTE [rsp+31], 10
+    lea rcx, [rsp+30]
 .L2:
-mov rax, rdi
-lea r8, [rsp+32]
-mul r9
-mov rax, rdi
-sub r8, rcx
-shr rdx, 3
-lea rsi, [rdx+rdx*4]
-add rsi, rsi
-sub rax, rsi
-add eax, 48
-mov BYTE [rcx], al
-mov rax, rdi
-mov rdi, rdx
-mov rdx, rcx
-sub rcx, 1
-cmp rax, 9
-ja .L2
-lea rax, [rsp+32]
-mov edi, 1
-sub rdx, rax
-xor eax, eax
-lea rsi, [rsp+32+rdx]
-mov rdx, r8
-mov rax, 1
-syscall
-;call write
-add rsp, 40
-ret
+    mov rax, rdi
+    lea r8, [rsp+32]
+    mul r9
+    mov rax, rdi
+    sub r8, rcx
+    shr rdx, 3
+    lea rsi, [rdx+rdx*4]
+    add rsi, rsi
+    sub rax, rsi
+    add eax, 48
+    mov BYTE [rcx], al
+    mov rax, rdi
+    mov rdi, rdx
+    mov rdx, rcx
+    sub rcx, 1
+    cmp rax, 9
+    ja .L2
+    lea rax, [rsp+32]
+    mov edi, 1
+    sub rdx, rax
+    xor eax, eax
+    lea rsi, [rsp+32+rdx]
+    mov rdx, r8
+    mov rax, 1
+    syscall
+    ;call write
+    add rsp, 40
+    ret
+print_char:
+    push   rbp
+    mov    rbp, rsp
+    sub    rsp, 16
+    mov    rax, rdi
+    mov    [rbp - 4], al
+    lea    rsi, [rbp - 4]
+    mov    rdx, 1
+    mov    rdi, 1
+    mov    rax, 1
+    syscall
+    add rsp, 16
+    pop    rbp
+    ret
 global _start
 _start:
 '''
@@ -54,6 +68,13 @@ BITS 64
 segment .text
 global main
 extern printf, fflush 
+print_char:
+    mov     rdi, char             ; set 1st parameter (format)
+    mov     rsi, rax 
+    call printf 
+    xor    rdi, rdi                ; clear rdi
+    call    fflush             
+    ret
 print_error:
     call printf 
     xor    rdi, rdi                ; clear rdi
@@ -63,7 +84,6 @@ print:
     mov     rdi, format             ; set 1st parameter (format)
     mov     rsi, rax                ; set 2nd parameter (current_number)
     xor     rax, rax                ; because printf is varargs
-
     call    printf                ; printf(format, current_number)
     xor     rax, rax                ; clear rax
     xor    rdi, rdi                ; clear rdi
@@ -81,6 +101,7 @@ syscall
 DATA=f'''
 segment .data 
 format db  "%d", 10, 0
+char db  "%c", 0
 
 '''
 
@@ -127,7 +148,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop    rbx \n")            
             output.write("cmp    rax, rbx \n")                
             output.write("cmove  rcx, rdx \n")  
-            #output.write("mov  rax, rcx \n") 
             output.write("push    rcx \n")           
         elif op['type']==get_OP_IF():
             assert len(op) >= 2, f"compile error! IF instruction does not have an END instruction! {op}"            
@@ -139,7 +159,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             assert len(op) >= 2, f"compile error! ELSE instruction does not have an END instruction! {op}"
             output.write("; else \n")
             output.write(f"jmp    addr_{op['jmp']} \n")  
-            #output.write(f"addr_{ip+1}: \n")    
         elif op['type']==get_OP_END():
             output.write("; end \n")
             assert len(op) >= 2, f"compile error! END instruction does not have a next instruction to jump! {op}"  
@@ -173,7 +192,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop    rax \n")            
             output.write("cmp    rax, rbx \n")                
             output.write("cmovg  rcx, rdx \n")  
-            #output.write("mov  rax, rcx \n") 
             output.write("push    rcx \n")                
         elif op['type']==get_OP_LT():
             output.write("; lt \n")
@@ -183,7 +201,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop    rax \n")            
             output.write("cmp    rax, rbx \n")                
             output.write("cmovl  rcx, rdx \n")  
-            #output.write("mov  rax, rcx \n") 
             output.write("push    rcx \n")  
         elif op['type']==get_OP_GE():
             output.write("; ge \n")
@@ -347,14 +364,26 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop rdi\n")            
             output.write("syscall\n") 
         elif op['type']==get_OP_WRITE():
-            output.write("; write \n")
-            output.write("mov rax, 1\n")
-            output.write("mov rdi, 1\n")
-            output.write("pop rsi\n")
-            output.write("pop rdx\n")
-            output.write("lea rcx, [rsi]\n")
-            output.write("mov rsi, rcx\n")
-            output.write("syscall\n")
+            if bytecode[ip - 1]['type']==get_OP_CHAR():
+                output.write("; write char \n")
+                if libc:
+                    output.write(f"mov rax, {bytecode[ip - 1]['value']}\n")
+                    output.write("push rax\n")
+                    output.write("call print_char\n")
+                else:
+                    output.write(f"mov rdi, {bytecode[ip - 1]['value']}\n")
+                    output.write("push rdi\n")
+                    output.write("call print_char\n")
+
+            else:
+                output.write("; write \n")
+                output.write("mov rax, 1\n")
+                output.write("mov rdi, 1\n") 
+                output.write("pop rsi\n")
+                output.write("pop rdx\n")
+                output.write("lea rcx, [rsi]\n")
+                output.write("mov rsi, rcx\n")
+                output.write("syscall\n")
         elif op['type']==get_OP_SYSCALL0():
             output.write("; syscall0 \n")
             output.write("pop rax\n")
@@ -405,6 +434,9 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop r8\n")
             output.write("pop r9\n")
             output.write("syscall\n")
+        elif op['type']==get_OP_CHAR():
+            output.write("; char\n")  
+            output.write(f"push {op['value']}\n")
         elif op['type']==get_OP_STRING():
             output.write("; string \n")
             output.write(f"mov rax, {len(op['value'])}\n")

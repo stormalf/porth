@@ -1,0 +1,29 @@
+//it's mandatory to keep the same size for all the strings inside the loop
+//if not you can have issues, failures due to something wrong with strings and stack perhaps caused by OVER ?
+1 WHILE DUP 30 <= DO
+    DUP 3 MOD 0 = 
+    OVER 5 MOD 0 =
+    ANDB IF
+        //DUP .
+        "FIZZBUZZ\n" 1 1 SYSCALL3
+        ELSE
+        DUP 3 MOD 0 = 
+        IF 
+            //DUP .
+            "FIZZ    \n" 1 1 SYSCALL3
+            
+        ELSE
+
+        DUP 5 MOD 0 =
+        IF
+            //DUP .
+            "BUZZ    \n" 1 1 SYSCALL3 
+        ELSE
+        DUP .
+        END
+
+        END
+    END
+    1 +
+END
+DROP
