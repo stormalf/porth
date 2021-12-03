@@ -1,0 +1,8 @@
+INCLUDE "tests/io.porth"
+
+"it works!\n" io_write
+
+MACRO try 
+10 20 +
+try
+ENDM

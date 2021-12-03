@@ -17,7 +17,7 @@ from porth_compiler import compile
 from porth_interpreter import simulate, get_runtime_error
 from typing import *
 
-__version__ = "1.0.21"
+__version__ = "1.0.23"
 
 
 def porthVersion()->str:
@@ -34,7 +34,7 @@ def main(args, filename: str) -> None:
     stack = []
     exit_code = 0
     program, tokens, isOK = load_program(filename)
-    if not isOK:
+    if isOK==False:
         error = True
     # if args.ast and not error:
     #     print_ast(tokens)        

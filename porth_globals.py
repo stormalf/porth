@@ -3,7 +3,7 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 42
+MAX_OPS = 47
 
 #max memory size
 MEM_CAPACITY = 640_000
@@ -19,7 +19,7 @@ COMMENTS = ["//", "#"]
 
 SINGLE_QUOTE = "'"
 DOUBLE_QUOTE = '"'
-STRING_LITERAL = [DOUBLE_QUOTE, " "]
+#STRING_LITERAL = [DOUBLE_QUOTE, " "]
 
 iota_counter= 0
 
@@ -77,15 +77,27 @@ OP_ANDB=iota()
 OP_OVER=iota()
 OP_MOD=iota()
 OP_STRING=iota()
+OP_MACRO=iota()
+OP_IDMACRO=iota()
+OP_ENDM=iota()
+OP_INCLUDE=iota()
+OP_CHAR=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
 #error code parsing
 ERR_TOK_NOERROR=iota(True)
 ERR_TOK_UNKNOWN=iota()
-ERR_TOK_FORBIDDEN=iota()
+#ERR_TOK_FORBIDDEN=iota()
 ERR_TOK_BLOCK=iota()
 ERR_TOK_STRING=iota()
+ERR_TOK_MACRO=iota()
+ERR_TOK_MACRO_ID=iota()
+ERR_MACRO_EMPTY=iota()
+ERR_MACRO_ENDM=iota()
+ERR_MACRO_RECURSIVE=iota()
+ERR_TOK_INCLUDE=iota()
+ERR_TOK_FILE=iota()
 
 #error codes runtime
 RUN_NO_ERROR=iota(True)
@@ -109,6 +121,7 @@ OPELSE= "ELSE"
 NUMBER= "number"
 UNKNOWN= "unknown"
 STRING= "string"
+CHAR="char"
 OPDUP="DUP"
 OPDUP2="2DUP"
 OPGT = ">"
@@ -140,9 +153,13 @@ OPORB= "ORB"
 OPANDB="ANDB"
 OPOVER="OVER"
 OPMOD="MOD"
+OPMACRO="MACRO"
+OPIDMACRO="identifier"
+OPENDM="ENDM"
+OPINCLUDE="INCLUDE"
 
 
-forbidden_tokens = [PLUS, MINUS, DUMP]
+#forbidden_tokens = [PLUS, MINUS, DUMP]
 
 def get_MAX_OPS() -> int:
     return MAX_OPS    
@@ -274,9 +291,12 @@ def get_OP_OVER() -> int:
 def get_OP_MOD() -> int:
     return OP_MOD
 
-    
 def get_OP_STRING() -> int:
     return OP_STRING
+
+def get_OP_CHAR() -> int:
+    return OP_CHAR
+
 
 keyword_table: Dict = {
     PLUS: OP_ADD,
@@ -316,8 +336,23 @@ keyword_table: Dict = {
     OPLE: OP_LE,
     OPNE: OP_NE,
     OPDIV: OP_DIV,
-    OPMUL: OP_MUL
+    OPMUL: OP_MUL,
+    OPMACRO: OP_MACRO,
+    OPENDM: OP_ENDM,
+    OPINCLUDE: OP_INCLUDE
 
+}
+
+special_chars: Dict = {
+    '\\n': '\n',
+    '\\t': '\t',
+    '\\r': '\r',
+    '\\f': '\f',
+    '\\v': '\v',
+    '\\b': '\b',
+    '\\a': '\a',
+    '\\0': '\0',
+    '\\"': '"'
 }
 
 

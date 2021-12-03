@@ -1,0 +1,15 @@
+"let's go " WRITE 'a' WRITE "to the store" WRITE
+"new line " WRITE 
+//special char not working for the moment  
+'\n' WRITE 
+"text after a new line" WRITE
+    '\n' WRITE "new line" WRITE
+    '\t' WRITE "tab" WRITE
+    '\r' WRITE "return" WRITE
+    '\f' WRITE "form feed" WRITE
+    '\v' WRITE "vertical tab" WRITE
+    '\b' WRITE "backspace" WRITE
+    '\a' WRITE "bell" WRITE
+    '\0' WRITE "null" WRITE
+    
+'"'
