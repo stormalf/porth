@@ -1,0 +1,7 @@
+INCLUDE "include/io.porth"
+
+"Hello world!\n" write
+//todo
+
+"Error!\n" error
+

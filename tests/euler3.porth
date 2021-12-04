@@ -1,0 +1,26 @@
+INCLUDE "include/mem.porth"
+
+//MEM  123456789 store64
+
+//MEM load64 .
+
+1 WHILE DUP 100 <= DO
+    MEM 2DUP load64 + store64
+    1 +
+END
+
+MEM load64 .
+MEM 0 store64
+
+MACRO acc 
+MEM
+ENDM
+
+1 2 WHILE OVER 4000000 < DO
+ OVER 2 MOD 0 = IF
+    OVER acc load64 + acc SWAP store64
+    END
+SWAP OVER +
+END
+
+acc load64 .

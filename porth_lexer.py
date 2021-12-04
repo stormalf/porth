@@ -6,6 +6,7 @@ from typing import *
 
 error_counter = 0
 macro_struct= {}
+include_file=[]
 
 #returns the number of errors found
 def get_counter_error() -> int:
@@ -235,31 +236,41 @@ def load_program(filename: str) -> Tuple[List, List, bool]:
     return program_xref, tokens, isOK
 
 
+def recursive_includes(tokens_temp: List ) -> List:
+    global error_counter, include_file
+    tokens_output = []
+    isOK = True
+    for i, token in enumerate(tokens_temp):
+        if (token['type'] == OP_INCLUDE and tokens_temp[i+1]['type'] == OP_STRING) or (token['type'] == OP_STRING and tokens_temp[i-1]['type'] == OP_INCLUDE):
+            if token['type'] == OP_STRING:
+                try:
+                    if tokens_temp[i]['value'] not in include_file:
+                        included_tokens, isOK=lex_file(tokens_temp[i]['value'])
+                        include_file.append(tokens_temp[i]['value'])
+                        tokens_output.extend(included_tokens)
+                except FileNotFoundError:
+                    print(f"Error Code {ERR_TOK_INCLUDE} File {tokens_temp[i]['value']} not found")
+                    error_counter += 1
+                    isOK = False
+        else:
+            tokens_output.append(token)
+    return tokens_output, isOK
+
+
 #do a first pass  to parse tokens and check for errors
-def pre_processing_includes(filename: str) -> Tuple[List, List, bool]:
-    global error_counter
+def pre_processing_includes(filename: str, recursive: bool = False) -> Tuple[List, List, bool]:
+    global error_counter, include_file
     tokens_output = []
     isOK = True
     tokens, isOK = lex_file(filename)
     if isOK==False:
         print(f"Error found in lex_file function in file {filename}")
         return [], [], isOK
-    for i, token in enumerate(tokens):
-        if (token['type'] == OP_INCLUDE and tokens[i+1]['type'] == OP_STRING) or (token['type'] == OP_STRING and tokens[i-1]['type'] == OP_INCLUDE):
-            if token['type'] == OP_STRING:
-                try:
-                    included_tokens, isOK=lex_file(tokens[i]['value'])
-                    tokens_output.extend(included_tokens)
-                except FileNotFoundError:
-                    print(f"Error Code {ERR_TOK_INCLUDE} File {tokens[i]['value']} not found")
-                    error_counter += 1
-                    isOK = False
-        else:
-            tokens_output.append(token)
-    if  any(d['value'] == OPINCLUDE for d in tokens_output):
-        print(f"Error Code {ERR_TOK_INCLUDE} recursive include not allowed!")
-        error_counter += 1
-        isOK = False
+    tokens_output, isOK  = recursive_includes(tokens)
+    #managing recursive includes
+    while isOK and any(d['value'] == OPINCLUDE for d in tokens_output):
+        tokens_temp = tokens_output
+        tokens_output, isOK = recursive_includes(tokens_temp)
     return [parse_word(word) for word in tokens_output], tokens_output, isOK
 
 #expand recursively all macros in the program
@@ -325,7 +336,9 @@ def pre_processing_macros(program: List) -> Tuple[List, bool]:
     if nbmacros != 0:
         print(f"Error Code {ERR_MACRO_ENDM} ENDM missing one")
         error_preproc += 1 
-    #detecting recursive macro
+    #detecting recursive macro. A solution to have recursive macros is to define a one time macro only by default
+    #but we need for that to allow arguments to be passed to the macro
+    #and in this case we need a keyword to find the start of the macro like BEGINM/ENDM
     for macro in macro_struct:
         if 'body' in macro_struct[macro]:
             macro_index = next((index for (index, d) in enumerate(macro_struct[macro]['body']) if d["value"] == macro), None)

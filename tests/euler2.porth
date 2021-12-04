@@ -1,0 +1,10 @@
+3 0 3 WHILE DUP 1000 < DO
+    DUP 3 MOD 0 = 
+    OVER 5 MOD 0 =
+    ORB IF
+        SWAP OVER + SWAP 
+    END
+    1 +
+END
+DROP
+ .

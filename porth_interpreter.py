@@ -330,7 +330,8 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     print(f"unknown syscall0 number: {syscall_number}")
                     runtime_error_counter += 1
-                    error = True                
+                    error = True      
+                stack.append(exit_code)          
                 ip += 1
             elif op['type']==get_OP_SYSCALL1():
                 syscall_number = stack.pop()
@@ -340,12 +341,14 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     print(f"unknown syscall1: {syscall_number}")
                     runtime_error_counter += 1
-                    error = True                
+                    error = True
+                stack.append(exit_code)                    
                 ip += 1 
             elif op['type']==get_OP_SYSCALL2():
                 print("not implemented yet!")
                 runtime_error_counter += 1
-                error = True                
+                error = True    
+                stack.append(exit_code)              
                 ip += 1                     
             elif op['type']==get_OP_SYSCALL3():
                 syscall_number = stack.pop()
@@ -370,18 +373,22 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     print(f"unknown syscall3: {syscall_number}")
                     runtime_error_counter += 1
                     error = True
+                stack.append(exit_code)              
                 ip += 1    
             elif op['type']==get_OP_SYSCALL4():
                 print("not implemented yet!")
                 error = True                
+                stack.append(exit_code)              
                 ip += 1                                                     
             elif op['type']==get_OP_SYSCALL5():
                 print("not implemented yet!")
                 error = True                
+                stack.append(exit_code)              
                 ip += 1                                                     
             elif op['type']==get_OP_SYSCALL6():
                 print("not implemented yet!")
                 error = True                
+                stack.append(exit_code)              
                 ip += 1  
             elif op['type']==get_OP_CHAR():
                 stack.append(op['value'])

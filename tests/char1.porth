@@ -3,4 +3,4 @@
 '*' WRITE
 ''' WRITE
 '"' WRITE
-":" 1 1 SYSCALL3
+":" 1 1 SYSCALL3 DROP

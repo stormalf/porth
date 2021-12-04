@@ -3,15 +3,15 @@
 10 . 20 . 30 .
 
 //push str 
-"Hello, World\n" 1 1 SYSCALL3 "Test" "coucou" 10 10 + "echo" 3 
-"Hello, World\n" 1 1 SYSCALL3
-"Hello, World\n" 1 1 SYSCALL3
-"Hello, World\n" 1 1 SYSCALL3
-//1 1 SYSCALL3
+"Hello, World\n" 1 1 SYSCALL3 DROP "Test" "coucou" 10 10 + "echo" 3 
+"Hello, World\n" 1 1 SYSCALL3 DROP
+"Hello, World\n" 1 1 SYSCALL3 DROP 
+"Hello, World\n" 1 1 SYSCALL3 DROP
+//1 1 SYSCALL3 => DROP is necessary to remove the syscall exit code
 
 10 0 WHILE 2DUP > DO
  "Hi!" 
- 1 1 SYSCALL3
+ 1 1 SYSCALL3 DROP
  1 +
 END
-"\n" 1 1 SYSCALL3
+"\n" 1 1 SYSCALL3 DROP

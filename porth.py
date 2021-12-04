@@ -17,7 +17,7 @@ from porth_compiler import compile
 from porth_interpreter import simulate, get_runtime_error
 from typing import *
 
-__version__ = "1.0.23"
+__version__ = "1.0.24"
 
 
 def porthVersion()->str:

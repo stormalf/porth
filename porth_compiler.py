@@ -100,9 +100,8 @@ syscall
 
 DATA=f'''
 segment .data 
-format db  "%d", 10, 0
+format db  "%llu", 10, 0
 char db  "%c", 0
-
 '''
 
 BSS=f'''
@@ -127,7 +126,9 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         output.write(f"addr_{ip}: \n")
         if op['type']==get_OP_PUSH():
             output.write("; push \n")             
-            output.write(f"push {op['value']}\n")
+            #output.write(f"push {op['value']}\n")
+            output.write(f"mov rax, {op['value']}\n")
+            output.write(f"push rax\n")
         elif op['type']==get_OP_ADD():
             output.write("; add \n")
             output.write("pop    rax \n")
@@ -393,13 +394,15 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("; syscall1 \n")
             output.write("pop rax\n")
             output.write("pop rdi\n")            
-            output.write("syscall\n")  
+            output.write("syscall\n") 
+            output.write("push rax\n") 
         elif op['type']==get_OP_SYSCALL2():
             output.write("; syscall2 \n")
             output.write("pop rax\n")
             output.write("pop rdi\n")
             output.write("pop rsi\n")
             output.write("syscall\n")
+            output.write("push rax\n")
         elif op['type']==get_OP_SYSCALL3():    
             output.write("; syscall3 \n")
             output.write("pop rax\n")
@@ -407,6 +410,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop rsi\n")
             output.write("pop rdx\n")            
             output.write("syscall\n")
+            output.write("push rax\n")
         elif op['type']==get_OP_SYSCALL4():
             output.write("; syscall4 \n")
             output.write("pop rax\n")
@@ -415,6 +419,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop rdx\n")
             output.write("pop r10\n")
             output.write("syscall\n")
+            output.write("push rax\n")
         elif op['type']==get_OP_SYSCALL5():
             output.write("; syscall5 \n")
             output.write("pop rax\n")
@@ -424,6 +429,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop r10\n")
             output.write("pop r8\n")
             output.write("syscall\n")
+            output.write("push rax\n")
         elif op['type']==get_OP_SYSCALL6():
             output.write("; syscall6 \n")
             output.write("pop rax\n")
@@ -434,6 +440,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("pop r8\n")
             output.write("pop r9\n")
             output.write("syscall\n")
+            output.write("push rax\n")
         elif op['type']==get_OP_CHAR():
             output.write("; char\n")  
             output.write(f"push {op['value']}\n")

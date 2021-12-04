@@ -1,5 +1,0 @@
-MACRO io_write 
-1 1 SYSCALL3
-ENDM
-//recursive include not implemented 
-//INCLUDE "toto"

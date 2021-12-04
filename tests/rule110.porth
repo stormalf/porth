@@ -8,12 +8,12 @@ MEM 98 + 1 @
             ELSE
                 MEM 100 + 32 @
             END
-            1 MEM 100 + 1 1 SYSCALL3
+            1 MEM 100 + 1 1 SYSCALL3 DROP
             1 + 
         END
         DROP 
         MEM 100 + 10 @
-        1 MEM 100 + 1 1 SYSCALL3
+        1 MEM 100 + 1 1 SYSCALL3 DROP
         //pattern
         MEM $ 1 SHL
         MEM 1 + $

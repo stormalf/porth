@@ -1,0 +1,12 @@
+INCLUDE "include/std.porth"
+
+MACRO N 10000000 ENDM
+
+MACRO FIB 
+1 2 WHILE OVER N < DO
+    OVER . 
+    SWAP OVER +
+END
+ENDM
+
+FIB

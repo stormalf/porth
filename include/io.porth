@@ -1,0 +1,18 @@
+INCLUDE "include/std.porth"
+
+MACRO io_write 
+1 1 SYSCALL3 DROP
+ENDM
+
+MACRO write STDOUT SYS_write SYSCALL3 DROP ENDM
+
+MACRO todo 
+"TODO\n" WRITE
+1 EXIT
+ENDM
+
+MACRO error 
+STDERR SYS_write SYSCALL3 
+1 EXIT
+ENDM
+

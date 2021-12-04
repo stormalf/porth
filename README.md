@@ -162,6 +162,8 @@ And adding the possibility to generate the .txt automatically (to use carefully 
 An issue still remains with the strings management if you define some strings with different sizes it doesn't work inside a loop!
 Not found why perhaps caused by OVER keyword. Probably need to review the string management later.
 
+1.0.24 Adding standard macros for syscalls, memory 64 bits loading and storing, adding a syscall return exit code that needs now to be dropped if not used. Adding recursive include management. Includes files into "include" folder (Episode 10).
+
 ## TODO
 
 Refactoring code to be simpler and more readable.
