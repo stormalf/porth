@@ -1,0 +1,40 @@
+INCLUDE "include/io.porth"
+
+// Max width of the row
+MACRO N 100 ENDM
+
+// memory layout
+MACRO row MEM ENDM
+MACRO display row N + ENDM
+
+row N 2 - + 1 @
+display N + 10 @
+
+0 WHILE DUP N 2 - < DO
+   0 WHILE DUP N < DO
+      DUP row + $ IF
+         DUP display + '*' @
+      ELSE
+         DUP display + ' ' @
+      END
+      1 +
+   END DROP
+
+   N 1 + display io_write
+
+   row     $ 1 SHL
+   row 1 + $
+   ORB
+
+   1 WHILE DUP N 2 - < DO
+      SWAP 1 SHL 7 ANDB
+      OVER row + 1 + $ ORB
+      2DUP 110 SWAP SHR 1 ANDB
+      SWAP row + SWAP @
+      SWAP
+
+      1 +
+   END 2drop
+
+   1 +
+END DROP

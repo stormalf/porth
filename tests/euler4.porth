@@ -1,0 +1,9 @@
+600851475143 2 WHILE OVER 1 > DO
+    2DUP MOD 0 = IF
+ 
+        SWAP OVER DIV SWAP
+        ELSE
+        1 +
+    END
+END
+.

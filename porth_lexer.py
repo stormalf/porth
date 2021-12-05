@@ -360,6 +360,7 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
     stack = []
     ifarray= []
     error = False
+    level = 0
     for ip in range(len(program)):
         filename, line, col, *_ = program[ip]['loc']
         op = program[ip]
@@ -401,7 +402,8 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
                 while_ip = stack.pop()
                 program[ip]['jmp'] = while_ip
                 stack.append(ip)
-            
+                program[ip]['level'] = level
+                level += 1
     if len(ifarray) > 0:
         print(f"Error Code {ERR_TOK_BLOCK} IF ELSE END missing one")
         error_xrefs += 1

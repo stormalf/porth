@@ -3,11 +3,13 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 47
+MAX_OPS = 48
 
 #max memory size
 MEM_CAPACITY = 640_000
 STR_CAPACITY = 640_000
+
+MAX_LOOP_SECURITY = 1_000_000
 
 exit_code = 0
 
@@ -53,6 +55,7 @@ OP_LE=iota()
 OP_NE=iota()
 OP_DIV=iota()
 OP_MUL=iota()
+OP_DIVMOD=iota()
 OP_WHILE=iota()
 OP_DO=iota()
 OP_MEM=iota()
@@ -103,10 +106,12 @@ ERR_TOK_FILE=iota()
 RUN_NO_ERROR=iota(True)
 RUN_DIV_ZERO=iota()
 RUN_UNKNOWN=iota()
+RUN_INFINITE_LOOP=iota()
 
 RUNTIME_ERROR = {
     RUN_DIV_ZERO: "Division by zero!",
-    RUN_UNKNOWN: "Unknown error!"
+    RUN_UNKNOWN: "Unknown error!",
+    RUN_INFINITE_LOOP: "Infinite loop!"
 } 
 
 
@@ -130,6 +135,7 @@ OPGE=">="
 OPLE="<="
 OPNE="!="
 OPDIV= "DIV"
+OPDIVMOD="DIVMOD"
 OPMUL="MUL"
 OPWHILE = "WHILE"
 OPDO = "DO"
@@ -223,6 +229,9 @@ def get_OP_DIV() -> int:
 
 def get_OP_MUL() -> int:
     return OP_MUL
+
+def get_OP_DIVMOD() -> int:
+    return OP_DIVMOD
 
 def get_OP_WHILE() -> int:
     return OP_WHILE
@@ -337,6 +346,7 @@ keyword_table: Dict = {
     OPNE: OP_NE,
     OPDIV: OP_DIV,
     OPMUL: OP_MUL,
+    OPDIVMOD: OP_DIVMOD,
     OPMACRO: OP_MACRO,
     OPENDM: OP_ENDM,
     OPINCLUDE: OP_INCLUDE

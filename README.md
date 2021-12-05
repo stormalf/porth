@@ -97,6 +97,7 @@ Keyword, operators, and constants are defined in the language.
     DIV: integer division
     MUL: integer multiplication
     MOD: integer modulo
+    OVER: swap the two values on the stack and dup the second value : a = pop() b = pop() push(b) push(a) push(b)
     !=: operator pops 2 values from the stack and push 1 if not equality and 0 otherwise
     >=: operator pops 2 values from the stack and push 1 if the first one is greater or equal than the second one and 0 otherwise
     <=: operator pops 2 values from the stack and push 1 if the first one is less or equal than the second one and 0 otherwise
@@ -164,7 +165,10 @@ Not found why perhaps caused by OVER keyword. Probably need to review the string
 
 1.0.24 Adding standard macros for syscalls, memory 64 bits loading and storing, adding a syscall return exit code that needs now to be dropped if not used. Adding recursive include management. Includes files into "include" folder (Episode 10).
 
+1.0.25 Adding a security loop to avoid infinite loop (limit to 1_000_000) seems to work. Adding a level information for DO loops.
+
 ## TODO
 
 Refactoring code to be simpler and more readable.
 Trying to implement similar language but using ANTLR4.
+Generate a real AST and symbol table.

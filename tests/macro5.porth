@@ -1,6 +1,6 @@
 INCLUDE "include/io.porth"
 
-"Hello world!\n" write
+"Hello world!\n" STDOUT write
 //todo
 
 "Error!\n" error

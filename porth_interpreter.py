@@ -15,7 +15,8 @@ def get_runtime_error() -> int:
 
 #simulate the program execution without compiling it
 def simulate(program: List) -> Tuple[List,bool, int]:
-    global exit_code, runtime_error_counter
+    global exit_code, runtime_error_counter, MAX_LOOP_SECURITY
+    conditions_stack = {}
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
     stack=[]
     error = False
@@ -187,6 +188,23 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     else:
                         stack.append(int(a / b))                 
                 ip += 1
+            elif op['type']==get_OP_DIVMOD():
+                if len(stack) < 2:
+                    print("DIVMOD impossible not enough element in stack")
+                    runtime_error_counter += 1
+                    error = True
+                else:
+                    b = stack.pop()
+                    a = stack.pop()
+                    if b == 0:
+                        print(RUNTIME_ERROR[RUN_DIV_ZERO])
+                        runtime_error_counter += 1
+                        error = True
+                        sys.exit(RUN_DIV_ZERO)
+                    else:
+                        stack.append(int(a % b)) 
+                        stack.append(int(a / b))   
+                ip += 1                
             elif op['type']==get_OP_MUL():
                 if len(stack) < 2:
                     print("MUL impossible not enough element in stack")
@@ -201,8 +219,19 @@ def simulate(program: List) -> Tuple[List,bool, int]:
             elif op['type']==get_OP_WHILE():
                 ip += 1                
             elif op['type']==get_OP_DO():
-                #ip += 1
                 a = stack.pop()
+                level = op['level']
+                if level not in conditions_stack:
+                    conditions_stack[level] = MAX_LOOP_SECURITY
+                else:
+                    loop_security = conditions_stack[level]
+                    loop_security -= 1
+                    conditions_stack[level] = loop_security
+                if conditions_stack[level] == 0:
+                    print(RUNTIME_ERROR[RUN_INFINITE_LOOP])
+                    runtime_error_counter += 1
+                    error = True
+                    sys.exit(RUN_INFINITE_LOOP)
                 if a == 0:
                     if len(op) >= 2:
                         ip = op['jmp']
@@ -308,7 +337,6 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 exit_code = stack.pop()
                 break
             elif op['type']==get_OP_WRITE():
-                #print(stack)
                 if program[ip-1]['type']==get_OP_CHAR():
                     print(chr(program[ip - 1]['value']), end="")
                 elif len(stack) < 2:
@@ -322,7 +350,6 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     s = mem[b:offset].decode('utf-8')
                     print(s, end='')
                 ip += 1
-                #print(stack)
             elif op['type']==get_OP_SYSCALL0():
                 syscall_number = stack.pop()
                 if syscall_number == 39:
@@ -360,7 +387,6 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     buffer = arg2
                     count = arg3
                     s = mem[buffer:buffer+count].decode('utf-8')
-                    #print(s, buffer, buffer+count)
                     if fd == 1:
                         print(s, end='')
                     elif fd == 2:
@@ -394,7 +420,6 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 stack.append(op['value'])
                 ip += 1
             elif op['type']==get_OP_STRING():
-                #n = len(op['value'])
                 bstr = bytes(op['value'], 'utf-8')
                 strlen = len(bstr)
                 stack.append(strlen)
@@ -404,8 +429,6 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     str_size += strlen
                     assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
                 stack.append(op['addr'])
-                #print(op)
-                #print(stack, op, str_size, strlen)
                 ip += 1
             else:
                 ip += 1                

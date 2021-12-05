@@ -102,6 +102,7 @@ DATA=f'''
 segment .data 
 format db  "%llu", 10, 0
 char db  "%c", 0
+security  dq  {MAX_LOOP_SECURITY}
 '''
 
 BSS=f'''
@@ -257,9 +258,40 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
                 output.write(f"mov rsi, error_message_{RUN_DIV_ZERO}\n")            
                 output.write("syscall\n")  
             output.write("mov rax, SYS_EXIT\n")
-            output.write(f"mov rdi, {RUN_DIV_ZERO()}\n")            
+            output.write(f"mov rdi, {RUN_DIV_ZERO}\n")            
             output.write("syscall\n")  
             output.write(f"addr_div_end_{ip}:\n")  
+        elif op['type']==get_OP_DIVMOD():
+            output.write("; mod \n")
+            output.write("xor rdx, rdx\n")
+            output.write("pop rbx\n")
+            output.write("pop rax\n")
+            output.write("cmp rbx, 0\n")
+            output.write(f"je addr_divmod_zero_{ip}\n")
+            output.write("div rbx\n")
+            output.write("push rdx\n")
+            output.write("push rax\n")            
+            output.write(f"jmp addr_divmod_end_{ip}\n")
+            output.write(f"addr_divmod_zero_{ip}:\n")
+            #print the error message using printf if libc
+            if libc:
+                output.write(f"mov rsi, {len(RUNTIME_ERROR[RUN_DIV_ZERO])}\n")
+                output.write(f"mov rdi, error_message_{RUN_DIV_ZERO}\n")    
+                output.write("push rdi\n")      
+                output.write("push rsi\n")
+                output.write("call print_error\n")
+            #otherwise print using write syscall
+            else:
+                output.write("; syscall3 \n")
+                output.write("mov rax, 1\n")
+                output.write("mov rdi, 1\n")
+                output.write(f"mov rdx, {len(RUNTIME_ERROR[RUN_DIV_ZERO]) + 1}\n")            
+                output.write(f"mov rsi, error_message_{RUN_DIV_ZERO}\n")            
+                output.write("syscall\n")  
+            output.write("mov rax, SYS_EXIT\n")
+            output.write(f"mov rdi, {RUN_DIV_ZERO}\n")            
+            output.write("syscall\n")  
+            output.write(f"addr_divmod_end_{ip}:\n")              
         elif op['type']==get_OP_MUL(): 
             output.write("; mul \n")
             output.write("pop    rbx \n")
@@ -270,6 +302,11 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("; while \n")
         elif op['type']==get_OP_DO():
             output.write("; do \n") 
+            #adding security for infinite loops I defined 1_000_000
+            output.write("mov rcx, [security]\n")
+            output.write("dec rcx\n")
+            output.write("mov [security], rcx\n")
+            output.write("jz infinite_loop\n")            
             output.write("pop    rax \n")
             output.write("test    rax, rax \n")
             assert len(op) >= 2, f"compile error! DO instruction does not have an END instruction to jump! {op}"             
@@ -454,7 +491,27 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True 
-    output.write("addr_%d:\n" % len(bytecode))               
+    #managing infinite loop exit (one label only)
+    output.write(f"jmp addr_{len(bytecode)}\n")      
+    output.write("infinite_loop: \n")
+    if libc:
+        output.write(f"mov rsi, {len(RUNTIME_ERROR[RUN_INFINITE_LOOP])}\n")
+        output.write(f"mov rdi, error_message_{RUN_INFINITE_LOOP}\n")    
+        output.write("push rdi\n")      
+        output.write("push rsi\n")
+        output.write("call print_error\n")
+    #otherwise print using write syscall
+    else:
+        output.write("; syscall3 \n")
+        output.write("mov rax, 1\n")
+        output.write("mov rdi, 1\n")
+        output.write(f"mov rdx, {len(RUNTIME_ERROR[RUN_INFINITE_LOOP]) + 1}\n")            
+        output.write(f"mov rsi, error_message_{RUN_INFINITE_LOOP}\n")            
+        output.write("syscall\n")
+        output.write("mov rax, SYS_EXIT\n")
+        output.write(f"mov rdi, {RUN_INFINITE_LOOP}\n")            
+        output.write("syscall\n")                             
+    output.write(f"addr_{len(bytecode)}:\n")               
     output.write(FOOTER)
     output.write(DATA)
     for index, s in enumerate(strs):

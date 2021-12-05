@@ -1,0 +1,26 @@
+INCLUDE "include/mem.porth"
+
+MACRO ans MEM ENDM
+
+10 WHILE DUP 100 < DO
+    10 WHILE DUP 100 < DO
+    2DUP MUL
+    DUP 0 WHILE OVER 0 > DO
+        10 MUL
+        OVER 10 MOD 
+        + 
+        SWAP 10 DIV SWAP
+        END
+        SWAP DROP
+    2DUP = IF
+        DUP ans load64 > IF
+            ans OVER store64
+            END
+    END
+    DROP DROP 
+    1 +
+    END DROP
+    1 +
+END DROP
+ans load64 .
+
