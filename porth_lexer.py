@@ -6,6 +6,7 @@ from typing import *
 
 error_counter = 0
 macro_struct= {}
+
 include_file=[]
 
 #returns the number of errors found
@@ -74,9 +75,10 @@ def parse_not_string(line: str, tokens: List) -> List[Tuple]:
     for i, token in enumerate(tokens):
         token_type = get_token_type(token)
         if token_type == OP_UNKNOWN:
-            isMacro = check_if_macro_identifier(token)
-            if isMacro:
+            if check_if_macro_identifier(token):
                 token_type = OP_IDMACRO
+            elif check_if_var_identifier(token):
+                token_type = OP_IDVAR
             else: 
                 #print(tokens)
                 #manage specific case of ' '
@@ -121,10 +123,55 @@ def lex_line(filename, row, line) -> List[Tuple]:
         organized_tokens = reorganize_tokens(strings, notstrings)
         coltok.extend(organized_tokens)
     else:
-        token_not_string = parse_not_string(line, tokens)
-        coltok.extend(token_not_string)
+        if OPVAR in line_to_parse:
+            coltok.extend(parse_var(filename, row, line, tokens))
+        else:
+            token_not_string = parse_not_string(line, tokens)
+            coltok.extend(token_not_string)
     return coltok
 
+#check if the token is a variable identifier
+def parse_var(filename:str, row: int, line: str, tokens: List) -> Dict:
+    global var_struct, error_counter
+    start = 0
+    coltok= []
+    if tokens[0] != OPVAR:
+        print(f"Error Code {ERR_TOK_VAR} VAR keyword should be the first token in variable definition line {row}")
+        error_counter += 1
+    elif len(tokens) < 4:
+        print(f"Error Code {ERR_TOK_VAR_DEF} Variable definition should be like VAR x u8 100 `!` error line {row}")
+        error_counter += 1
+    elif tokens[1] in keyword_table:
+        print(f"Error Code {ERR_TOK_VAR_ID} Variable identifier should not be a keyword! Keyword {tokens[1]} found as Variable Identifier at line {row}")
+        error_counter += 1
+    elif tokens[2] not in VAR_TYPE:
+        print(f"Error Code {ERR_TOK_VAR_TYPE} Variable type should be one of {VAR_TYPE} error line {row}")
+        error_counter += 1
+    else:
+        #check if variable already defined
+        if tokens[1] in var_struct:
+            _, first_definition, _ = var_struct[tokens[1]]['definition']
+            print(f"Error Code {ERR_TOK_VAR_ID} line {row} VAR identifier {tokens[1]} already defined at line {first_definition}")
+            error_counter += 1
+        elif tokens[1] in macro_struct:
+            _, first_definition, _ = macro_struct[tokens[1]]['definition']
+            print(f"Error Code {ERR_TOK_VAR_ID} line {row} VAR identifier {tokens[1]} already defined as macro at line {first_definition}")
+            error_counter += 1
+        else:
+            if len(tokens) > 3:
+                var_struct[tokens[1]] = {'definition': (filename, row, line[start:].find(tokens[1])), 'type': tokens[2], 'value': tokens[3]}
+            else:
+                var_struct[tokens[1]] = {'definition': (filename, row, line[start:].find(tokens[1])), 'type': tokens[2], 'value': None}
+        for token in tokens:
+            token_type = get_token_type(token)
+            if check_if_var_identifier(token):
+                token_type = OP_IDVAR
+            elif token in VAR_TYPE:
+                token_type = OP_VARTYPE
+            col = line[start:].find(token) 
+            start= col + start + 1  #adding 1 to start from column 1 instead of 0
+            coltok.append((start, token_type, token)) 
+    return coltok
 
 #returns the function corresponding to the token found
 def parse_word(token: Dict) -> Dict:
@@ -154,6 +201,10 @@ def parse_word(token: Dict) -> Dict:
                 return {'type': OP_CHAR, 'loc': loc, 'value': char_int, 'jmp': None}
             elif check_if_macro_identifier(word)==True:
                 return {'type': OP_IDMACRO, 'loc': loc, 'value': word, 'jmp': None}
+            elif check_if_var_identifier(word)==True:
+                return {'type': OP_IDVAR, 'loc': loc, 'value': word, 'jmp': None}
+            elif check_if_var_type(word)==True:
+                return {'type': OP_VARTYPE, 'loc': loc, 'value': word, 'jmp': None}
             else:
                 print(f"Error Code {ERR_TOK_UNKNOWN} Unknown word: {word} at line {line}, column {column} in file {filename}")
                 error_counter += 1
@@ -174,6 +225,10 @@ def parse_macro(filename:str, row: int, line: str, tokens: List) -> List[Tuple]:
     elif tokens[1] in keyword_table:
         print(f"Error Code {ERR_TOK_MACRO_ID} Macro identifier should not be a keyword! Keyword {tokens[1]} found as Macro Identifier at line {row}")
         error_counter += 1
+    elif tokens[1] in var_struct:
+            _, first_definition, _ = var_struct[tokens[1]]['definition']
+            print(f"Error Code {ERR_TOK_VAR_ID} line {row} MACRO identifier {tokens[1]} already defined as variable at line {first_definition}")
+            error_counter += 1        
     else:
         #check if macro already defined
         if tokens[1] in macro_struct:
@@ -192,6 +247,22 @@ def parse_macro(filename:str, row: int, line: str, tokens: List) -> List[Tuple]:
             start= col + start + 1  #adding 1 to start from column 1 instead of 0
             coltok.append((start, token_type, token)) 
     return coltok
+
+#returns True if the token is a variable type
+def check_if_var_type(word: str) -> bool:
+    global VAR_TYPE
+    isVarType = False
+    if word in VAR_TYPE:
+        isVarType = True
+    return isVarType
+
+#returns True if the token is a variable identifier
+def check_if_var_identifier(word: str) -> bool:
+    global var_struct
+    isVarId = False
+    if word in var_struct:
+        isVarId = True
+    return isVarId
 
 #returns True if the token is a macro identifier
 def check_if_macro_identifier(word: str) -> bool:

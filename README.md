@@ -12,7 +12,7 @@ It uses often the same syntax that I used in the current code. Sometimes it stil
 
 ## porth compiler usage
 
-python3 porth.py --help
+./porth.py --help
 
     usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-l] -i INPUTFILE [-o OUTFILE]
 
@@ -33,25 +33,17 @@ python3 porth.py --help
 
 Example to compile :
 
-    python3 porth.py -c -i pgm1.porth -o pgm1
+    ./porth.py -c -i pgm1.porth -o pgm1
 
 Example after refactoring into folders :
 
-    python3 porth.py -c -i tests/pgm11.porth -o bin/pgm11
+    ./porth.py -c -i tests/pgm11.porth -o bin/pgm11
 
 ## Lexing
 
 It shows all errors in a file and don't compile or simulate if error found during lexing phasis:
 
-python3 porth.py -c -i pgm3.porth -o pgm3
-
-    Error Code 1 Token . is forbidden in first position in file pgm3.porth, line 1 column 1
-    Error Code 1 Token - is forbidden in first position in file pgm3.porth, line 2 column 1
-    Error Code 1 Token + is forbidden in first position in file pgm3.porth, line 3 column 1
-    Error Code 1 Token - is forbidden in first position in file pgm3.porth, line 4 column 1
-    Error Code 1 Token . is forbidden in first position in file pgm3.porth, line 5 column 1
-
-python3 porth.py -c -i pgm4.porth -o pgm4
+./porth.py -c -i pgm4.porth -o pgm4
 
     Error Code 0 Unknown word: "test" at line 1, column 1 in file pgm4.porth
     Error Code 0 Unknown word: fqkqjqs at line 2, column 1 in file pgm4.porth
@@ -61,7 +53,7 @@ python3 porth.py -c -i pgm4.porth -o pgm4
 
 Example with simulation instead of compilation :
 
-    python3 porth.py -s -i pgm7.porth -o pgm7
+    ./porth.py -s -i pgm7.porth -o pgm7
     777
 
 ## language features
@@ -107,6 +99,9 @@ Keyword, operators, and constants are defined in the language.
     ENDM: keyword to close a macro
     INCLUDE: keyword to include a file but recursive include are not allowed
     '_': single quotes to create a char (1 character allowed except for some special characters see special_chars dictionary). It's possible to print some chars like '\n' or '\t' but some issues still yet with unicode characters that are coded in more than one byte.
+    VAR: keyword to create a variable followed by the name of the variable, the type of the variable
+    !: assignment operator pops the value and the variable and assign the value to the variable.
+    u8, u16, u32, u64 : variables types allowed for now.
 
 ## release notes
 
@@ -165,10 +160,56 @@ Not found why perhaps caused by OVER keyword. Probably need to review the string
 
 1.0.24 Adding standard macros for syscalls, memory 64 bits loading and storing, adding a syscall return exit code that needs now to be dropped if not used. Adding recursive include management. Includes files into "include" folder (Episode 10).
 
-1.0.25 Adding a security loop to avoid infinite loop (limit to 1_000_000) seems to work. Adding a level information for DO loops.
+1.0.25 Adding a security loop to avoid infinite loop (limit to 10_000_000) seems to work. Adding a level information for DO loops.
+
+1.0.26 starting variable management. Updating files to use pypy3 instead of python3. Variables should be assigned during declaration.
+The non-initialized variables are not taken into account for now (segment fault during compilation).
+
+## simulation
+
+The simulation/interpreter mode is too long. By generating a shared library using cython it seems a little bit faster (I used my pytoc tool to generate the shared library). The euler6 example takes :
+
+    time python3 porth.py -s -i examples/euler6.porth -o bin/euler6
+    906609
+
+    real    1m34.319s
+    user    1m33.724s
+    sys     0m0.010s
+
+without cython:
+
+    time python3 porth.py -s -i examples/euler6.porth -o bin/euler6
+    906609
+
+    real    2m7.769s
+    user    2m7.723s
+    sys     0m0.000s
+
+the compiled version :
+
+    time bin/euler6
+    906609
+
+    real    0m0.092s
+    user    0m0.082s
+    sys     0m0.009s
+
+using pypy :
+
+    time ./porth.py -s -i ./examples/euler6.porth -o bin/euler6
+    906609
+
+    real    0m10.606s
+    user    0m10.596s
+    sys     0m0.010s
+
+link to pypy : https://www.pypy.org/download.html
 
 ## TODO
 
+Manage negative numbers at compilation.
+Adding other types for variables (bool, signed int, char, string, float)
+Adding error management for variables.
 Refactoring code to be simpler and more readable.
 Trying to implement similar language but using ANTLR4.
 Generate a real AST and symbol table.

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/pypy3
 # -*- coding: utf-8 -*-
 
 ''' 
@@ -17,10 +17,10 @@ from porth_compiler import compile
 from porth_interpreter import simulate, get_runtime_error
 from typing import *
 
-__version__ = "1.0.25"
+__version__ = "1.0.26"
 
 
-def porthVersion()->str:
+def porthVersion() -> str:
     return f"porth version : {__version__}"
 
 

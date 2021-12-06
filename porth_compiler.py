@@ -112,7 +112,8 @@ mem: resb {get_MEM_CAPACITY()}
 
 #compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode: List, outfile: str, libc: bool = True):
-    global exit_code
+    global exit_code, var_struct
+    bss_var = []
     strs = []
     assert get_OPS() == get_MAX_OPS(), "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())   
     asmfile = outfile + ".asm"
@@ -124,13 +125,20 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
     error = False    
     for ip in range(len(bytecode)):
         op = bytecode[ip]
+        #print(op)
         output.write(f"addr_{ip}: \n")
         if op['type']==get_OP_PUSH():
             output.write("; push \n")             
-            #output.write(f"push {op['value']}\n")
-            output.write(f"mov rax, {op['value']}\n")
+            if op['value'] in var_struct:
+                output.write(f"mov rax, {var_struct[op['value']]}\n")
+            else:
+                output.write(f"mov rax, {op['value']}\n")
             output.write(f"push rax\n")
         elif op['type']==get_OP_ADD():
+            # b = bytecode[ip - 1]
+            # a = bytecode[ip - 2]
+            # a_value = get_var_value(a)
+            # b_value = get_var_value(b)
             output.write("; add \n")
             output.write("pop    rax \n")
             output.write("pop    rbx \n")
@@ -488,6 +496,29 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("push rax\n")
             output.write(f"push str_{len(strs)}\n")
             strs.append(op['value'])
+        elif op['type']==get_OP_VAR():
+            pass
+        elif op['type']==get_OP_IDVAR():
+            #if it's not the definition of a variable, we push the value
+            if bytecode[ip - 1]['type'] != get_OP_VAR():
+                output.write("; idvar \n")
+                output.write(f"mov rax, {op['value']}\n")
+                output.write("mov rbx, [rax]\n")
+                output.write("push rbx\n")
+            #definition of variable we push the address of the variable
+            else:
+                output.write("; definition idvar \n")
+                output.write(f"mov rax, {op['value']}\n")
+                output.write("push rax\n")
+
+        elif op['type']==get_OP_ASSIGN():            
+            output.write("; assign \n")
+            output.write("pop rax\n") #value or variable 
+            output.write("pop rbx\n") #variable
+            output.write(f"mov [rbx], rax\n")
+            output.write("push rbx\n") #push address
+        elif op['type']==get_OP_VARTYPE():
+            pass
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True 
@@ -518,7 +549,27 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         output.write(f"str_{index}: db {','.join(map(hex, list(bytes(s, 'utf-8'))))}, 0\n")
     for i in RUNTIME_ERROR:
         output.write(f'error_message_{i} db "{RUNTIME_ERROR[i]}", 10, 0\n')
+    for i, var in enumerate(var_struct):
+        if var_struct[var]['type']==OPU8 and var_struct[var]['value']!= None:
+            output.write(f"{var}: db {var_struct[var]['value']}\n")
+        elif var_struct[var]['type']==OPU16 and var_struct[var]['value']!= None:
+            output.write(f"{var}: dw {var_struct[var]['value']}\n")
+        elif var_struct[var]['type']==OPU32 and var_struct[var]['value']!= None:
+            output.write(f"{var}: dd {var_struct[var]['value']}\n")
+        elif var_struct[var]['type']==OPU64 and var_struct[var]['value']!= None:
+            output.write(f"{var}: dq {var_struct[var]['value']}\n")   
+        else:
+            bss_var.append(var)     
     output.write(BSS)
+    for var in bss_var:
+        if var_struct[var]['type']==OPU8:
+            output.write(f"{var}: resb 8\n")
+        elif var_struct[var]['type']==OPU16:
+            output.write(f"{var}: resw 2\n")
+        elif var_struct[var]['type']==OPU32:
+            output.write(f"{var}: resd 4\n")
+        elif var_struct[var]['type']==OPU64:
+            output.write(f"{var}: resq 8\n")
     output.close()
     if libc:
         os.system(f"nasm -felf64 {asmfile}  &&  gcc -static {outfile}.o -o {outfile} ")
