@@ -145,6 +145,7 @@ ERR_TOK_VAR=iota()
 ERR_TOK_VAR_DEF=iota()
 ERR_TOK_VAR_ID=iota()
 ERR_TOK_VAR_TYPE=iota()
+ERR_VAR_UNDEF=iota()
 
 #error codes runtime
 RUN_NO_ERROR=iota(True)

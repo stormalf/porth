@@ -429,7 +429,7 @@ def pre_processing_macros(program: List) -> Tuple[List, bool]:
 
 #cross references to store the link between a IF and this corresponding END operation!
 def cross_reference_block(program: List) -> Tuple[List, bool]:
-    global error_counter, macro_struct
+    global error_counter, macro_struct, var_struct
     error_xrefs = 0
     stack = []
     ifarray= []
@@ -478,6 +478,11 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
                 stack.append(ip)
                 program[ip]['level'] = level
                 level += 1
+        elif op['type'] == OP_IDVAR:
+            def_line = var_struct[op['value']]['definition'][1]
+            if ip < def_line:
+                print(f"Error Code {ERR_VAR_UNDEF} variable `{op['value']}` used before definition in file {filename}, line {line} column {col}")
+                error_xrefs += 1
     if len(ifarray) > 0:
         print(f"Error Code {ERR_TOK_BLOCK} IF ELSE END missing one")
         error_xrefs += 1
