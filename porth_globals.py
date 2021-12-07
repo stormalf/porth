@@ -3,15 +3,17 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 48
+MAX_OPS = 52
 
 #max memory size
 MEM_CAPACITY = 640_000
 STR_CAPACITY = 640_000
+#VAR_CAPACITY = 640_000
 
 MAX_LOOP_SECURITY = 10_000_000
 
 exit_code = 0
+var_struct = {}
 
 
 #list of comments types probably I'll prefer the python comment syntax for myself
@@ -22,6 +24,7 @@ COMMENTS = ["//", "#"]
 SINGLE_QUOTE = "'"
 DOUBLE_QUOTE = '"'
 #STRING_LITERAL = [DOUBLE_QUOTE, " "]
+
 
 iota_counter= 0
 
@@ -35,6 +38,39 @@ def iota(reset=False) -> int:
         iota_counter+=1
     return iota_counter
 
+def get_var_value(var: Union[str, int]) -> int:
+    global var_struct
+    if var in var_struct:
+        return var_struct[var]['value']
+    else:
+        return var
+
+def get_var_type(var: Union[str, int]) -> Union[str, None]:
+    global var_struct
+    if var in var_struct:
+        return var_struct[var]['type']
+    else:
+        return None        
+
+def get_var_qualifier(type: str) -> str:
+    if type == "u8":
+        return "byte"
+    elif type == "u16":
+        return "word"
+    elif type == "u32":
+        return "dword"
+    elif type == "u64":
+        return "qword"
+
+def get_register(type: str) -> str:
+    if type == "u8":
+        return "al"
+    elif type == "u16":
+        return "ax"
+    elif type == "u32":
+        return "eax"
+    elif type == "u64":
+        return "rax"
 
     
 OP_PUSH=iota(True)    
@@ -85,6 +121,10 @@ OP_IDMACRO=iota()
 OP_ENDM=iota()
 OP_INCLUDE=iota()
 OP_CHAR=iota()
+OP_VAR=iota()
+OP_ASSIGN=iota()
+OP_IDVAR=iota()
+OP_VARTYPE=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -101,6 +141,11 @@ ERR_MACRO_ENDM=iota()
 ERR_MACRO_RECURSIVE=iota()
 ERR_TOK_INCLUDE=iota()
 ERR_TOK_FILE=iota()
+ERR_TOK_VAR=iota()
+ERR_TOK_VAR_DEF=iota()
+ERR_TOK_VAR_ID=iota()
+ERR_TOK_VAR_TYPE=iota()
+ERR_VAR_UNDEF=iota()
 
 #error codes runtime
 RUN_NO_ERROR=iota(True)
@@ -160,10 +205,26 @@ OPANDB="ANDB"
 OPOVER="OVER"
 OPMOD="MOD"
 OPMACRO="MACRO"
-OPIDMACRO="identifier"
+OPIDMACRO="idmacro"
 OPENDM="ENDM"
 OPINCLUDE="INCLUDE"
+OPVAR="VAR"
+OPASSIGN="!"
+OPIDVAR="idvar"
+OPU8="u8"
+OPU16="u16"
+OPU32="u32"
+OPU64="u64"
+# OPI8="i8"
+# OPI16="i16"
+# OPI32="i32"
+# OPI64="i64"
+# OPF32="f32"
+# OPF64="f64"
+# OPSTRING="str"
+# OPCHAR="char"
 
+VAR_TYPE=[OPU8,OPU16,OPU32,OPU64]
 
 #forbidden_tokens = [PLUS, MINUS, DUMP]
 
@@ -306,6 +367,17 @@ def get_OP_STRING() -> int:
 def get_OP_CHAR() -> int:
     return OP_CHAR
 
+def get_OP_VAR() -> int:
+    return OP_VAR
+
+def get_OP_IDVAR() -> int:
+    return OP_IDVAR
+
+def get_OP_ASSIGN() -> int:
+    return OP_ASSIGN
+
+def get_OP_VARTYPE() -> int:
+    return OP_VARTYPE
 
 keyword_table: Dict = {
     PLUS: OP_ADD,
@@ -349,8 +421,9 @@ keyword_table: Dict = {
     OPDIVMOD: OP_DIVMOD,
     OPMACRO: OP_MACRO,
     OPENDM: OP_ENDM,
-    OPINCLUDE: OP_INCLUDE
-
+    OPINCLUDE: OP_INCLUDE,
+    OPVAR: OP_VAR,
+    OPASSIGN: OP_ASSIGN
 }
 
 special_chars: Dict = {
@@ -362,7 +435,6 @@ special_chars: Dict = {
     '\\b': '\b',
     '\\a': '\a',
     '\\0': '\0',
-    '\\"': '"'
 }
 
 

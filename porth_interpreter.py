@@ -13,9 +13,12 @@ def get_runtime_error() -> int:
     global runtime_error_counter
     return runtime_error_counter
 
+
+
+
 #simulate the program execution without compiling it
 def simulate(program: List) -> Tuple[List,bool, int]:
-    global exit_code, runtime_error_counter, MAX_LOOP_SECURITY
+    global exit_code, runtime_error_counter, MAX_LOOP_SECURITY, var_struct
     conditions_stack = {}
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
     stack=[]
@@ -37,9 +40,12 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     runtime_error_counter += 1
                     error = True
                 else:
-                    a = stack.pop()
                     b = stack.pop()
-                    stack.append(a + b)
+                    a = stack.pop()
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)
+                    stack.append(a_value + b_value)
             elif op['type']==get_OP_SUB():
                 ip += 1                
                 if len(stack) < 2:
@@ -47,9 +53,12 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     runtime_error_counter += 1                    
                     error = True
                 else:
-                    a = stack.pop()
                     b = stack.pop()
-                    stack.append(b - a)
+                    a = stack.pop()
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                  
+                    stack.append(a_value - b_value)
             elif op['type']==get_OP_EQUAL():
                 ip += 1                
                 if len(stack) < 2:
@@ -57,18 +66,24 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     runtime_error_counter += 1                    
                     error = True
                 else:
-                    a = stack.pop()
                     b = stack.pop()
-                    stack.append(int(b == a)) 
+                    a = stack.pop()
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                
+                    stack.append(int(a_value == b_value)) 
             elif op['type']==get_OP_DUMP():
-                ip += 1                
                 if len(stack) == 0:
                     runtime_error_counter += 1                    
                     print("stack is empty impossible to dump")
                     error = True
                 else:
                     a = stack.pop()
-                    print(a)
+                    if program[ip - 1]['type'] == get_OP_IDVAR():
+                        print(var_struct[a]['value'])
+                    else:
+                        print(a)
+                ip += 1   
             elif op['type']==get_OP_IF():
                 ip += 1                
                 if len(stack) == 0:
@@ -105,8 +120,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     error = True
                 else:
                     a = stack.pop()
-                    stack.append(a)
-                    stack.append(a)
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    stack.append(a_value)
+                    stack.append(a_value)
                 ip += 1 
                 #print(stack)
             elif op['type']==get_OP_DUP2():
@@ -117,10 +134,13 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(a)
-                    stack.append(b)
-                    stack.append(a)
-                    stack.append(b)
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)               
+                    stack.append(a_value)
+                    stack.append(b_value)
+                    stack.append(a_value)
+                    stack.append(b_value)
                 ip += 1                 
             elif op['type']==get_OP_GT():
                 if len(stack) < 2:
@@ -130,7 +150,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:                
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(int(a > b)) 
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                  
+                    stack.append(int(a_value > b_value)) 
                 ip += 1        
             elif op['type']==get_OP_LT():
                 if len(stack) < 2:
@@ -140,7 +163,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(int(a < b))                 
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                  
+                    stack.append(int(a_value < b_value))                 
                 ip += 1   
             elif op['type']==get_OP_GE():                
                 if len(stack) < 2:
@@ -150,7 +176,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(int(a >= b))                 
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                   
+                    stack.append(int(a_value >= b_value))                 
                 ip += 1
             elif op['type']==get_OP_LE():
                 if len(stack) < 2:
@@ -160,7 +189,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(int(a <= b))                 
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    stack.append(int(a_value <= b_value))                 
                 ip += 1
             elif op['type']==get_OP_NE():
                 if len(stack) < 2:
@@ -170,7 +202,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(int(a != b))                 
+                    #if variable retrieve the content value 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                   
+                    stack.append(int(a_value != b_value))                 
                 ip += 1
             elif op['type']==get_OP_DIV():
                 if len(stack) < 2:
@@ -180,13 +215,15 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    if b == 0:
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    if b_value == 0:
                         print(RUNTIME_ERROR[RUN_DIV_ZERO])
                         runtime_error_counter += 1
                         error = True
                         sys.exit(RUN_DIV_ZERO)
                     else:
-                        stack.append(int(a / b))                 
+                        stack.append(int(a_value / b_value))                 
                 ip += 1
             elif op['type']==get_OP_DIVMOD():
                 if len(stack) < 2:
@@ -196,14 +233,16 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    if b == 0:
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    if b_value == 0:
                         print(RUNTIME_ERROR[RUN_DIV_ZERO])
                         runtime_error_counter += 1
                         error = True
                         sys.exit(RUN_DIV_ZERO)
                     else:
-                        stack.append(int(a % b)) 
-                        stack.append(int(a / b))   
+                        stack.append(int(a_value % b_value)) 
+                        stack.append(int(a_value / b_value))   
                 ip += 1                
             elif op['type']==get_OP_MUL():
                 if len(stack) < 2:
@@ -214,7 +253,9 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     #print(stack)
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(int(a * b))                 
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    stack.append(int(a_value * b_value))                 
                 ip += 1
             elif op['type']==get_OP_WHILE():
                 ip += 1                
@@ -263,8 +304,10 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     a = stack.pop()
                     b = stack.pop()
-                    stack.append(a)
-                    stack.append(b)
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    stack.append(a_value)
+                    stack.append(b_value)
                 ip += 1        
             elif op['type']==get_OP_SHL():
                 if len(stack) < 2:
@@ -274,7 +317,9 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(a << b)
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    stack.append(a_value << b_value)
                 ip += 1      
             elif op['type']==get_OP_SHR():
                 if len(stack) < 2:
@@ -284,7 +329,9 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(a >> b)
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    stack.append(a_value >> b_value)
                 ip += 1
             elif op['type']==get_OP_ORB():
                 if len(stack) < 2:
@@ -294,7 +341,9 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(a | b)
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    stack.append(a_value | b_value)
                 ip += 1
             elif op['type']==get_OP_ANDB():
                 if len(stack) < 2:
@@ -304,17 +353,21 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    stack.append(a & b)
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    stack.append(a_value & b_value)
                 ip += 1         
             elif op['type']==get_OP_DROP():
                 stack.pop()
                 ip += 1
             elif op['type']==get_OP_OVER():
-                a = stack.pop()
                 b = stack.pop()
-                stack.append(b)
-                stack.append(a)
-                stack.append(b)
+                a = stack.pop()
+                a_value = get_var_value(a)
+                b_value = get_var_value(b)                
+                stack.append(a_value)
+                stack.append(b_value)
+                stack.append(a_value)
                 ip += 1
             elif op['type']==get_OP_MOD():
                 if len(stack) < 2:
@@ -324,17 +377,20 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 else:
                     b = stack.pop()
                     a = stack.pop()
-                    if b == 0:
+                    a_value = get_var_value(a)
+                    b_value = get_var_value(b)                    
+                    if b_value == 0:
                         print(RUNTIME_ERROR[RUN_DIV_ZERO])
                         runtime_error_counter += 1
                         error = True
                         sys.exit(RUN_DIV_ZERO)                        
                     else:
-                        stack.append(a % b)
+                        stack.append(a_value % b_value)
                 ip += 1
             elif op['type']==get_OP_EXIT():
                 syscall_number = 60
-                exit_code = stack.pop()
+                a = stack.pop()
+                exit_code = get_var_value(a)
                 break
             elif op['type']==get_OP_WRITE():
                 if program[ip-1]['type']==get_OP_CHAR():
@@ -429,6 +485,24 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                     str_size += strlen
                     assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
                 stack.append(op['addr'])
+                ip += 1
+            elif op['type']==get_OP_VAR():
+                ip += 1
+            elif op['type']==get_OP_IDVAR():
+                stack.append(op['value'])
+                ip += 1
+            elif op['type']==get_OP_ASSIGN():
+                if len(stack) < 2:
+                    print("! impossible not enough element in stack")
+                    runtime_error_counter += 1
+                    error = True
+                else:
+                    value = stack.pop() #value to assign
+                    var = stack.pop() #variable 
+                var_struct[var]['value'] = value
+                stack.append(var_struct[var])
+                ip += 1  
+            elif op['type']==get_OP_VARTYPE():              
                 ip += 1
             else:
                 ip += 1                
