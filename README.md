@@ -165,6 +165,8 @@ Not found why perhaps caused by OVER keyword. Probably need to review the string
 1.0.26 starting variable management. Updating files to use pypy3 instead of python3. Variables should be assigned during declaration.
 The non-initialized variables are not taken into account for now (segment fault during compilation).
 
+1.0.27 fixing variable management for initialized variables and uninitialzed variables. Seems to work but need to do more tests and controls.
+
 ## simulation
 
 The simulation/interpreter mode is too long. By generating a shared library using cython it seems a little bit faster (I used my pytoc tool to generate the shared library). The euler6 example takes :

@@ -61,7 +61,6 @@ global _start
 _start:
 '''
 
-
 #using printf standard function to print on the screen
 HEADER = f'''%define SYS_EXIT 60\n
 BITS 64
@@ -73,12 +72,12 @@ print_char:
     mov     rsi, rax 
     call printf 
     xor    rdi, rdi                ; clear rdi
-    call    fflush             
+    call    fflush 
     ret
 print_error:
     call printf 
     xor    rdi, rdi                ; clear rdi
-    call    fflush             
+    call    fflush  
     ret
 print:
     mov     rdi, format             ; set 1st parameter (format)
@@ -99,7 +98,7 @@ syscall
 '''
 
 DATA=f'''
-segment .data 
+section .data 
 format db  "%llu", 10, 0
 char db  "%c", 0
 security  dq  {MAX_LOOP_SECURITY}
@@ -109,6 +108,9 @@ BSS=f'''
 section .bss    ; uninitialized data section
 mem: resb {get_MEM_CAPACITY()}
 '''
+
+
+
 
 #compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode: List, outfile: str, libc: bool = True):
@@ -128,27 +130,21 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         #print(op)
         output.write(f"addr_{ip}: \n")
         if op['type']==get_OP_PUSH():
-            output.write("; push \n")             
-            if op['value'] in var_struct:
-                output.write(f"mov rax, {var_struct[op['value']]}\n")
-            else:
-                output.write(f"mov rax, {op['value']}\n")
-            output.write(f"push rax\n")
+            output.write("; push \n")   
+            output.write("xor rax, rax\n")
+            output.write(f"mov rax, {op['value']}\n")                      
+            output.write("push rax\n")
         elif op['type']==get_OP_ADD():
-            # b = bytecode[ip - 1]
-            # a = bytecode[ip - 2]
-            # a_value = get_var_value(a)
-            # b_value = get_var_value(b)
             output.write("; add \n")
             output.write("pop    rax \n")
-            output.write("pop    rbx \n")
-            output.write("add    rax, rbx \n")
+            output.write("pop    rcx \n")
+            output.write("add    rax, rcx \n")
             output.write("push    rax \n")
         elif op['type']==get_OP_SUB():
             output.write("; sub \n")
-            output.write("pop    rbx \n")
+            output.write("pop    rcx \n")
             output.write("pop    rax \n")
-            output.write("sub    rax, rbx \n")                
+            output.write("sub    rax, rcx \n")                
             output.write("push    rax \n")
         elif op['type']==get_OP_EQUAL():
             output.write("; equal \n")
@@ -188,12 +184,12 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("push rax\n")   
         elif op['type']==get_OP_DUP2():
             output.write("; 2dup \n")            
-            output.write("pop rbx \n")
+            output.write("pop rcx \n")
             output.write("pop rax \n")            
             output.write("push rax\n")               
-            output.write("push rbx\n") 
+            output.write("push rcx\n") 
             output.write("push rax\n")               
-            output.write("push rbx\n")                           
+            output.write("push rcx\n")                           
         elif op['type']==get_OP_GT():
             output.write("; gt \n")
             output.write("mov    rcx, 0 \n")
@@ -241,12 +237,12 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("push    rcx \n")
         elif op['type']==get_OP_DIV():
             output.write("; div \n")
-            output.write("pop    rbx \n")
+            output.write("pop    rcx \n")
             output.write("pop    rax \n")
             output.write("mov    rdx, 0 \n")
-            output.write("cmp rbx, 0\n")
+            output.write("cmp rcx, 0\n")
             output.write(f"je addr_div_zero_{ip}\n")
-            output.write("div rbx\n")
+            output.write("div rcx\n")
             output.write("push rax\n")
             output.write(f"jmp addr_div_end_{ip}\n")
             output.write(f"addr_div_zero_{ip}:\n")
@@ -272,11 +268,11 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         elif op['type']==get_OP_DIVMOD():
             output.write("; mod \n")
             output.write("xor rdx, rdx\n")
-            output.write("pop rbx\n")
+            output.write("pop rcx\n")
             output.write("pop rax\n")
-            output.write("cmp rbx, 0\n")
+            output.write("cmp rcx, 0\n")
             output.write(f"je addr_divmod_zero_{ip}\n")
-            output.write("div rbx\n")
+            output.write("div rcx\n")
             output.write("push rdx\n")
             output.write("push rax\n")            
             output.write(f"jmp addr_divmod_end_{ip}\n")
@@ -302,9 +298,9 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write(f"addr_divmod_end_{ip}:\n")              
         elif op['type']==get_OP_MUL(): 
             output.write("; mul \n")
-            output.write("pop    rbx \n")
+            output.write("pop    rcx \n")
             output.write("pop    rax \n")
-            output.write("imul   rbx \n")
+            output.write("imul   rcx \n")
             output.write("push    rax \n")
         elif op['type']==get_OP_WHILE():
             output.write("; while \n")
@@ -336,9 +332,9 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         elif op['type']==get_OP_SWAP(): 
             output.write("; swap \n") 
             output.write("pop rax\n")
-            output.write("pop rbx\n")
+            output.write("pop rcx\n")
             output.write("push rax\n")
-            output.write("push rbx\n")
+            output.write("push rcx\n")
         elif op['type']==get_OP_DROP():
             output.write("; drop \n")
             output.write("pop rax\n")
@@ -356,31 +352,31 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("push rax\n")
         elif op['type']==get_OP_ORB():
             output.write("; orb \n")
-            output.write("pop rbx\n")
+            output.write("pop rcx\n")
             output.write("pop rax\n")
-            output.write("or rax, rbx\n")
+            output.write("or rax, rcx\n")
             output.write("push rax\n")
         elif op['type']==get_OP_ANDB():
             output.write("; andb \n")
-            output.write("pop rbx\n")
+            output.write("pop rcx\n")
             output.write("pop rax\n")
-            output.write("and rax, rbx\n")
+            output.write("and rax, rcx\n")
             output.write("push rax\n")
         elif op['type']==get_OP_OVER():
             output.write("; over \n")
             output.write("pop rax\n")
-            output.write("pop rbx\n")
-            output.write("push rbx\n")
+            output.write("pop rcx\n")
+            output.write("push rcx\n")
             output.write("push rax\n")
-            output.write("push rbx\n")
+            output.write("push rcx\n")
         elif op['type']==get_OP_MOD():
             output.write("; mod \n")
             output.write("xor rdx, rdx\n")
-            output.write("pop rbx\n")
+            output.write("pop rcx\n")
             output.write("pop rax\n")
-            output.write("cmp rbx, 0\n")
+            output.write("cmp rcx, 0\n")
             output.write(f"je addr_mod_zero_{ip}\n")
-            output.write("div rbx\n")
+            output.write("div rcx\n")
             output.write("push rdx\n")
             output.write(f"jmp addr_mod_end_{ip}\n")
             output.write(f"addr_mod_zero_{ip}:\n")
@@ -501,22 +497,31 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         elif op['type']==get_OP_IDVAR():
             #if it's not the definition of a variable, we push the value
             if bytecode[ip - 1]['type'] != get_OP_VAR():
-                output.write("; idvar \n")
-                output.write(f"mov rax, {op['value']}\n")
-                output.write("mov rbx, [rax]\n")
-                output.write("push rbx\n")
-            #definition of variable we push the address of the variable
-            else:
-                output.write("; definition idvar \n")
-                output.write(f"mov rax, {op['value']}\n")
-                output.write("push rax\n")
-
+                value = var_struct[op['value']]['value']
+                if value != None:
+                    output.write("; idvar \n")
+                    type=get_var_type(op['value'])
+                    qualifier=get_var_qualifier(type)
+                    register=get_register(type)
+                    #print(f"{op['value']} {type} {qualifier} {register}")
+                    #output.write(f"mov {register}, {qualifier} [{op['value']}]\n")
+                    output.write(f"xor rax, rax\n")
+                    output.write(f"mov {register},  {qualifier} [{op['value']}]\n")
+                    #output.write(f"mov rax,  [{op['value']}]\n")
+                    output.write(f"push rax\n")
+            # #definition of variable we push the address of the variable
+            # else:
+            #     output.write("; definition idvar \n")
+            #     output.write(f"mov rax, [{op['value']}]\n")
+            #     output.write("push rax\n")
+            pass
         elif op['type']==get_OP_ASSIGN():            
-            output.write("; assign \n")
-            output.write("pop rax\n") #value or variable 
-            output.write("pop rbx\n") #variable
-            output.write(f"mov [rbx], rax\n")
-            output.write("push rbx\n") #push address
+            #output.write("; assign \n")
+            # output.write("pop rcx\n") #value or variable 
+            # output.write("pop rax\n") #variable
+            # output.write("mov [rax], rcx\n")
+            pass
+            #output.write("push rcx\n") #push address
         elif op['type']==get_OP_VARTYPE():
             pass
         else:
@@ -551,19 +556,19 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         output.write(f'error_message_{i} db "{RUNTIME_ERROR[i]}", 10, 0\n')
     for i, var in enumerate(var_struct):
         if var_struct[var]['type']==OPU8 and var_struct[var]['value']!= None:
-            output.write(f"{var}: db {var_struct[var]['value']}\n")
+            output.write(f"{var} db {var_struct[var]['value']}\n")
         elif var_struct[var]['type']==OPU16 and var_struct[var]['value']!= None:
-            output.write(f"{var}: dw {var_struct[var]['value']}\n")
+            output.write(f"{var} dw {var_struct[var]['value']}\n")
         elif var_struct[var]['type']==OPU32 and var_struct[var]['value']!= None:
-            output.write(f"{var}: dd {var_struct[var]['value']}\n")
+            output.write(f"{var} dd {var_struct[var]['value']}\n")
         elif var_struct[var]['type']==OPU64 and var_struct[var]['value']!= None:
-            output.write(f"{var}: dq {var_struct[var]['value']}\n")   
+            output.write(f"{var} dq {var_struct[var]['value']}\n")   
         else:
             bss_var.append(var)     
     output.write(BSS)
     for var in bss_var:
         if var_struct[var]['type']==OPU8:
-            output.write(f"{var}: resb 8\n")
+            output.write(f"{var}: resb 1\n")
         elif var_struct[var]['type']==OPU16:
             output.write(f"{var}: resw 2\n")
         elif var_struct[var]['type']==OPU32:

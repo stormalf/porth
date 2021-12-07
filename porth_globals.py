@@ -44,6 +44,34 @@ def get_var_value(var: Union[str, int]) -> int:
         return var_struct[var]['value']
     else:
         return var
+
+def get_var_type(var: Union[str, int]) -> Union[str, None]:
+    global var_struct
+    if var in var_struct:
+        return var_struct[var]['type']
+    else:
+        return None        
+
+def get_var_qualifier(type: str) -> str:
+    if type == "u8":
+        return "byte"
+    elif type == "u16":
+        return "word"
+    elif type == "u32":
+        return "dword"
+    elif type == "u64":
+        return "qword"
+
+def get_register(type: str) -> str:
+    if type == "u8":
+        return "al"
+    elif type == "u16":
+        return "ax"
+    elif type == "u32":
+        return "eax"
+    elif type == "u64":
+        return "rax"
+
     
 OP_PUSH=iota(True)    
 OP_ADD=iota()

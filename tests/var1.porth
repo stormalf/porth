@@ -1,19 +1,28 @@
-VAR x u16 1000 !
-VAR z u16 0 !
+VAR x u16 1000 ! 
+VAR z u8 4 !
+MACRO Y 10 ENDM
+
+VAR t u16 999 !
+Y .
 x .
-MACRO y 10 ENDM
+z .
+t .
+x z + .
+x z MUL .
+x z DIV .
+x z MOD .
+x z ANDB .
+x z ORB .
+x z - .
+x z DIVMOD . . 
 
-x y + .
-x y MUL .
-x y DIV .
-x y MOD .
-x y ANDB .
-x y ORB .
-x y - .
-x y DIVMOD . . 
-
-//z 11 !
-//z .
-//0
-VAR my_number u32 123456789 !
+VAR my_number u64 123456789 !
 my_number .
+
+VAR test u8
+
+test 9 !
+test .
+
+VAR a u16 2550 !
+a .

@@ -138,9 +138,12 @@ def parse_var(filename:str, row: int, line: str, tokens: List) -> Dict:
     if tokens[0] != OPVAR:
         print(f"Error Code {ERR_TOK_VAR} VAR keyword should be the first token in variable definition line {row}")
         error_counter += 1
-    elif len(tokens) < 4:
-        print(f"Error Code {ERR_TOK_VAR_DEF} Variable definition should be like VAR x u8 100 `!` error line {row}")
+    elif len(tokens) < 3:
+        print(f"Error Code {ERR_TOK_VAR_DEF} Variable definition should be like VAR x u8  (x variable name and u8 variable type) error line {row}")
         error_counter += 1
+    elif len(tokens) > 5:
+        print(f"Error Code {ERR_TOK_VAR_DEF} Variable definition should be like VAR x u8 100 ! (x variable name and u8 variable type value and assignment operator) error line {row}")
+        error_counter += 1        
     elif tokens[1] in keyword_table:
         print(f"Error Code {ERR_TOK_VAR_ID} Variable identifier should not be a keyword! Keyword {tokens[1]} found as Variable Identifier at line {row}")
         error_counter += 1
