@@ -22,3 +22,7 @@ VAR reminder u16 0 !reminder
 // assignment variable can't be used after a DIVMOD operator
 //test test2 DIVMOD !result !reminder
 test . test2 . result . reminder . 
+
+//assign content of test2 to variable test
+test2 !test
+test .

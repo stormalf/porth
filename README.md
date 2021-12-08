@@ -14,7 +14,7 @@ It uses often the same syntax that I used in the current code. Sometimes it stil
 
 ./porth.py --help
 
-    usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-l] -i INPUTFILE [-o OUTFILE]
+    usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-l] -i INPUTFILE [-o OUTFILE] [-w]
 
     porth is a python3 forth language simulation
 
@@ -30,6 +30,7 @@ It uses often the same syntax that I used in the current code. Sometimes it stil
                             intput file
     -o OUTFILE, --outfile OUTFILE
                             output file
+    -w, --warning         display warnings
 
 Example to compile :
 
@@ -100,7 +101,7 @@ Keyword, operators, and constants are defined in the language.
     INCLUDE: keyword to include a file but recursive include are not allowed
     '_': single quotes to create a char (1 character allowed except for some special characters see special_chars dictionary). It's possible to print some chars like '\n' or '\t' but some issues still yet with unicode characters that are coded in more than one byte.
     VAR: keyword to create a variable followed by the name of the variable, the type of the variable
-    !: assignment operator pops the value and the variable and assign the value to the variable.
+    !variable_name: assignment operator pops the value and the variable and assign the value to the variable ex: !x pop the value and assign to x.
     u8, u16, u32, u64 : variables types allowed for now.
 
 ## release notes
@@ -167,7 +168,7 @@ The non-initialized variables are not taken into account for now (segment fault 
 
 1.0.27 fixing variable management for initialized variables and uninitialzed variables. Seems to work but need to do more tests and controls.
 
-1.0.28 refactoring error management in porth_error.py. Changing the way to assign variables now it will be !variable_name ex !x to assign a value to the variable x. It's possible to store the result of some operators into a variable (see OPERATORS list)
+1.0.28 refactoring error management in porth_error.py. Changing the way to assign variables now it will be !variable_name ex !x to assign a value to the variable x. It's possible to store the result of some operators into a variable (see OPERATORS list). Adding -w flag to display warnings.
 
 ## simulation
 
