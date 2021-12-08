@@ -491,17 +491,30 @@ def simulate(program: List) -> Tuple[List,bool, int]:
             elif op['type']==get_OP_IDVAR():
                 stack.append(op['value'])
                 ip += 1
-            elif op['type']==get_OP_ASSIGN():
-                if len(stack) < 2:
+            # elif op['type']==get_OP_ASSIGN():
+            #     if len(stack) < 2:
+            #         print("! impossible not enough element in stack")
+            #         runtime_error_counter += 1
+            #         error = True
+            #     else:
+            #         value = stack.pop() #value to assign
+            #         var = stack.pop() #variable 
+            #     var_struct[var]['value'] = value
+            #     stack.append(var_struct[var])
+            #     ip += 1  
+            elif op['type']==get_OP_ASSIGN_VAR():
+                if len(stack) < 1:
                     print("! impossible not enough element in stack")
                     runtime_error_counter += 1
                     error = True
                 else:
-                    value = stack.pop() #value to assign
-                    var = stack.pop() #variable 
-                var_struct[var]['value'] = value
-                stack.append(var_struct[var])
-                ip += 1  
+                    a = stack.pop()
+                    a_value = get_var_value(a)
+                    var = op['value'][1:]
+                    var_struct[var]['value'] = a_value
+                    #print(var_struct[var])
+                    stack.append(var_struct[var]['value']) 
+                ip += 1                                         
             elif op['type']==get_OP_VARTYPE():              
                 ip += 1
             else:

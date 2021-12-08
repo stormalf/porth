@@ -167,6 +167,8 @@ The non-initialized variables are not taken into account for now (segment fault 
 
 1.0.27 fixing variable management for initialized variables and uninitialzed variables. Seems to work but need to do more tests and controls.
 
+1.0.28 refactoring error management in porth_error.py. Changing the way to assign variables now it will be !variable_name ex !x to assign a value to the variable x. It's possible to store the result of some operators into a variable (see OPERATORS list)
+
 ## simulation
 
 The simulation/interpreter mode is too long. By generating a shared library using cython it seems a little bit faster (I used my pytoc tool to generate the shared library). The euler6 example takes :
@@ -209,9 +211,8 @@ link to pypy : https://www.pypy.org/download.html
 
 ## TODO
 
-Manage negative numbers at compilation.
-Adding other types for variables (bool, signed int, char, string, float)
-Adding error management for variables.
-Refactoring code to be simpler and more readable.
-Trying to implement similar language but using ANTLR4.
-Generate a real AST and symbol table.
+- Manage negative numbers at compilation.
+- Adding other types for variables (bool, signed int, char, string, float)
+- Refactoring code to be simpler and more readable.
+- Trying to implement similar language but using ANTLR4.
+- Generate a real AST and symbol table.

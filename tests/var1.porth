@@ -1,8 +1,8 @@
-VAR x u16 1000 ! 
-VAR z u8 4 !
+VAR x u16 1000 !x
+VAR z u8 4 !z
 MACRO Y 10 ENDM
 
-VAR t u16 999 !
+VAR t u16 999 !t
 Y .
 x .
 z .
@@ -16,13 +16,13 @@ x z ORB .
 x z - .
 x z DIVMOD . . 
 
-VAR my_number u64 123456789 !
+VAR my_number u64 123456789 !my_number
 my_number .
 
 VAR test u8
 
-test 9 !
+test 9 !test
 test .
 
-VAR a u16 2550 !
+VAR a u16 2550 !a
 a .

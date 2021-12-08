@@ -503,25 +503,25 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
                     type=get_var_type(op['value'])
                     qualifier=get_var_qualifier(type)
                     register=get_register(type)
-                    #print(f"{op['value']} {type} {qualifier} {register}")
-                    #output.write(f"mov {register}, {qualifier} [{op['value']}]\n")
                     output.write(f"xor rax, rax\n")
                     output.write(f"mov {register},  {qualifier} [{op['value']}]\n")
-                    #output.write(f"mov rax,  [{op['value']}]\n")
                     output.write(f"push rax\n")
-            # #definition of variable we push the address of the variable
-            # else:
-            #     output.write("; definition idvar \n")
-            #     output.write(f"mov rax, [{op['value']}]\n")
-            #     output.write("push rax\n")
-            pass
-        elif op['type']==get_OP_ASSIGN():            
-            #output.write("; assign \n")
-            # output.write("pop rcx\n") #value or variable 
-            # output.write("pop rax\n") #variable
-            # output.write("mov [rax], rcx\n")
-            pass
-            #output.write("push rcx\n") #push address
+        # elif op['type']==get_OP_ASSIGN():            
+        #     pass
+        elif op['type']==get_OP_ASSIGN_VAR():  
+            if bytecode[ip - 1]['type'] != get_OP_VAR():
+                #print(op)
+                var = op['variable']
+                value = var_struct[var]['value']
+                if value != None:
+                    output.write("; idvar \n")
+                    type=get_var_type(var)
+                    qualifier=get_var_qualifier(type)
+                    register=get_register(type)
+                    output.write(f"pop rax\n")
+                    output.write(f"mov {qualifier} [{var}], {register}\n")
+                    output.write(f"push rax\n")                      
+            pass        
         elif op['type']==get_OP_VARTYPE():
             pass
         else:
@@ -556,13 +556,13 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         output.write(f'error_message_{i} db "{RUNTIME_ERROR[i]}", 10, 0\n')
     for i, var in enumerate(var_struct):
         if var_struct[var]['type']==OPU8 and var_struct[var]['value']!= None:
-            output.write(f"{var} db {var_struct[var]['value']}\n")
+            output.write(f"{var}: db {var_struct[var]['value']}, 0\n")
         elif var_struct[var]['type']==OPU16 and var_struct[var]['value']!= None:
-            output.write(f"{var} dw {var_struct[var]['value']}\n")
+            output.write(f"{var}: dw {var_struct[var]['value']}, 0\n")
         elif var_struct[var]['type']==OPU32 and var_struct[var]['value']!= None:
-            output.write(f"{var} dd {var_struct[var]['value']}\n")
+            output.write(f"{var}: dd {var_struct[var]['value']}, 0\n")
         elif var_struct[var]['type']==OPU64 and var_struct[var]['value']!= None:
-            output.write(f"{var} dq {var_struct[var]['value']}\n")   
+            output.write(f"{var}: dq {var_struct[var]['value']}, 0\n")   
         else:
             bss_var.append(var)     
     output.write(BSS)

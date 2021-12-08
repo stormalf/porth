@@ -4,6 +4,8 @@ from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
 MAX_OPS = 52
+MAX_ERROR_TABLE = 31
+MAX_WARNING_TABLE=1
 
 #max memory size
 MEM_CAPACITY = 640_000
@@ -12,9 +14,19 @@ STR_CAPACITY = 640_000
 
 MAX_LOOP_SECURITY = 10_000_000
 
-exit_code = 0
 var_struct = {}
+macro_struct= {}
+warning_msg = {}
+error_msg = {}
 
+include_file=[]
+
+iota_counter= 0
+exit_code = 0
+error_counter = 0
+warning_counter = 0
+error_table_counter = 0
+warning_table_counter = 0
 
 #list of comments types probably I'll prefer the python comment syntax for myself
 #I keep only two // and # I removed the ; perhaps we need it later for other operation code
@@ -25,10 +37,6 @@ SINGLE_QUOTE = "'"
 DOUBLE_QUOTE = '"'
 #STRING_LITERAL = [DOUBLE_QUOTE, " "]
 
-
-iota_counter= 0
-
-
 #enum function in python 
 def iota(reset=False) -> int:
     global iota_counter
@@ -37,6 +45,7 @@ def iota(reset=False) -> int:
     else:
         iota_counter+=1
     return iota_counter
+
 
 def get_var_value(var: Union[str, int]) -> int:
     global var_struct
@@ -122,9 +131,10 @@ OP_ENDM=iota()
 OP_INCLUDE=iota()
 OP_CHAR=iota()
 OP_VAR=iota()
-OP_ASSIGN=iota()
+#OP_ASSIGN=iota()
 OP_IDVAR=iota()
 OP_VARTYPE=iota()
+OP_ASSIGN_VAR=iota()
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -146,6 +156,14 @@ ERR_TOK_VAR_DEF=iota()
 ERR_TOK_VAR_ID=iota()
 ERR_TOK_VAR_TYPE=iota()
 ERR_VAR_UNDEF=iota()
+ERR_VAR_ASSIGN=iota()
+ERR_VAR_TYPE=iota()
+ERR_VAR_DEF=iota()
+ERR_VAR_NOT_ALW=iota()
+
+#warning code 
+WARN_NO_WARNING=iota(True)
+WARN_VAR_UNUSED=iota()
 
 #error codes runtime
 RUN_NO_ERROR=iota(True)
@@ -215,6 +233,7 @@ OPU8="u8"
 OPU16="u16"
 OPU32="u32"
 OPU64="u64"
+OPASSIGNVAR= OPASSIGN + OPIDVAR
 # OPI8="i8"
 # OPI16="i16"
 # OPI32="i32"
@@ -224,9 +243,17 @@ OPU64="u64"
 # OPSTRING="str"
 # OPCHAR="char"
 
+OPERATORS=[OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_SHL, OP_SHR, OP_ANDB, OP_ORB, OP_MOD]
+
 VAR_TYPE=[OPU8,OPU16,OPU32,OPU64]
 
 #forbidden_tokens = [PLUS, MINUS, DUMP]
+
+def get_MAX_ERROR() -> int:
+    return MAX_ERROR_TABLE    
+
+def get_MAX_WARNING() -> int:
+    return MAX_WARNING_TABLE    
 
 def get_MAX_OPS() -> int:
     return MAX_OPS    
@@ -373,11 +400,14 @@ def get_OP_VAR() -> int:
 def get_OP_IDVAR() -> int:
     return OP_IDVAR
 
-def get_OP_ASSIGN() -> int:
-    return OP_ASSIGN
+# def get_OP_ASSIGN() -> int:
+#     return OP_ASSIGN
 
 def get_OP_VARTYPE() -> int:
     return OP_VARTYPE
+
+def get_OP_ASSIGN_VAR() -> int:
+    return OP_ASSIGN_VAR
 
 keyword_table: Dict = {
     PLUS: OP_ADD,
@@ -422,8 +452,8 @@ keyword_table: Dict = {
     OPMACRO: OP_MACRO,
     OPENDM: OP_ENDM,
     OPINCLUDE: OP_INCLUDE,
-    OPVAR: OP_VAR,
-    OPASSIGN: OP_ASSIGN
+    OPVAR: OP_VAR
+    #OPASSIGN: OP_ASSIGN
 }
 
 special_chars: Dict = {

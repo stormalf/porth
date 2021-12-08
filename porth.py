@@ -12,12 +12,13 @@ Youtube videos from Tsoding Daily
 import argparse
 import os
 import sys
-from porth_lexer import get_counter_error, load_program 
+from porth_lexer import load_program
 from porth_compiler import compile
 from porth_interpreter import simulate, get_runtime_error
+from porth_error import check_errors, check_warnings, print_errors, print_warnings, get_counter_error, get_counter_warning
 from typing import *
 
-__version__ = "1.0.27"
+__version__ = "1.0.28"
 
 
 def porthVersion() -> str:
@@ -41,10 +42,7 @@ def main(args, filename: str) -> None:
     if not error and args.simulate:
         #print("simulating...")
         stack, error, exit_code = simulate(program)
-        if not error:
-            #print("simulation succeeded!")
-            pass
-        else:
+        if error:
             print("simulation failed!")
             print(f"Errors found during runtime simulation: {get_runtime_error()}")
     if not error and (args.compile or args.run):
@@ -55,15 +53,22 @@ def main(args, filename: str) -> None:
             if args.run:
                 run_program(args.outfile)
         else:
-            print("compilation failed!")    
-    if error:
-        print(f"Errors found in program {filename} : {get_counter_error()}")
+            print("compilation failed!")   
+    if check_errors():
+        print_errors()
+        print(f"Errors found in program : {get_counter_error()}")
+    if args.warning:
+        if check_warnings(filename):
+            print_warnings()
+            print(f"Warnings found in program {filename} : {get_counter_warning()}")            
     if args.dump:
+        print("----------------------------------")
         print(f"dumping...")
         print(f"tokens : {tokens}")
         print(f"stack : {stack}")
-        print(f"errors : {get_counter_error()}")      
-        print("dumping done!")
+        print(f"errors : {get_counter_error()}")  
+        print(f"warnings : {get_counter_warning()}")      
+        print("----------------------------------")        
     sys.exit(exit_code)   
 
 if __name__=='__main__':
@@ -77,6 +82,7 @@ if __name__=='__main__':
     parser.add_argument('-l', '--libc', help='using gcc and libc', action="store_true", required=False)      
     parser.add_argument('-i', '--inputfile', help='intput file', required=True)
     parser.add_argument('-o', '--outfile', help='output file', default="output", required=False)
+    parser.add_argument('-w', '--warning', help='display warnings', action="store_true", required=False)          
     args = parser.parse_args()
     program = args.inputfile
     main(args, program)

@@ -1,0 +1,11 @@
+ 10 10 u16 10 ! 
+VAR 10 u16 1 !
+VAR myvar u8 1 !
+VAR myvar2 u8
+myvar2 myvar !
+myvar .
+myvar2 .
+
+12 myvar !
+myvar .
+VAR
