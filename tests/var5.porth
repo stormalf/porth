@@ -1,0 +1,9 @@
+VAR a u8 10 !a
+VAR b u16 500 !b
+VAR c u32 150000 !c
+VAR d u64 10203040500 !d
+
+a .
+b .
+c .
+d .

@@ -44,7 +44,7 @@ Example after refactoring into folders :
 
 Example to compile and run passing parameters for execution :
 
-    ./porth.py -r -l -i tests/string4.porth -o bin/string4 -p titi -p toto -p test -p tata -p tonton
+    ./porth.py -r -l -i tests/string4.porth -o bin/string4 -p titi -p toto -p test -p tata
 
 ## Lexing
 
@@ -176,7 +176,7 @@ The non-initialized variables are not taken into account for now (segment fault 
 
 1.0.28 refactoring error management in porth_error.py. Changing the way to assign variables now it will be !variable_name ex !x to assign a value to the variable x. It's possible to store the result of some operators into a variable (see OPERATORS list). Adding -w flag to display warnings.
 
-1.0.29 managing argv and argc. Adding -p flag to pass parameter to be taken in account during execution. Note that libc doesn't manage the argv by the stack but using registers (rdi for argc and rsi for argv).
+1.0.29 managing argv and argc. Adding -p flag to pass parameter to be taken in account during execution. Note that libc doesn't manage the argv by the stack but using registers (rdi for argc and rsi for argv). Adding -p flag to pass parameter to be taken in account during execution. Starting refactoring compile function.
 
 ## simulation
 

@@ -298,6 +298,70 @@ def generate_over_op(output):
     output.write("push rax\n")
     output.write("push rcx\n")
 
+def generate_syscall0_op(output):
+    output.write("; syscall0 \n")
+    output.write("pop rax\n")
+    output.write("syscall\n")
+    output.write("push rax\n")
+
+def generate_syscall1_op(output):
+    output.write("; syscall1 \n")
+    output.write("pop rax\n")
+    output.write("pop rdi\n")            
+    output.write("syscall\n") 
+    output.write("push rax\n")
+
+def generate_syscall2_op(output):
+    output.write("; syscall2 \n")
+    output.write("pop rax\n")
+    output.write("pop rdi\n")
+    output.write("pop rsi\n")
+    output.write("syscall\n")
+    output.write("push rax\n")
+
+def generate_syscall3_op(output):
+    output.write("; syscall3 \n")
+    output.write("pop rax\n")
+    output.write("pop rdi\n")            
+    output.write("pop rsi\n")
+    output.write("pop rdx\n")            
+    output.write("syscall\n")
+    output.write("push rax\n")
+
+def generate_syscall4_op(output):
+    output.write("; syscall4 \n")
+    output.write("pop rax\n")
+    output.write("pop rdi\n")
+    output.write("pop rsi\n")
+    output.write("pop rdx\n")
+    output.write("pop r10\n")
+    output.write("syscall\n")
+    output.write("push rax\n")
+
+def generate_syscall5_op(output):    
+    output.write("; syscall5 \n")
+    output.write("pop rax\n")
+    output.write("pop rdi\n")
+    output.write("pop rsi\n")
+    output.write("pop rdx\n")
+    output.write("pop r10\n")
+    output.write("pop r8\n")
+    output.write("syscall\n")
+    output.write("push rax\n")
+
+def generate_syscall6_op(output):
+    output.write("; syscall6 \n")
+    output.write("pop rax\n")
+    output.write("pop rdi\n")
+    output.write("pop rsi\n")
+    output.write("pop rdx\n")
+    output.write("pop r10\n")
+    output.write("pop r8\n")
+    output.write("pop r9\n")
+    output.write("syscall\n")
+    output.write("push rax\n")
+
+
 #compile the bytecode using nasm and gcc (for printf usage)
 def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = []) -> bool:
     global exit_code, var_struct
@@ -487,7 +551,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
                 output.write("call print_error\n")
             #otherwise print using write syscall
             else:
-         
                 output.write("; syscall3 \n")
                 output.write("mov rax, 1\n")
                 output.write("mov rdi, 1\n")
@@ -514,7 +577,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
                     output.write(f"mov rdi, {bytecode[ip - 1]['value']}\n")
                     output.write("push rdi\n")
                     output.write("call print_char\n")
-
             else:
                 output.write("; write \n")
                 output.write("mov rax, 1\n")
@@ -525,68 +587,25 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
                 output.write("mov rsi, rcx\n")
                 output.write("syscall\n")
         elif op['type']==get_OP_SYSCALL0():
-            output.write("; syscall0 \n")
-            output.write("pop rax\n")
-            output.write("syscall\n")
-            output.write("push rax\n")
+            generate_syscall0_op(output)
         elif op['type']==get_OP_SYSCALL1():    
-            output.write("; syscall1 \n")
-            output.write("pop rax\n")
-            output.write("pop rdi\n")            
-            output.write("syscall\n") 
-            output.write("push rax\n") 
+            generate_syscall1_op(output)
         elif op['type']==get_OP_SYSCALL2():
-            output.write("; syscall2 \n")
-            output.write("pop rax\n")
-            output.write("pop rdi\n")
-            output.write("pop rsi\n")
-            output.write("syscall\n")
-            output.write("push rax\n")
+            generate_syscall2_op(output)
         elif op['type']==get_OP_SYSCALL3():    
-            output.write("; syscall3 \n")
-            output.write("pop rax\n")
-            output.write("pop rdi\n")            
-            output.write("pop rsi\n")
-            output.write("pop rdx\n")            
-            output.write("syscall\n")
-            output.write("push rax\n")
+            generate_syscall3_op(output)
         elif op['type']==get_OP_SYSCALL4():
-            output.write("; syscall4 \n")
-            output.write("pop rax\n")
-            output.write("pop rdi\n")
-            output.write("pop rsi\n")
-            output.write("pop rdx\n")
-            output.write("pop r10\n")
-            output.write("syscall\n")
-            output.write("push rax\n")
+            generate_syscall4_op(output)
         elif op['type']==get_OP_SYSCALL5():
-            output.write("; syscall5 \n")
-            output.write("pop rax\n")
-            output.write("pop rdi\n")
-            output.write("pop rsi\n")
-            output.write("pop rdx\n")
-            output.write("pop r10\n")
-            output.write("pop r8\n")
-            output.write("syscall\n")
-            output.write("push rax\n")
+            generate_syscall5_op(output)
         elif op['type']==get_OP_SYSCALL6():
-            output.write("; syscall6 \n")
-            output.write("pop rax\n")
-            output.write("pop rdi\n")
-            output.write("pop rsi\n")
-            output.write("pop rdx\n")
-            output.write("pop r10\n")
-            output.write("pop r8\n")
-            output.write("pop r9\n")
-            output.write("syscall\n")
-            output.write("push rax\n")
+            generate_syscall6_op(output)
         elif op['type']==get_OP_CHAR():
             output.write("; char\n")  
             output.write(f"push {op['value']}\n")
         elif op['type']==get_OP_STRING():
             output.write("; string \n")
             output.write(f"mov rax, {len(op['value'])}\n")
-            #print(len(op['value']), strs)
             output.write("push rax\n")
             output.write(f"push str_{len(strs)}\n")
             strs.append(op['value'])
@@ -634,7 +653,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
         output.write("push rdi\n")      
         output.write("push rsi\n")
         output.write("call print_error\n")
-
     #otherwise print using write syscall
     else:
         output.write("; syscall3 \n")
@@ -664,8 +682,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
             output.write(f"{var}: dq {var_struct[var]['value']}, 0\n")   
         else:
             bss_var.append(var)  
-    # for i, parm in enumerate(parameter):
-    #     output.write(f"parm_{i}: db '{parm[0]}', 10, 0\n")
     output.write(BSS)
     for var in bss_var:
         if var_struct[var]['type']==OPU8:
