@@ -67,6 +67,8 @@ BITS 64
 segment .text
 global main
 extern printf, fflush 
+push_args:
+ret
 print_char:
     mov     rdi, char             ; set 1st parameter (format)
     mov     rsi, rax 
@@ -89,10 +91,12 @@ print:
     call    fflush             ; fflush(stdout) without it, the output is not printed!!!!!
     ret
 main:
+
 '''
 
 #footer assembly that exit function followed by data section with format
-FOOTER = f'''mov rax, SYS_EXIT
+FOOTER = f'''
+mov rax, SYS_EXIT
 mov rdi, 0
 syscall
 '''
@@ -100,6 +104,7 @@ syscall
 DATA=f'''
 section .data 
 format db  "%llu", 10, 0
+format2 db "%s", 10, 0
 char db  "%c", 0
 security  dq  {MAX_LOOP_SECURITY}
 '''
@@ -109,19 +114,202 @@ section .bss    ; uninitialized data section
 mem: resb {get_MEM_CAPACITY()}
 '''
 
+#with libc argc, argv are not passed by the stack but by the registers rdi contains argc and rsi contains argv
+#to be able to use the same program with or without libc we need to push the arguments on the stack before executing the porth program
+def generate_read_argv(output):
+        output.write("mov rax, [rsi + (rdi * 8) + 8]\n") 
+        output.write("mov rdx, rdi\n")
+        output.write("check_args:\n")
+        output.write("cmp rdi, 0 \n") 
+        output.write("jz no_args\n")
+        output.write("push rax\n")
+        output.write("mov rax, [rsi + (rdi * 8)]\n")            
+        output.write("dec rdi\n")
+        output.write("jmp check_args\n")
+        output.write("no_args:\n")
+        output.write(f"mov rax, [rsi + 8] \n") 
+        output.write("push rax\n")    
+        output.write(f"mov rax, [rsi] \n")             
+        output.write(f"push rax\n") 
+        output.write(f"push rdx\n")      
 
+def generate_add_op(output):
+    output.write("; add \n")
+    output.write("pop    rax \n")
+    output.write("pop    rcx \n")
+    output.write("add    rax, rcx \n")
+    output.write("push    rax \n")
 
+def generate_sub_op(output): 
+    output.write("; sub \n")
+    output.write("pop    rcx \n")
+    output.write("pop    rax \n")
+    output.write("sub    rax, rcx \n")                
+    output.write("push    rax \n")
+
+def generate_equal_op(output):
+    output.write("; equal \n")
+    output.write("mov    rcx, 0 \n")
+    output.write("mov    rdx, 1 \n")
+    output.write("pop    rax \n")
+    output.write("pop    r9 \n")            
+    output.write("cmp    rax, r9 \n")                
+    output.write("cmove  rcx, rdx \n")  
+    output.write("push    rcx \n")   
+
+def generate_dup_op(output):
+    output.write("; dup \n")            
+    output.write("pop rax \n")
+    output.write("push rax\n")               
+    output.write("push rax\n") 
+
+def generate_dup2_op(output):
+    output.write("; 2dup \n")            
+    output.write("pop rcx \n")
+    output.write("pop rax \n")            
+    output.write("push rax\n")               
+    output.write("push rcx\n") 
+    output.write("push rax\n")               
+    output.write("push rcx\n")  
+
+def generate_gt_op(output):
+    output.write("; gt \n")
+    output.write("mov    rcx, 0 \n")
+    output.write("mov    rdx, 1 \n")
+    output.write("pop    r9 \n")
+    output.write("pop    rax \n")            
+    output.write("cmp    rax, r9 \n")                
+    output.write("cmovg  rcx, rdx \n")  
+    output.write("push    rcx \n") 
+
+def generate_lt_op(output):
+    output.write("; lt \n")
+    output.write("mov    rcx, 0 \n")
+    output.write("mov    rdx, 1 \n")
+    output.write("pop    r9 \n")
+    output.write("pop    rax \n")            
+    output.write("cmp    rax, r9 \n")                
+    output.write("cmovl  rcx, rdx \n")  
+    output.write("push    rcx \n")  
+
+def generate_ge_op(output):
+    output.write("; ge \n")
+    output.write("mov    rcx, 0 \n")
+    output.write("mov    rdx, 1 \n")
+    output.write("pop    r9 \n")
+    output.write("pop    rax \n")            
+    output.write("cmp    rax, r9 \n")                
+    output.write("cmovge rcx, rdx \n")  
+    output.write("push    rcx \n")
+
+def generate_le_op(output):
+    output.write("; le \n")
+    output.write("mov    rcx, 0 \n")
+    output.write("mov    rdx, 1 \n")
+    output.write("pop    r9 \n")
+    output.write("pop    rax \n")            
+    output.write("cmp    rax, r9 \n")                
+    output.write("cmovle rcx, rdx \n")  
+    output.write("push    rcx \n")
+
+def generate_ne_op(output):
+    output.write("; ne \n")
+    output.write("mov    rcx, 0 \n")
+    output.write("mov    rdx, 1 \n")
+    output.write("pop    r9 \n")
+    output.write("pop    rax \n")            
+    output.write("cmp    rax, r9 \n")                
+    output.write("cmovne rcx, rdx \n")  
+    output.write("push    rcx \n")
+
+def generate_mul_op(output):
+    output.write("; mul \n")
+    output.write("pop    rcx \n")
+    output.write("pop    rax \n")
+    output.write("imul   rcx \n")
+    output.write("push    rax \n")    
+
+def generate_load_op(output):
+    output.write("; load \n")
+    output.write("pop rax\n")    
+    output.write("xor rbx, rbx\n")           
+    output.write("mov bl, [rax]\n")
+    output.write("push rbx\n")    
+
+def generate_store_op(output):
+    output.write("; store \n")
+    output.write("pop rbx\n")
+    output.write("pop rax\n")
+    output.write("mov [rax], bl\n")    
+
+def generate_load64_op(output):
+    output.write("; load64 \n")
+    output.write("pop rax\n")
+    output.write("xor rcx, rcx\n")
+    output.write("mov rcx, [rax]\n")
+    output.write("push rcx\n")    
+
+def generate_store64_op(output):
+    output.write("; store64 \n")
+    output.write("pop rcx\n")
+    output.write("pop rax\n")
+    output.write("mov [rax], rcx\n")
+
+def generate_swap_op(output):
+    output.write("; swap \n") 
+    output.write("pop rax\n")
+    output.write("pop rcx\n")
+    output.write("push rax\n")
+    output.write("push rcx\n")    
+
+def generate_shl_op(output):
+    output.write("; shl \n")
+    output.write("pop rcx\n")
+    output.write("pop rax\n")
+    output.write("shl rax, cl\n")
+    output.write("push rax\n")
+
+def generate_shr_op(output):
+    output.write("; shr \n")
+    output.write("pop rcx\n")
+    output.write("pop rax\n")
+    output.write("shr rax, cl\n")
+    output.write("push rax\n")
+
+def generate_orb_op(output):
+    output.write("; orb \n")
+    output.write("pop rcx\n")
+    output.write("pop rax\n")
+    output.write("or rax, rcx\n")
+    output.write("push rax\n")
+
+def generate_andb_op(output):
+    output.write("; andb \n")
+    output.write("pop rcx\n")
+    output.write("pop rax\n")
+    output.write("and rax, rcx\n")
+    output.write("push rax\n")
+
+def generate_over_op(output):
+    output.write("; over \n")
+    output.write("pop rax\n")
+    output.write("pop rcx\n")
+    output.write("push rcx\n")
+    output.write("push rax\n")
+    output.write("push rcx\n")
 
 #compile the bytecode using nasm and gcc (for printf usage)
-def compile(bytecode: List, outfile: str, libc: bool = True):
+def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = []) -> bool:
     global exit_code, var_struct
     bss_var = []
     strs = []
     assert get_OPS() == get_MAX_OPS(), "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())   
     asmfile = outfile + ".asm"
     output = open(asmfile, "w") 
+    #
     if libc:
         output.write(HEADER) 
+        generate_read_argv(output)
     else:
         output.write(HEADER2)
     error = False    
@@ -135,26 +323,11 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write(f"mov rax, {op['value']}\n")                      
             output.write("push rax\n")
         elif op['type']==get_OP_ADD():
-            output.write("; add \n")
-            output.write("pop    rax \n")
-            output.write("pop    rcx \n")
-            output.write("add    rax, rcx \n")
-            output.write("push    rax \n")
+            generate_add_op(output)
         elif op['type']==get_OP_SUB():
-            output.write("; sub \n")
-            output.write("pop    rcx \n")
-            output.write("pop    rax \n")
-            output.write("sub    rax, rcx \n")                
-            output.write("push    rax \n")
+            generate_sub_op(output)
         elif op['type']==get_OP_EQUAL():
-            output.write("; equal \n")
-            output.write("mov    rcx, 0 \n")
-            output.write("mov    rdx, 1 \n")
-            output.write("pop    rax \n")
-            output.write("pop    rbx \n")            
-            output.write("cmp    rax, rbx \n")                
-            output.write("cmove  rcx, rdx \n")  
-            output.write("push    rcx \n")           
+            generate_equal_op(output)
         elif op['type']==get_OP_IF():
             assert len(op) >= 2, f"compile error! IF instruction does not have an END instruction! {op}"            
             output.write("; if \n")
@@ -178,63 +351,19 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
                 output.write("pop rdi \n")
             output.write("call print\n")   
         elif op['type']==get_OP_DUP():
-            output.write("; dup \n")            
-            output.write("pop rax \n")
-            output.write("push rax\n")               
-            output.write("push rax\n")   
+            generate_dup_op(output)
         elif op['type']==get_OP_DUP2():
-            output.write("; 2dup \n")            
-            output.write("pop rcx \n")
-            output.write("pop rax \n")            
-            output.write("push rax\n")               
-            output.write("push rcx\n") 
-            output.write("push rax\n")               
-            output.write("push rcx\n")                           
+            generate_dup2_op(output)                         
         elif op['type']==get_OP_GT():
-            output.write("; gt \n")
-            output.write("mov    rcx, 0 \n")
-            output.write("mov    rdx, 1 \n")
-            output.write("pop    rbx \n")
-            output.write("pop    rax \n")            
-            output.write("cmp    rax, rbx \n")                
-            output.write("cmovg  rcx, rdx \n")  
-            output.write("push    rcx \n")                
+            generate_gt_op(output)              
         elif op['type']==get_OP_LT():
-            output.write("; lt \n")
-            output.write("mov    rcx, 0 \n")
-            output.write("mov    rdx, 1 \n")
-            output.write("pop    rbx \n")
-            output.write("pop    rax \n")            
-            output.write("cmp    rax, rbx \n")                
-            output.write("cmovl  rcx, rdx \n")  
-            output.write("push    rcx \n")  
+            generate_lt_op(output)
         elif op['type']==get_OP_GE():
-            output.write("; ge \n")
-            output.write("mov    rcx, 0 \n")
-            output.write("mov    rdx, 1 \n")
-            output.write("pop    rbx \n")
-            output.write("pop    rax \n")            
-            output.write("cmp    rax, rbx \n")                
-            output.write("cmovge rcx, rdx \n")  
-            output.write("push    rcx \n")
+            generate_ge_op(output)
         elif op['type']==get_OP_LE():
-            output.write("; le \n")
-            output.write("mov    rcx, 0 \n")
-            output.write("mov    rdx, 1 \n")
-            output.write("pop    rbx \n")
-            output.write("pop    rax \n")            
-            output.write("cmp    rax, rbx \n")                
-            output.write("cmovle rcx, rdx \n")  
-            output.write("push    rcx \n")
+            generate_le_op(output)
         elif op['type']==get_OP_NE():
-            output.write("; ne \n")
-            output.write("mov    rcx, 0 \n")
-            output.write("mov    rdx, 1 \n")
-            output.write("pop    rbx \n")
-            output.write("pop    rax \n")            
-            output.write("cmp    rax, rbx \n")                
-            output.write("cmovne rcx, rdx \n")  
-            output.write("push    rcx \n")
+            generate_ne_op(output)
         elif op['type']==get_OP_DIV():
             output.write("; div \n")
             output.write("pop    rcx \n")
@@ -261,6 +390,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
                 output.write(f"mov rdx, {len(RUNTIME_ERROR[RUN_DIV_ZERO]) + 1}\n")            
                 output.write(f"mov rsi, error_message_{RUN_DIV_ZERO}\n")            
                 output.write("syscall\n")  
+            #output.write(f"pop rbp\n")
             output.write("mov rax, SYS_EXIT\n")
             output.write(f"mov rdi, {RUN_DIV_ZERO}\n")            
             output.write("syscall\n")  
@@ -297,11 +427,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("syscall\n")  
             output.write(f"addr_divmod_end_{ip}:\n")              
         elif op['type']==get_OP_MUL(): 
-            output.write("; mul \n")
-            output.write("pop    rcx \n")
-            output.write("pop    rax \n")
-            output.write("imul   rcx \n")
-            output.write("push    rax \n")
+            generate_mul_op(output)
         elif op['type']==get_OP_WHILE():
             output.write("; while \n")
         elif op['type']==get_OP_DO():
@@ -319,56 +445,28 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
             output.write("; mem \n")
             output.write("push mem\n")   
         elif op['type']==get_OP_LOAD(): 
-            output.write("; load \n")
-            output.write("pop rax\n")    
-            output.write("xor rbx, rbx\n")           
-            output.write("mov bl, [rax]\n")
-            output.write("push rbx\n")
+            generate_load_op(output)
         elif op['type']==get_OP_STORE(): 
-            output.write("; store \n")
-            output.write("pop rbx\n")
-            output.write("pop rax\n")
-            output.write("mov [rax], bl\n")
+            generate_store_op(output)
+        elif op['type']==get_OP_LOAD64():
+            generate_load64_op(output)
+        elif op['type']==get_OP_STORE64():
+            generate_store64_op(output)
         elif op['type']==get_OP_SWAP(): 
-            output.write("; swap \n") 
-            output.write("pop rax\n")
-            output.write("pop rcx\n")
-            output.write("push rax\n")
-            output.write("push rcx\n")
+            generate_swap_op(output)
         elif op['type']==get_OP_DROP():
             output.write("; drop \n")
             output.write("pop rax\n")
         elif op['type']==get_OP_SHL():
-            output.write("; shl \n")
-            output.write("pop rcx\n")
-            output.write("pop rax\n")
-            output.write("shl rax, cl\n")
-            output.write("push rax\n")
+            generate_shl_op(output)
         elif op['type']==get_OP_SHR():
-            output.write("; shr \n")
-            output.write("pop rcx\n")
-            output.write("pop rax\n")
-            output.write("shr rax, cl\n")
-            output.write("push rax\n")
+            generate_shr_op(output)
         elif op['type']==get_OP_ORB():
-            output.write("; orb \n")
-            output.write("pop rcx\n")
-            output.write("pop rax\n")
-            output.write("or rax, rcx\n")
-            output.write("push rax\n")
+            generate_orb_op(output)
         elif op['type']==get_OP_ANDB():
-            output.write("; andb \n")
-            output.write("pop rcx\n")
-            output.write("pop rax\n")
-            output.write("and rax, rcx\n")
-            output.write("push rax\n")
+            generate_andb_op(output)
         elif op['type']==get_OP_OVER():
-            output.write("; over \n")
-            output.write("pop rax\n")
-            output.write("pop rcx\n")
-            output.write("push rcx\n")
-            output.write("push rax\n")
-            output.write("push rcx\n")
+            generate_over_op(output)
         elif op['type']==get_OP_MOD():
             output.write("; mod \n")
             output.write("xor rdx, rdx\n")
@@ -536,6 +634,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         output.write("push rdi\n")      
         output.write("push rsi\n")
         output.write("call print_error\n")
+
     #otherwise print using write syscall
     else:
         output.write("; syscall3 \n")
@@ -564,7 +663,9 @@ def compile(bytecode: List, outfile: str, libc: bool = True):
         elif var_struct[var]['type']==OPU64 and var_struct[var]['value']!= None:
             output.write(f"{var}: dq {var_struct[var]['value']}, 0\n")   
         else:
-            bss_var.append(var)     
+            bss_var.append(var)  
+    # for i, parm in enumerate(parameter):
+    #     output.write(f"parm_{i}: db '{parm[0]}', 10, 0\n")
     output.write(BSS)
     for var in bss_var:
         if var_struct[var]['type']==OPU8:

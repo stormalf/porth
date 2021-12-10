@@ -14,7 +14,7 @@ It uses often the same syntax that I used in the current code. Sometimes it stil
 
 ./porth.py --help
 
-    usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-l] -i INPUTFILE [-o OUTFILE] [-w]
+    usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-l] -i INPUTFILE [-o OUTFILE] [-w] [-p PARAMETER [PARAMETER ...]]
 
     porth is a python3 forth language simulation
 
@@ -31,6 +31,8 @@ It uses often the same syntax that I used in the current code. Sometimes it stil
     -o OUTFILE, --outfile OUTFILE
                             output file
     -w, --warning         display warnings
+    -p PARAMETER [PARAMETER ...], --parameter PARAMETER [PARAMETER ...]
+                            parameter for execution
 
 Example to compile :
 
@@ -39,6 +41,10 @@ Example to compile :
 Example after refactoring into folders :
 
     ./porth.py -c -i tests/pgm11.porth -o bin/pgm11
+
+Example to compile and run passing parameters for execution :
+
+    ./porth.py -r -l -i tests/string4.porth -o bin/string4 -p titi -p toto -p test -p tata -p tonton
 
 ## Lexing
 
@@ -169,6 +175,8 @@ The non-initialized variables are not taken into account for now (segment fault 
 1.0.27 fixing variable management for initialized variables and uninitialzed variables. Seems to work but need to do more tests and controls.
 
 1.0.28 refactoring error management in porth_error.py. Changing the way to assign variables now it will be !variable_name ex !x to assign a value to the variable x. It's possible to store the result of some operators into a variable (see OPERATORS list). Adding -w flag to display warnings.
+
+1.0.29 managing argv and argc. Adding -p flag to pass parameter to be taken in account during execution. Note that libc doesn't manage the argv by the stack but using registers (rdi for argc and rsi for argv).
 
 ## simulation
 

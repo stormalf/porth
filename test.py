@@ -33,9 +33,6 @@ def gentxt():
             os.system(f"rm {entry.path}")
             
 
-            
-
-
 def test():
     sim_failed = 0
     com_failed = 0
@@ -47,10 +44,20 @@ def test():
 
             txt_path = entry.path[:-len(porth_ext)].replace("tests/", "bin/") + ".txt"
             exe_path = entry.path[:-len(porth_ext)].replace("tests/", "./bin/")
+            args_path = entry.path[:-len(porth_ext)].replace("tests/", "bin/") + ".args"
             expected_output = None
             with open(txt_path, "rb") as f:
                 expected_output = f.read()
-            sim_output = cmd_run_echoed(["./porth.py", "-s", "-i", entry.path, "-o", exe_path], capture_output=True, check=True).stdout
+            if not os.path.exists(args_path):
+                args = ""
+            else:
+                args_list = open(args_path, "r").read().split()
+                for arg in args_list:
+                    args += " -p " + arg + " "
+            #print(args)
+            sim_args = ["./porth.py", "-s", "-i", entry.path, "-o", exe_path]
+            sim_args.extend(shlex.split(args))
+            sim_output = cmd_run_echoed(sim_args, capture_output=True, check=True).stdout
             if sim_output != expected_output:
                 sim_failed += 1
                 print("[ERROR] Unexpected simulation output")
@@ -59,10 +66,15 @@ def test():
                 print("  Actual:")
                 print(f"    {sim_output}")
                 # exit(1)
-            
-
-            cmd_run_echoed(["./porth.py", "-c", "-i", entry.path, "-o",  exe_path], check=True)
-            com_output = cmd_run_echoed([exe_path], capture_output=True, check=True).stdout
+            if not os.path.exists(args_path):
+                args = ""
+            else:
+                args = open(args_path, "r").read()
+            com_args = ["./porth.py", "-c", "-i", entry.path, "-o",  exe_path]
+            cmd_run_echoed(com_args, check=True)
+            com_args = [exe_path]
+            com_args.extend(shlex.split(args))            
+            com_output = cmd_run_echoed(com_args, capture_output=True, check=True).stdout
             print('______________')            
             if com_output != expected_output:
                 com_failed += 1
@@ -73,8 +85,15 @@ def test():
                 print(f"    {com_output}")
 
             #compilation with libc
-            cmd_run_echoed(["./porth.py", "-c", "-l", "-i", entry.path, "-o",  exe_path], check=True)
-            com_output = cmd_run_echoed([exe_path], capture_output=True, check=True).stdout
+            if not os.path.exists(args_path):
+                args = ""
+            else:
+                args = open(args_path, "r").read()            
+            com_libc_args = ["./porth.py", "-c", "-l", "-i", entry.path, "-o",  exe_path]
+            cmd_run_echoed(com_libc_args, check=True)
+            com_libc_args = [exe_path]
+            com_libc_args.extend(shlex.split(args))            
+            com_output = cmd_run_echoed(com_libc_args, capture_output=True, check=True).stdout
             print('______________')            
             if com_output != expected_output:
                 com_libc_failed += 1

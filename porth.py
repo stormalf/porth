@@ -18,22 +18,22 @@ from porth_interpreter import simulate, get_runtime_error
 from porth_error import check_errors, check_warnings, print_errors, print_warnings, get_counter_error, get_counter_warning
 from typing import *
 
-__version__ = "1.0.28"
+__version__ = "1.0.29"
 
 
 def porthVersion() -> str:
     return f"porth version : {__version__}"
 
 
-def run_program(filename: str) -> None:
-    #print(f"running {filename}...")
-    os.system(f"{filename}")
+def run_program(filename: str, parameter: List) -> None:
+    os.system(filename + ' ' + ' '.join(par[0] for par in parameter))
 
 def main(args, filename: str) -> None:   
     error = False
     tokens=[]
     stack = []
     exit_code = 0
+    #args.parameter.insert(0, [args.outfile])
     program, tokens, isOK = load_program(filename)
     if isOK==False:
         error = True
@@ -41,17 +41,18 @@ def main(args, filename: str) -> None:
     #     print_ast(tokens)        
     if not error and args.simulate:
         #print("simulating...")
-        stack, error, exit_code = simulate(program)
+
+        stack, error, exit_code = simulate(program, args.parameter, args.outfile)
         if error:
             print("simulation failed!")
             print(f"Errors found during runtime simulation: {get_runtime_error()}")
     if not error and (args.compile or args.run):
         #print("compiling...")
-        error = compile(program, args.outfile, args.libc)
+        error = compile(program, args.outfile, args.libc, args.parameter)
         if not error:
             #print("compilation done!")
             if args.run:
-                run_program(args.outfile)
+                run_program(args.outfile, args.parameter)
         else:
             print("compilation failed!")   
     if check_errors():
@@ -82,7 +83,8 @@ if __name__=='__main__':
     parser.add_argument('-l', '--libc', help='using gcc and libc', action="store_true", required=False)      
     parser.add_argument('-i', '--inputfile', help='intput file', required=True)
     parser.add_argument('-o', '--outfile', help='output file', default="output", required=False)
-    parser.add_argument('-w', '--warning', help='display warnings', action="store_true", required=False)          
+    parser.add_argument('-w', '--warning', help='display warnings', action="store_true", required=False)  
+    parser.add_argument('-p', '--parameter', help='parameter for execution', default=[], required=False, action='append',  nargs='+')        
     args = parser.parse_args()
     program = args.inputfile
     main(args, program)

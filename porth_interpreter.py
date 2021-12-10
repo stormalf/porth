@@ -17,7 +17,7 @@ def get_runtime_error() -> int:
 
 
 #simulate the program execution without compiling it
-def simulate(program: List) -> Tuple[List,bool, int]:
+def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, int]:
     global exit_code, runtime_error_counter, MAX_LOOP_SECURITY, var_struct
     conditions_stack = {}
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
@@ -25,8 +25,21 @@ def simulate(program: List) -> Tuple[List,bool, int]:
     error = False
     #isMem = False
     ip = 0
-    str_size= 0
-    mem = bytearray( get_STR_CAPACITY() + get_MEM_CAPACITY())
+    str_size= NULL_POINTER_PADDING
+    stack.append(0)
+    mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() + get_MEM_CAPACITY())
+    parameter.insert(0, outfile)
+    #print(len(parameter))
+    for arg in reversed(parameter):
+        #print(arg[0])
+        value = arg[0].encode('utf-8')
+        n = len(value)
+        mem[str_size:str_size+n] = value
+        mem[str_size+n] = 0
+        stack.append(str_size)
+        str_size += n + 1  # +1 for the null byte
+        assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
+    stack.append(len(parameter))
     if not error:
         while ip < len(program):
             op = program[ip]
@@ -295,7 +308,17 @@ def simulate(program: List) -> Tuple[List,bool, int]:
                 value = stack.pop()
                 addr = stack.pop()
                 mem[addr] = value & 0xFF
-                ip += 1   
+                ip += 1  
+            elif op['type']==get_OP_LOAD64():
+                addr = stack.pop()
+                byte = mem[addr]
+                stack.append(byte)
+                ip += 1
+            elif op['type']==get_OP_STORE64():
+                store_value = stack.pop()
+                store_addr = stack.pop()
+                mem[store_addr] = store_value
+                ip += 1
             elif op['type']==get_OP_SWAP():
                 if len(stack) < 2:
                     print("SWAP impossible not enough element in stack")

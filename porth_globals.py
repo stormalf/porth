@@ -3,11 +3,12 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 52
+MAX_OPS = 54
 MAX_ERROR_TABLE = 31
 MAX_WARNING_TABLE=1
 
 #max memory size
+NULL_POINTER_PADDING = 1
 MEM_CAPACITY = 640_000
 STR_CAPACITY = 640_000
 #VAR_CAPACITY = 640_000
@@ -135,6 +136,9 @@ OP_VAR=iota()
 OP_IDVAR=iota()
 OP_VARTYPE=iota()
 OP_ASSIGN_VAR=iota()
+OP_LOAD64=iota()
+OP_STORE64=iota()
+
 #keep in last line to have the counter working
 COUNT_OPS=iota()
 
@@ -234,6 +238,9 @@ OPU16="u16"
 OPU32="u32"
 OPU64="u64"
 OPASSIGNVAR= OPASSIGN + OPIDVAR
+OPS64="@64"
+OPL64="$64"
+
 # OPI8="i8"
 # OPI16="i16"
 # OPI32="i32"
@@ -336,6 +343,12 @@ def get_OP_LOAD() -> int:
 def get_OP_STORE() -> int:
     return OP_STORE   
 
+def get_OP_LOAD64() -> int:
+    return OP_LOAD64
+
+def get_OP_STORE64() -> int:
+    return OP_STORE64  
+
 def get_OP_SYSCALL0() -> int:
     return OP_SYSCALL0
 
@@ -426,6 +439,8 @@ keyword_table: Dict = {
     OPMEM: OP_MEM,
     OPSTORE: OP_STORE,
     OPLOAD: OP_LOAD,
+    OPS64: OP_STORE64,
+    OPL64: OP_LOAD64,
     OPSYSCALL0: OP_SYSCALL0,
     OPSYSCALL1: OP_SYSCALL1,
     OPSYSCALL2: OP_SYSCALL2,
