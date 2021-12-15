@@ -6,6 +6,9 @@ ENDM
 
 MACRO write SYS_write SYSCALL3 DROP ENDM
 
+MACRO read SYS_read SYSCALL3 ENDM
+
+
 MACRO todo 
 "TODO\n" STDOUT write
 1 EXIT

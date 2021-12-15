@@ -1,0 +1,42 @@
+MACRO ,node/value $64 ENDM
+MACRO ,node/prev 8 + $64 ENDM
+MACRO .node/value @64 ENDM
+MACRO .node/prev SWAP 8 + SWAP @64 ENDM
+MACRO sizeof(node) 16 ENDM
+
+MACRO list_a MEM ENDM
+MACRO list_b list_a 8 + ENDM
+
+MACRO nodes_count list_b 8 + ENDM
+MACRO nodes nodes_count 8 + ENDM
+
+MACRO alloc_node
+  nodes_count $64 sizeof(node) MUL nodes +
+  nodes_count DUP $64 1 + @64
+ENDM
+
+MACRO push_node
+  OVER alloc_node 2DUP SWAP $64 .node/prev @64
+  SWAP $64 SWAP .node/value
+ENDM
+
+MACRO pop_node
+  DUP $64 ,node/value SWAP
+  DUP $64 ,node/prev @64
+ENDM
+
+// initialize list_a
+0 WHILE DUP 5 < DO
+  list_a OVER push_node
+  1 +
+END DROP
+
+// reverse list_a into list_b
+WHILE list_a $64 0 != DO
+  list_a pop_node list_b SWAP push_node
+END
+
+// print list_b
+WHILE list_b $64 0 != DO
+  list_b pop_node .
+END

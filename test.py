@@ -3,13 +3,12 @@
 import sys
 import os
 import subprocess
-#from subprocess import PIPE, run
 import shlex
 
 def cmd_run_echoed(cmd, **kwargs):
     print("[CMD] %s" % " ".join(map(shlex.quote, cmd)))
     try : 
-        run=  subprocess.run(cmd, **kwargs)
+        run=  subprocess.run(cmd, **kwargs,)
     except subprocess.CalledProcessError as e:
         run= e
 
@@ -31,7 +30,24 @@ def gentxt():
         txt_ext = ".txt"
         if entry.is_file() and not entry.path.endswith(txt_ext):
             os.system(f"rm {entry.path}")
-            
+
+def get_args(args_path, sim=False):
+    args = ""
+    if os.path.exists(args_path):    
+        if sim:
+
+            args_list = open(args_path, "r").read().split()
+            for arg in args_list:
+                args += " -p " + arg + " "            
+        else:
+            args = open(args_path, "r").read()
+    return args
+
+def get_input(input_path):
+    input_data = None
+    if os.path.exists(input_path):    
+        input_data = open(input_path, "rb").read()
+    return input_data
 
 def test():
     sim_failed = 0
@@ -45,19 +61,15 @@ def test():
             txt_path = entry.path[:-len(porth_ext)].replace("tests/", "bin/") + ".txt"
             exe_path = entry.path[:-len(porth_ext)].replace("tests/", "./bin/")
             args_path = entry.path[:-len(porth_ext)].replace("tests/", "bin/") + ".args"
+            input_path = entry.path[:-len(porth_ext)].replace("tests/", "bin/") + ".input"
             expected_output = None
             with open(txt_path, "rb") as f:
                 expected_output = f.read()
-            if not os.path.exists(args_path):
-                args = ""
-            else:
-                args_list = open(args_path, "r").read().split()
-                for arg in args_list:
-                    args += " -p " + arg + " "
-            #print(args)
+            args = get_args(args_path, sim=True)
             sim_args = ["./porth.py", "-s", "-i", entry.path, "-o", exe_path]
             sim_args.extend(shlex.split(args))
-            sim_output = cmd_run_echoed(sim_args, capture_output=True, check=True).stdout
+            input_data = get_input(input_path) 
+            sim_output = cmd_run_echoed(sim_args, input=input_data, capture_output=True, check=True).stdout
             if sim_output != expected_output:
                 sim_failed += 1
                 print("[ERROR] Unexpected simulation output")
@@ -65,16 +77,12 @@ def test():
                 print(f"   {expected_output}")
                 print("  Actual:")
                 print(f"    {sim_output}")
-                # exit(1)
-            if not os.path.exists(args_path):
-                args = ""
-            else:
-                args = open(args_path, "r").read()
+            args = get_args(args_path, sim=False)
             com_args = ["./porth.py", "-c", "-i", entry.path, "-o",  exe_path]
             cmd_run_echoed(com_args, check=True)
             com_args = [exe_path]
-            com_args.extend(shlex.split(args))            
-            com_output = cmd_run_echoed(com_args, capture_output=True, check=True).stdout
+            com_args.extend(shlex.split(args))     
+            com_output = cmd_run_echoed(com_args, input=input_data, capture_output=True, check=True).stdout
             print('______________')            
             if com_output != expected_output:
                 com_failed += 1
@@ -85,15 +93,11 @@ def test():
                 print(f"    {com_output}")
 
             #compilation with libc
-            if not os.path.exists(args_path):
-                args = ""
-            else:
-                args = open(args_path, "r").read()            
             com_libc_args = ["./porth.py", "-c", "-l", "-i", entry.path, "-o",  exe_path]
             cmd_run_echoed(com_libc_args, check=True)
             com_libc_args = [exe_path]
-            com_libc_args.extend(shlex.split(args))            
-            com_output = cmd_run_echoed(com_libc_args, capture_output=True, check=True).stdout
+            com_libc_args.extend(shlex.split(args))     
+            com_output = cmd_run_echoed(com_libc_args, input=input_data, capture_output=True, check=True).stdout
             print('______________')            
             if com_output != expected_output:
                 com_libc_failed += 1

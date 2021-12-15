@@ -3,7 +3,7 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 54
+MAX_OPS = 56
 MAX_ERROR_TABLE = 31
 MAX_WARNING_TABLE=1
 
@@ -11,7 +11,7 @@ MAX_WARNING_TABLE=1
 NULL_POINTER_PADDING = 1
 MEM_CAPACITY = 640_000
 STR_CAPACITY = 640_000
-#VAR_CAPACITY = 640_000
+ARGV_CAPACITY = 640_000
 
 MAX_LOOP_SECURITY = 10_000_000
 
@@ -138,6 +138,8 @@ OP_VARTYPE=iota()
 OP_ASSIGN_VAR=iota()
 OP_LOAD64=iota()
 OP_STORE64=iota()
+OP_ARGC=iota()
+OP_ARGV=iota()
 
 #keep in last line to have the counter working
 COUNT_OPS=iota()
@@ -240,6 +242,8 @@ OPU64="u64"
 OPASSIGNVAR= OPASSIGN + OPIDVAR
 OPS64="@64"
 OPL64="$64"
+OPARGC="ARGC"
+OPARGV="ARGV"
 
 # OPI8="i8"
 # OPI16="i16"
@@ -270,6 +274,9 @@ def get_MEM_CAPACITY() -> int:
 
 def get_STR_CAPACITY() -> int:
     return STR_CAPACITY    
+
+def get_ARGV_CAPACITY() -> int:
+    return ARGV_CAPACITY
 
 def get_OPS() -> int: 
     return COUNT_OPS    
@@ -422,6 +429,13 @@ def get_OP_VARTYPE() -> int:
 def get_OP_ASSIGN_VAR() -> int:
     return OP_ASSIGN_VAR
 
+def get_OP_ARGC() -> int:
+    return OP_ARGC
+
+def get_OP_ARGV() -> int:
+    return OP_ARGV
+
+
 keyword_table: Dict = {
     PLUS: OP_ADD,
     MINUS: OP_SUB,
@@ -467,8 +481,9 @@ keyword_table: Dict = {
     OPMACRO: OP_MACRO,
     OPENDM: OP_ENDM,
     OPINCLUDE: OP_INCLUDE,
-    OPVAR: OP_VAR
-    #OPASSIGN: OP_ASSIGN
+    OPVAR: OP_VAR,
+    OPARGC: OP_ARGC,
+    OPARGV: OP_ARGV
 }
 
 special_chars: Dict = {

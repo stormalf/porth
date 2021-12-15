@@ -1,0 +1,23 @@
+INCLUDE "include/io.porth"
+
+MACRO NAME_CAPACITY 256 ENDM
+
+MACRO name MEM ENDM
+
+"What is your name ?\n" STDOUT write 
+
+NAME_CAPACITY name STDIN read
+DUP 0 <= IF
+    "ERROR: could not read your name, sorry \n" STDERR write
+    1 exit
+END
+
+
+name OVER + 1 - $ '\n' = IF
+ 1 - 
+END
+
+"Hello, " STDOUT write 
+name STDOUT write 
+"! \n" STDOUT write
+

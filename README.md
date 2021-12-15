@@ -81,7 +81,7 @@ Keyword, operators, and constants are defined in the language.
     WHILE: keyword to create a loop followed by a conditional statement
     DO: keyword to open the loop if the condition is true
     LOOP: keyword to close the loop
-    COMMENTS : are ignored by the compiler 3 possible comments allowed for now : //, # and ;
+    COMMENTS : are ignored by the compiler 3 possible comments allowed for now : //, #.
     MEM: keyword to push the address of the beginning of the memory onto the stack
     @: operator loads value from the memory
     $: operator stores value to the memory
@@ -104,11 +104,13 @@ Keyword, operators, and constants are defined in the language.
     WRITE: keyword to write a string to the output file (do internally a 1 1 SYSCALL3 at each WRITE)
     MACRO: keyword to create a macro for now inlining definition of a macro is not allowed but macro inside macro is allowed except itself (recursive macro it crashes for now)
     ENDM: keyword to close a macro
-    INCLUDE: keyword to include a file but recursive include are not allowed
+    INCLUDE: keyword to include a file recursive include are managed.
     '_': single quotes to create a char (1 character allowed except for some special characters see special_chars dictionary). It's possible to print some chars like '\n' or '\t' but some issues still yet with unicode characters that are coded in more than one byte.
     VAR: keyword to create a variable followed by the name of the variable, the type of the variable
     !variable_name: assignment operator pops the value and the variable and assign the value to the variable ex: !x pop the value and assign to x.
     u8, u16, u32, u64 : variables types allowed for now.
+    ARGC: keyword to push the number of arguments passed to the program
+    ARGV: keyword to push the arguments passed to the program
 
 ## release notes
 
@@ -177,6 +179,8 @@ The non-initialized variables are not taken into account for now (segment fault 
 1.0.28 refactoring error management in porth_error.py. Changing the way to assign variables now it will be !variable_name ex !x to assign a value to the variable x. It's possible to store the result of some operators into a variable (see OPERATORS list). Adding -w flag to display warnings.
 
 1.0.29 managing argv and argc. Adding -p flag to pass parameter to be taken in account during execution. Note that libc doesn't manage the argv by the stack but using registers (rdi for argc and rsi for argv). Adding -p flag to pass parameter to be taken in account during execution. Starting refactoring compile function.
+
+1.0.30 refactoring compile function. Changing the way to manage argc and argv. Adding standard input management for testing ".input" extension file.
 
 ## simulation
 

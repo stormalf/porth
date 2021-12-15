@@ -1,0 +1,12 @@
+INCLUDE "include/std.porth"
+INCLUDE "include/string.porth"
+INCLUDE "include/io.porth"
+
+ARGV 8 + 
+ARGC 1 - 
+WHILE DUP 0 > DO
+  OVER $64 DUP strlen SWAP
+  STDOUT write "\n" STDOUT write
+  1 - SWAP 8 + SWAP 
+END
+

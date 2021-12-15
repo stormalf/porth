@@ -26,22 +26,33 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
     #isMem = False
     ip = 0
     str_size= NULL_POINTER_PADDING
-    stack.append(0)
-    mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() + get_MEM_CAPACITY())
-    parameter.insert(0, outfile)
-    #print(len(parameter))
-    for arg in reversed(parameter):
-        #print(arg[0])
+    #stack.append(0)
+    mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY() + get_MEM_CAPACITY())
+    outlist=[outfile]
+    parameter.insert(0, outlist)
+    argv_buf_ptr = NULL_POINTER_PADDING + get_STR_CAPACITY()
+    str_buf_ptr  = NULL_POINTER_PADDING
+    mem_buf_ptr  = NULL_POINTER_PADDING + get_STR_CAPACITY() + get_ARGV_CAPACITY()
+    argc = 0
+    #stack.append(0)
+    for arg in parameter:        
         value = arg[0].encode('utf-8')
         n = len(value)
-        mem[str_size:str_size+n] = value
-        mem[str_size+n] = 0
-        stack.append(str_size)
+        arg_ptr = str_buf_ptr + str_size
+        mem[arg_ptr:arg_ptr+n] = value
+        mem[arg_ptr+n] = 0
+        #stack.append(arg_ptr)
         str_size += n + 1  # +1 for the null byte
-        assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
-    stack.append(len(parameter))
+        assert str_size <= get_STR_CAPACITY(), "string buffer overflow!"
+        argv_ptr = argv_buf_ptr+argc*8
+        mem[argv_ptr:argv_ptr+8] = arg_ptr.to_bytes(8, byteorder='little')
+        argc += 1
+        assert argc*8 <= get_ARGV_CAPACITY(), "argv buffer overflow!"
+    stack.append(argc)
+    #print(mem[argv_buf_ptr:10])    
     if not error:
         while ip < len(program):
+            #print(stack)
             op = program[ip]
             if op['type']==get_OP_PUSH():
                 ip += 1
@@ -297,7 +308,7 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     ip += 1    
             elif op['type']==get_OP_MEM():
                 isMem = True
-                stack.append(STR_CAPACITY)
+                stack.append(mem_buf_ptr)
                 ip += 1   
             elif op['type']==get_OP_LOAD():
                 addr = stack.pop()
@@ -310,14 +321,23 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 mem[addr] = value & 0xFF
                 ip += 1  
             elif op['type']==get_OP_LOAD64():
+                # addr = stack.pop()
+                # byte = mem[addr]
+                # stack.append(byte)
                 addr = stack.pop()
-                byte = mem[addr]
-                stack.append(byte)
+                _bytes = bytearray(8)
+                for offset in range(0,8):
+                    _bytes[offset] = mem[addr + offset]
+                stack.append(int.from_bytes(_bytes, byteorder="little"))
+
                 ip += 1
             elif op['type']==get_OP_STORE64():
-                store_value = stack.pop()
-                store_addr = stack.pop()
-                mem[store_addr] = store_value
+                #print(stack)
+                store_value64 = stack.pop().to_bytes(length=8, byteorder="little")
+                store_addr64 = stack.pop()
+                for byte in store_value64:
+                    mem[store_addr64] = byte
+                    store_addr64 += 1
                 ip += 1
             elif op['type']==get_OP_SWAP():
                 if len(stack) < 2:
@@ -474,11 +494,26 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                         print(f"unknown file descriptor: {fd}")
                         runtime_error_counter += 1
                         error = True
+                    stack.append(exit_code) 
+                elif syscall_number == 0:
+                    fd = arg1
+                    buffer = arg2
+                    count = arg3
+                    if fd == 0:
+                        s = sys.stdin.readline()
+                        #print(s, len(s))
+                        mem[buffer:buffer+len(s)] = s.encode('utf-8')
+                        buffer += len(s)
+                        stack.append(len(s))
+                    else:
+                        print(f"unknown file descriptor: {fd}")
+                        runtime_error_counter += 1
+                        error = True
                 else:
                     print(f"unknown syscall3: {syscall_number}")
                     runtime_error_counter += 1
                     error = True
-                stack.append(exit_code)              
+             
                 ip += 1    
             elif op['type']==get_OP_SYSCALL4():
                 print("not implemented yet!")
@@ -503,28 +538,32 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 strlen = len(bstr)
                 stack.append(strlen)
                 if 'addr' not in op:
-                    op['addr'] = str_size
-                    mem[str_size:str_size+strlen] = bstr
+                    str_ptr = str_buf_ptr+str_size
+                    op['addr'] = str_ptr
+                    mem[str_ptr:str_ptr+strlen] = bstr
                     str_size += strlen
                     assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
                 stack.append(op['addr'])
+                # str_ptr = str_buf_ptr+str_size
+                # str_ptrs[ip] = str_ptr
+                # mem[str_ptr:str_ptr+n] = value
+                # str_size += n
+                # assert str_size <= STR_CAPACITY, "String buffer overflow"
+                # stack.append(str_ptrs[ip])
+
                 ip += 1
             elif op['type']==get_OP_VAR():
                 ip += 1
             elif op['type']==get_OP_IDVAR():
                 stack.append(op['value'])
                 ip += 1
-            # elif op['type']==get_OP_ASSIGN():
-            #     if len(stack) < 2:
-            #         print("! impossible not enough element in stack")
-            #         runtime_error_counter += 1
-            #         error = True
-            #     else:
-            #         value = stack.pop() #value to assign
-            #         var = stack.pop() #variable 
-            #     var_struct[var]['value'] = value
-            #     stack.append(var_struct[var])
-            #     ip += 1  
+            elif op['type']==get_OP_ARGC():
+                stack.append(argc)
+                ip += 1
+            elif op['type']==get_OP_ARGV():
+                stack.append(argv_buf_ptr)
+                ip += 1
+
             elif op['type']==get_OP_ASSIGN_VAR():
                 if len(stack) < 1:
                     print("! impossible not enough element in stack")

@@ -18,7 +18,7 @@ from porth_interpreter import simulate, get_runtime_error
 from porth_error import check_errors, check_warnings, print_errors, print_warnings, get_counter_error, get_counter_warning
 from typing import *
 
-__version__ = "1.0.29"
+__version__ = "1.0.30"
 
 
 def porthVersion() -> str:
