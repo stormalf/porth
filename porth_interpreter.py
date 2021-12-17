@@ -53,8 +53,8 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
         mem[argv_ptr:argv_ptr+8] = arg_ptr.to_bytes(8, byteorder='little')
         argc += 1
         assert argc*8 <= get_ARGV_CAPACITY(), "argv buffer overflow!"
-    stack.append(argc)
-    set_stack_counter()
+    #stack.append(argc)
+    #set_stack_counter()
     if not error:
         while ip < len(program):
             op = program[ip]
@@ -733,7 +733,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
     # non initialized variables 1 value in the stack but can be initialized later dictionary with value != None
     #need to destroy variables by reversing order of declaration
     # print("----------------------------------")  
-    print(stack)
+    #print(stack)
     # print("----------------------------------")  
     return stack, error, exit_code  
 

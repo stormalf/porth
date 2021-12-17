@@ -97,8 +97,8 @@ Keyword, operators, and constants are defined in the language.
     EXIT: keyword to end the program (calls syscall1)
     SHR: shift right bits
     SHL: shift left bits
-    ORB: bitwise or
-    ANDB: bitwise and
+    ORB, OR: bitwise or
+    ANDB, AND: bitwise and
     DIV: integer division
     MUL: integer multiplication
     MOD: integer modulo

@@ -244,7 +244,9 @@ OPDROP="DROP"
 OPSHL="SHL"
 OPSHR="SHR"
 OPORB= "ORB"
+OPOR="OR"
 OPANDB="ANDB"
+OPAND="AND"
 OPOVER="OVER"
 OPMOD="MOD"
 OPMACRO="MACRO"
@@ -444,6 +446,12 @@ def get_OP_SHR() -> int:
 def get_OP_ORB() -> int:
     return OP_ORB
 
+def get_OP_OR() -> int:
+    return OP_ORB
+
+def get_OP_AND() -> int:
+    return OP_ANDB
+
 def get_OP_ANDB() -> int:
     return OP_ANDB
 
@@ -523,6 +531,8 @@ keyword_table: Dict = {
     OPSHL: OP_SHL,
     OPSHR: OP_SHR,
     OPORB: OP_ORB,
+    OPOR: OP_ORB,
+    OPAND: OP_ANDB,
     OPANDB: OP_ANDB,
     OPOVER: OP_OVER,
     OPMOD: OP_MOD,
