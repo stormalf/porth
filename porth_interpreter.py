@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+from io import FileIO
 import sys
 import os
 from typing import Tuple
 from porth_globals import *
 from typing import *
+
 
 runtime_error_counter = 0
 
@@ -13,12 +15,18 @@ def get_runtime_error() -> int:
     global runtime_error_counter
     return runtime_error_counter
 
+#print only if requested
+def print_output_simulation(value, file: FileIO = sys.stdout, end: str = None, istoprint: bool = True) -> None:
+    if istoprint:
+        if end is None:
+            print(value, file=file)
+        else:
+            print(value, end=end, file=file)
 
-
-
-#simulate the program execution without compiling it
-def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, int]:
-    global exit_code, runtime_error_counter, MAX_LOOP_SECURITY, var_struct
+#simulate the program execution without compiling it. To be able to re-use the simulate function to detect some warnings and errors
+#the output is printed only if the function is requested with istoprint=True (default behaviour)
+def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tuple[List,bool, int]:
+    global exit_code, runtime_error_counter, MAX_LOOP_SECURITY, var_struct 
     conditions_stack = {}
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
     stack=[]
@@ -26,7 +34,6 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
     #isMem = False
     ip = 0
     str_size= NULL_POINTER_PADDING
-    #stack.append(0)
     mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY() + get_MEM_CAPACITY())
     outlist=[outfile]
     parameter.insert(0, outlist)
@@ -34,14 +41,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
     str_buf_ptr  = NULL_POINTER_PADDING
     mem_buf_ptr  = NULL_POINTER_PADDING + get_STR_CAPACITY() + get_ARGV_CAPACITY()
     argc = 0
-    #stack.append(0)
     for arg in parameter:        
         value = arg[0].encode('utf-8')
         n = len(value)
         arg_ptr = str_buf_ptr + str_size
         mem[arg_ptr:arg_ptr+n] = value
         mem[arg_ptr+n] = 0
-        #stack.append(arg_ptr)
         str_size += n + 1  # +1 for the null byte
         assert str_size <= get_STR_CAPACITY(), "string buffer overflow!"
         argv_ptr = argv_buf_ptr+argc*8
@@ -49,14 +54,14 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
         argc += 1
         assert argc*8 <= get_ARGV_CAPACITY(), "argv buffer overflow!"
     stack.append(argc)
-    #print(mem[argv_buf_ptr:10])    
+    set_stack_counter()
     if not error:
         while ip < len(program):
-            #print(stack)
             op = program[ip]
             if op['type']==get_OP_PUSH():
                 ip += 1
                 stack.append(op['value'])
+                set_stack_counter()
             elif op['type']==get_OP_ADD():
                 ip += 1                
                 if len(stack) < 2:
@@ -66,10 +71,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)
                     stack.append(a_value + b_value)
+                    set_stack_counter()
             elif op['type']==get_OP_SUB():
                 ip += 1                
                 if len(stack) < 2:
@@ -79,10 +86,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                  
                     stack.append(a_value - b_value)
+                    set_stack_counter()
             elif op['type']==get_OP_EQUAL():
                 ip += 1                
                 if len(stack) < 2:
@@ -92,10 +101,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                
                     stack.append(int(a_value == b_value)) 
+                    set_stack_counter()
             elif op['type']==get_OP_DUMP():
                 if len(stack) == 0:
                     runtime_error_counter += 1                    
@@ -103,10 +114,13 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     error = True
                 else:
                     a = stack.pop()
+                    set_stack_counter(-1)
                     if program[ip - 1]['type'] == get_OP_IDVAR():
-                        print(var_struct[a]['value'])
+                        #print(var_struct[a]['value'])
+                        print_output_simulation(var_struct[a]['value'], istoprint=istoprint)
                     else:
-                        print(a)
+                        #print(a)
+                        print_output_simulation(a, istoprint=istoprint)
                 ip += 1   
             elif op['type']==get_OP_IF():
                 ip += 1                
@@ -116,7 +130,9 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     error = True
                 else:
                     a = stack.pop()
-                    if a == 0:
+                    a_value = get_var_value(a)
+                    set_stack_counter(-1)
+                    if a_value == 0:
                         if len(op) >= 2:
                             ip = op['jmp']
                         else:
@@ -144,12 +160,13 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     error = True
                 else:
                     a = stack.pop()
+                    set_stack_counter(-1)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     stack.append(a_value)
                     stack.append(a_value)
+                    set_stack_counter(2)
                 ip += 1 
-                #print(stack)
             elif op['type']==get_OP_DUP2():
                 if len(stack) < 2:
                     print("2DUP impossible not enough element in stack")
@@ -158,6 +175,7 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)               
@@ -165,6 +183,7 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     stack.append(b_value)
                     stack.append(a_value)
                     stack.append(b_value)
+                    set_stack_counter(4)
                 ip += 1                 
             elif op['type']==get_OP_GT():
                 if len(stack) < 2:
@@ -174,10 +193,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:                
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                  
                     stack.append(int(a_value > b_value)) 
+                    set_stack_counter()
                 ip += 1        
             elif op['type']==get_OP_LT():
                 if len(stack) < 2:
@@ -187,10 +208,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                  
-                    stack.append(int(a_value < b_value))                 
+                    stack.append(int(a_value < b_value))  
+                    set_stack_counter()               
                 ip += 1   
             elif op['type']==get_OP_GE():                
                 if len(stack) < 2:
@@ -200,10 +223,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                   
-                    stack.append(int(a_value >= b_value))                 
+                    stack.append(int(a_value >= b_value)) 
+                    set_stack_counter()                
                 ip += 1
             elif op['type']==get_OP_LE():
                 if len(stack) < 2:
@@ -213,10 +238,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
-                    stack.append(int(a_value <= b_value))                 
+                    stack.append(int(a_value <= b_value))    
+                    set_stack_counter()            
                 ip += 1
             elif op['type']==get_OP_NE():
                 if len(stack) < 2:
@@ -226,10 +253,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     #if variable retrieve the content value 
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                   
-                    stack.append(int(a_value != b_value))                 
+                    stack.append(int(a_value != b_value))     
+                    set_stack_counter()            
                 ip += 1
             elif op['type']==get_OP_DIV():
                 if len(stack) < 2:
@@ -239,15 +268,18 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
                     if b_value == 0:
-                        print(RUNTIME_ERROR[RUN_DIV_ZERO])
+                        #print(RUNTIME_ERROR[RUN_DIV_ZERO])
+                        print_output_simulation(RUNTIME_ERROR[RUN_DIV_ZERO], istoprint=istoprint)
                         runtime_error_counter += 1
                         error = True
                         sys.exit(RUN_DIV_ZERO)
                     else:
-                        stack.append(int(a_value / b_value))                 
+                        stack.append(int(a_value / b_value))
+                        set_stack_counter()                 
                 ip += 1
             elif op['type']==get_OP_DIVMOD():
                 if len(stack) < 2:
@@ -257,16 +289,19 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
                     if b_value == 0:
-                        print(RUNTIME_ERROR[RUN_DIV_ZERO])
+                        #print(RUNTIME_ERROR[RUN_DIV_ZERO])
+                        print_output_simulation(RUNTIME_ERROR[RUN_DIV_ZERO], istoprint=istoprint)
                         runtime_error_counter += 1
                         error = True
                         sys.exit(RUN_DIV_ZERO)
                     else:
                         stack.append(int(a_value % b_value)) 
-                        stack.append(int(a_value / b_value))   
+                        stack.append(int(a_value / b_value))  
+                        set_stack_counter(2) 
                 ip += 1                
             elif op['type']==get_OP_MUL():
                 if len(stack) < 2:
@@ -274,17 +309,20 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     runtime_error_counter += 1
                     error = True
                 else:
-                    #print(stack)
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
-                    stack.append(int(a_value * b_value))                 
+                    stack.append(int(a_value * b_value))
+                    set_stack_counter()                 
                 ip += 1
             elif op['type']==get_OP_WHILE():
                 ip += 1                
             elif op['type']==get_OP_DO():
                 a = stack.pop()
+                a_value = get_var_value(a)
+                set_stack_counter(-1)
                 level = op['level']
                 if level not in conditions_stack:
                     conditions_stack[level] = MAX_LOOP_SECURITY
@@ -293,11 +331,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     loop_security -= 1
                     conditions_stack[level] = loop_security
                 if conditions_stack[level] == 0:
-                    print(RUNTIME_ERROR[RUN_INFINITE_LOOP])
+                    #print(RUNTIME_ERROR[RUN_INFINITE_LOOP])
+                    print_output_simulation(RUNTIME_ERROR[RUN_INFINITE_LOOP], istoprint=istoprint)
                     runtime_error_counter += 1
                     error = True
                     sys.exit(RUN_INFINITE_LOOP)
-                if a == 0:
+                if a_value == 0:
                     if len(op) >= 2:
                         ip = op['jmp']
                     else:
@@ -307,34 +346,89 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     ip += 1    
             elif op['type']==get_OP_MEM():
-                isMem = True
+                #isMem = True
                 stack.append(mem_buf_ptr)
-                ip += 1   
+                set_stack_counter()
+                ip += 1  
             elif op['type']==get_OP_LOAD():
                 addr = stack.pop()
-                byte = mem[addr]
+                a_value = get_var_value(addr)
+                set_stack_counter(-1)
+                byte = mem[a_value]
                 stack.append(byte)
+                set_stack_counter()
                 ip += 1                    
             elif op['type']==get_OP_STORE():
                 value = stack.pop()
                 addr = stack.pop()
-                mem[addr] = value & 0xFF
+                a_value = get_var_value(value)                
+                b_value = get_var_value(addr)                                
+                set_stack_counter(-2)
+                mem[b_value] = a_value & 0xFF
                 ip += 1  
+            elif op['type']==get_OP_LOAD16():
+                a = stack.pop()
+                set_stack_counter(-1)
+                addr = get_var_value(a)                
+                _bytes = bytearray(2)
+                for offset in range(0,2):
+                    _bytes[offset] = mem[addr + offset]
+                stack.append(int.from_bytes(_bytes, byteorder="little"))
+                set_stack_counter()
+                ip += 1                    
+            elif op['type']==get_OP_STORE16():
+                a = stack.pop()
+                store_value = get_var_value(a)                
+                store_value16 = store_value.to_bytes(length=2, byteorder="little",  signed=(store_value < 0))
+                b = stack.pop()
+                store_addr16 = get_var_value(b)                
+                set_stack_counter(-2)
+                for byte in store_value16:
+                    mem[store_addr16] = byte
+                    store_addr16 += 1
+                ip += 1                   
+            elif op['type']==get_OP_LOAD32():
+                a = stack.pop()
+                addr = get_var_value(a)      
+                set_stack_counter(-1)          
+                _bytes = bytearray(4)
+                #print(addr, mem[addr:20])                    
+                for offset in range(0,4):
+                    _bytes[offset] = mem[addr + offset]
+                stack.append(int.from_bytes(_bytes, byteorder="little"))
+                set_stack_counter()
+                ip += 1                     
+            elif op['type']==get_OP_STORE32():
+                a = stack.pop()
+                store_value = get_var_value(a)                
+                store_value32 = store_value.to_bytes(length=4, byteorder="little",  signed=(store_value < 0))
+                b = stack.pop()
+                store_addr32 = get_var_value(b)   
+                #print(store_value32, store_addr32, mem[store_addr32:20])                 
+                set_stack_counter(-2)
+                for byte in store_value32:
+                    mem[store_addr32] = byte
+                    store_addr32 += 1
+                ip += 1                
             elif op['type']==get_OP_LOAD64():
-                # addr = stack.pop()
-                # byte = mem[addr]
-                # stack.append(byte)
-                addr = stack.pop()
+                a = stack.pop()
+                addr = get_var_value(a)
+                set_stack_counter(-1)
+                #print("load64", addr, mem[addr:20])
                 _bytes = bytearray(8)
                 for offset in range(0,8):
                     _bytes[offset] = mem[addr + offset]
                 stack.append(int.from_bytes(_bytes, byteorder="little"))
-
+                set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_STORE64():
-                #print(stack)
-                store_value64 = stack.pop().to_bytes(length=8, byteorder="little")
-                store_addr64 = stack.pop()
+                a = stack.pop()
+                store_value = get_var_value(a)                
+                store_value64 = store_value.to_bytes(length=8, byteorder="little",  signed=(store_value < 0))
+                b = stack.pop()
+                store_addr64 = get_var_value(b)                
+                #print("store64", store_addr64, mem[0:100])                
+                set_stack_counter(-2)
                 for byte in store_value64:
                     mem[store_addr64] = byte
                     store_addr64 += 1
@@ -347,10 +441,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     a = stack.pop()
                     b = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
                     stack.append(a_value)
                     stack.append(b_value)
+                    set_stack_counter(2)
                 ip += 1        
             elif op['type']==get_OP_SHL():
                 if len(stack) < 2:
@@ -360,9 +456,11 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
                     stack.append(a_value << b_value)
+                    set_stack_counter()
                 ip += 1      
             elif op['type']==get_OP_SHR():
                 if len(stack) < 2:
@@ -372,9 +470,11 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
                     stack.append(a_value >> b_value)
+                    set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_ORB():
                 if len(stack) < 2:
@@ -384,9 +484,11 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
                     stack.append(a_value | b_value)
+                    set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_ANDB():
                 if len(stack) < 2:
@@ -396,21 +498,26 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
                     stack.append(a_value & b_value)
+                    set_stack_counter()
                 ip += 1         
             elif op['type']==get_OP_DROP():
                 stack.pop()
+                set_stack_counter(-1)
                 ip += 1
             elif op['type']==get_OP_OVER():
                 b = stack.pop()
                 a = stack.pop()
+                set_stack_counter(-2)
                 a_value = get_var_value(a)
                 b_value = get_var_value(b)                
                 stack.append(a_value)
                 stack.append(b_value)
                 stack.append(a_value)
+                set_stack_counter(3)
                 ip += 1
             elif op['type']==get_OP_MOD():
                 if len(stack) < 2:
@@ -420,24 +527,29 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop()
                     a = stack.pop()
+                    set_stack_counter(-2)
                     a_value = get_var_value(a)
                     b_value = get_var_value(b)                    
                     if b_value == 0:
-                        print(RUNTIME_ERROR[RUN_DIV_ZERO])
+                        #print(RUNTIME_ERROR[RUN_DIV_ZERO])
+                        print_output_simulation(RUNTIME_ERROR[RUN_DIV_ZERO], istoprint=istoprint)
                         runtime_error_counter += 1
                         error = True
                         sys.exit(RUN_DIV_ZERO)                        
                     else:
                         stack.append(a_value % b_value)
+                        set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_EXIT():
                 syscall_number = 60
                 a = stack.pop()
+                set_stack_counter(-1)
                 exit_code = get_var_value(a)
                 break
             elif op['type']==get_OP_WRITE():
                 if program[ip-1]['type']==get_OP_CHAR():
-                    print(chr(program[ip - 1]['value']), end="")
+                    #print(chr(program[ip - 1]['value']), end="")
+                    print_output_simulation(chr(program[ip - 1]['value']), end="", istoprint=istoprint)
                 elif len(stack) < 2:
                         print("WRITE impossible not enough element in stack")
                         runtime_error_counter += 1
@@ -445,66 +557,78 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                 else:
                     b = stack.pop() #addr
                     a = stack.pop() #length
+                    set_stack_counter(-2)
                     offset = (b+a) 
                     s = mem[b:offset].decode('utf-8')
-                    print(s, end='')
+                    #print(s, end='')
+                    print_output_simulation(s, end='', istoprint=istoprint)
                 ip += 1
             elif op['type']==get_OP_SYSCALL0():
                 syscall_number = stack.pop()
+                set_stack_counter(-1)
                 if syscall_number == 39:
                     stack.append(os.getpid())
+                    set_stack_counter()
                 else:
                     print(f"unknown syscall0 number: {syscall_number}")
                     runtime_error_counter += 1
                     error = True      
-                stack.append(exit_code)          
+                stack.append(exit_code)
+                set_stack_counter()          
                 ip += 1
             elif op['type']==get_OP_SYSCALL1():
                 syscall_number = stack.pop()
                 exit_code = stack.pop()
+                set_stack_counter(-2)
                 if syscall_number == 60:
                     break
                 else:
                     print(f"unknown syscall1: {syscall_number}")
                     runtime_error_counter += 1
                     error = True
-                stack.append(exit_code)                    
+                stack.append(exit_code)
+                set_stack_counter()                   
                 ip += 1 
             elif op['type']==get_OP_SYSCALL2():
                 print("not implemented yet!")
                 runtime_error_counter += 1
                 error = True    
-                stack.append(exit_code)              
+                stack.append(exit_code) 
+                set_stack_counter()             
                 ip += 1                     
             elif op['type']==get_OP_SYSCALL3():
                 syscall_number = stack.pop()
                 arg1 = stack.pop()
                 arg2 = stack.pop()
                 arg3 = stack.pop()
+                set_stack_counter(-3)
                 if syscall_number == 1:
                     fd = arg1
                     buffer = arg2
                     count = arg3
                     s = mem[buffer:buffer+count].decode('utf-8')
                     if fd == 1:
-                        print(s, end='')
+                        #print(s, end='')
+                        print_output_simulation(s, end='', istoprint=istoprint)
                     elif fd == 2:
-                        print(s, end='', file=sys.stderr)
+                        #print(s, end='', file=sys.stderr)
+                        print_output_simulation(s, end='', file=sys.stderr, istoprint=istoprint)
                     else:
                         print(f"unknown file descriptor: {fd}")
                         runtime_error_counter += 1
                         error = True
                     stack.append(exit_code) 
+                    set_stack_counter()
                 elif syscall_number == 0:
                     fd = arg1
                     buffer = arg2
                     count = arg3
                     if fd == 0:
                         s = sys.stdin.readline()
-                        #print(s, len(s))
                         mem[buffer:buffer+len(s)] = s.encode('utf-8')
                         buffer += len(s)
                         stack.append(len(s))
+                        set_stack_counter()
                     else:
                         print(f"unknown file descriptor: {fd}")
                         runtime_error_counter += 1
@@ -518,25 +642,30 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
             elif op['type']==get_OP_SYSCALL4():
                 print("not implemented yet!")
                 error = True                
-                stack.append(exit_code)              
+                stack.append(exit_code) 
+                set_stack_counter()             
                 ip += 1                                                     
             elif op['type']==get_OP_SYSCALL5():
                 print("not implemented yet!")
                 error = True                
-                stack.append(exit_code)              
+                stack.append(exit_code)
+                set_stack_counter()             
                 ip += 1                                                     
             elif op['type']==get_OP_SYSCALL6():
                 print("not implemented yet!")
                 error = True                
-                stack.append(exit_code)              
+                stack.append(exit_code) 
+                set_stack_counter()             
                 ip += 1  
             elif op['type']==get_OP_CHAR():
                 stack.append(op['value'])
+                set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_STRING():
                 bstr = bytes(op['value'], 'utf-8')
                 strlen = len(bstr)
                 stack.append(strlen)
+                set_stack_counter()
                 if 'addr' not in op:
                     str_ptr = str_buf_ptr+str_size
                     op['addr'] = str_ptr
@@ -544,24 +673,21 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     str_size += strlen
                     assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
                 stack.append(op['addr'])
-                # str_ptr = str_buf_ptr+str_size
-                # str_ptrs[ip] = str_ptr
-                # mem[str_ptr:str_ptr+n] = value
-                # str_size += n
-                # assert str_size <= STR_CAPACITY, "String buffer overflow"
-                # stack.append(str_ptrs[ip])
-
+                set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_VAR():
                 ip += 1
             elif op['type']==get_OP_IDVAR():
                 stack.append(op['value'])
+                set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_ARGC():
                 stack.append(argc)
+                set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_ARGV():
                 stack.append(argv_buf_ptr)
+                set_stack_counter()
                 ip += 1
 
             elif op['type']==get_OP_ASSIGN_VAR():
@@ -571,13 +697,29 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
                     error = True
                 else:
                     a = stack.pop()
+                    set_stack_counter(-1)
                     a_value = get_var_value(a)
                     var = op['value'][1:]
                     var_struct[var]['value'] = a_value
-                    #print(var_struct[var])
                     stack.append(var_struct[var]['value']) 
+                    set_stack_counter()
                 ip += 1                                         
             elif op['type']==get_OP_VARTYPE():              
+                ip += 1
+            elif op['type']==get_OP_ROTATE():
+                if len(stack) < 3:
+                    print("! impossible not enough element in stack")
+                    runtime_error_counter += 1
+                    error = True
+                else:
+                    c = stack.pop()
+                    b = stack.pop()
+                    a = stack.pop()
+                    set_stack_counter(-3)
+                    stack.append(b)
+                    stack.append(c)
+                    stack.append(a)
+                    set_stack_counter(3)
                 ip += 1
             else:
                 ip += 1                
@@ -586,8 +728,12 @@ def simulate(program: List, parameter: List, outfile:str) -> Tuple[List,bool, in
         # if isMem:
         #     print()
         #     print(f"memory dump {mem[:20]}")  
+    #probably here need to destroy variables and argc, argv
+    # initialized variables 2 values in the stack variable name and value
+    # non initialized variables 1 value in the stack but can be initialized later dictionary with value != None
+    #need to destroy variables by reversing order of declaration
     # print("----------------------------------")  
-    # print(stack)
+    print(stack)
     # print("----------------------------------")  
     return stack, error, exit_code  
 

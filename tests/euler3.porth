@@ -1,4 +1,4 @@
-INCLUDE "include/mem.porth"
+INCLUDE "include/std.porth"
 
 //MEM  123456789 store64
 

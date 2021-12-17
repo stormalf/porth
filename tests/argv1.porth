@@ -1,6 +1,4 @@
 INCLUDE "include/std.porth"
-INCLUDE "include/string.porth"
-INCLUDE "include/io.porth"
 
 ARGV 8 + 
 ARGC 1 - 

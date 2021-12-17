@@ -1,0 +1,96 @@
+INCLUDE "include/std.porth"
+
+MACRO acc MEM ENDM
+
+1 2 WHILE OVER 4000000 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $64 + acc SWAP @64
+  END
+
+  SWAP OVER +
+END 2drop
+acc $64 .
+
+
+1 2 WHILE OVER 4000000 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $64 + acc SWAP @64
+  END
+
+  SWAP OVER +
+END 2drop
+acc $64 .
+
+
+1 2 WHILE OVER 4000000 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $32 + acc SWAP @32
+  END
+
+  SWAP OVER +
+END 2drop
+acc $32 .
+
+1 2 WHILE OVER 4000000 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $32 + acc SWAP @32
+  END
+
+  SWAP OVER +
+END 2drop
+acc $32 .
+
+1 2 WHILE OVER 4000 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $16 + acc SWAP @16
+  END
+
+  SWAP OVER +
+END 2drop
+acc $16 .
+
+1 2 WHILE OVER 4000 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $16 + acc SWAP @16
+  END
+
+  SWAP OVER +
+END 2drop
+acc $16 .
+
+
+1 2 WHILE OVER 200 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $8 + acc SWAP @8
+  END
+
+  SWAP OVER +
+END 2drop
+acc $8 .
+
+1 2 WHILE OVER 200 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $8 + acc SWAP @8
+  END
+
+  SWAP OVER +
+END 2drop
+acc $8 .
+
+1 2 WHILE OVER 200 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $ + acc SWAP @
+  END
+
+  SWAP OVER +
+END 2drop
+acc $ .
+
+1 2 WHILE OVER 200 < DO
+  OVER 2 MOD 0 = IF
+    OVER acc $ + acc SWAP @
+  END
+
+  SWAP OVER +
+END 2drop
+acc $ .

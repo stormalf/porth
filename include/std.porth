@@ -1,10 +1,21 @@
 MACRO STDIN  0 ENDM
 MACRO STDOUT 1 ENDM
 MACRO STDERR 2 ENDM
+MACRO stdin  0 ENDM
+MACRO stdout 1 ENDM
+MACRO stderr 2 ENDM
 
-/// Syscalls
-// Come from https://filippo.io/linux-syscall-table/
-// gawk '{ print "MACRO", "SYS_"$2, $1, "ENDM" }' ./syscalls.in > syscalls.porth
+MACRO NULL 0 ENDM
+
+//MACRO nop ENDM
+
+MACRO true  1 ENDM
+MACRO false 0 ENDM
+
+
+/// SYSCALLs
+// Come from https://filippo.io/linux-SYSCALL-table/
+// gawk '{ print "MACRO", "SYS_"$2, $1, "ENDM" }' ./SYSCALLs.in > SYSCALLs.porth
 MACRO SYS_read 0 ENDM
 MACRO SYS_write 1 ENDM
 MACRO SYS_open 2 ENDM
@@ -188,7 +199,7 @@ MACRO SYS_quotactl 179 ENDM
 MACRO SYS_nfsservctl 180 ENDM
 MACRO SYS_getpmsg 181 ENDM
 MACRO SYS_putpmsg 182 ENDM
-MACRO SYS_afs_syscall 183 ENDM
+MACRO SYS_afs_SYSCALL 183 ENDM
 MACRO SYS_tuxcall 184 ENDM
 MACRO SYS_security 185 ENDM
 MACRO SYS_gettid 186 ENDM
@@ -224,7 +235,7 @@ MACRO SYS_epoll_wait_old 215 ENDM
 MACRO SYS_remap_file_pages 216 ENDM
 MACRO SYS_getdents64 217 ENDM
 MACRO SYS_set_tid_address 218 ENDM
-MACRO SYS_restart_syscall 219 ENDM
+MACRO SYS_restart_SYSCALL 219 ENDM
 MACRO SYS_semtimedop 220 ENDM
 MACRO SYS_fadvise64 221 ENDM
 MACRO SYS_timer_create 222 ENDM
@@ -325,4 +336,77 @@ MACRO 2drop DROP DROP ENDM
 
 MACRO exit SYS_exit SYSCALL1 ENDM
 
+MACRO io_write 
+1 1 SYSCALL3 DROP
+ENDM
 
+MACRO write SYS_write SYSCALL3 DROP ENDM
+MACRO read SYS_read SYSCALL3 ENDM
+
+
+MACRO todo 
+"TODO\n" STDOUT write
+1 EXIT
+ENDM
+
+MACRO error 
+STDERR write 
+1 EXIT
+ENDM
+
+MACRO load64
+    7 + 0 
+    8 SHL OVER $ + SWAP 1 - SWAP
+    8 SHL OVER $ + SWAP 1 - SWAP
+    8 SHL OVER $ + SWAP 1 - SWAP
+    8 SHL OVER $ + SWAP 1 - SWAP
+    8 SHL OVER $ + SWAP 1 - SWAP
+    8 SHL OVER $ + SWAP 1 - SWAP
+    8 SHL OVER $ + SWAP 1 - SWAP
+    8 SHL OVER $ + SWAP DROP
+ENDM
+
+MACRO store64 
+    2DUP 255 ANDB @ 8 SHR SWAP 1 + SWAP
+    2DUP 255 ANDB @ 8 SHR SWAP 1 + SWAP
+    2DUP 255 ANDB @ 8 SHR SWAP 1 + SWAP
+    2DUP 255 ANDB @ 8 SHR SWAP 1 + SWAP
+    2DUP 255 ANDB @ 8 SHR SWAP 1 + SWAP
+    2DUP 255 ANDB @ 8 SHR SWAP 1 + SWAP
+    2DUP 255 ANDB @ 8 SHR SWAP 1 + SWAP
+    2DUP 255 ANDB @ 8 SHR DROP DROP
+ENDM
+
+MACRO inc64
+  DUP load64 1 + store64
+ENDM
+
+MACRO strlen
+0 SWAP WHILE DUP $ 0 != DO
+    1 + SWAP 1 + SWAP
+    END DROP
+ENDM
+
+
+MACRO AT_FDCWD -100 ENDM
+
+MACRO O_RDONLY 0 ENDM
+
+MACRO CLOCK_MONOTONIC 1 ENDM
+MACRO TIMER_ABSTIME 1 ENDM
+
+MACRO MAP_PRIVATE 2 ENDM
+MACRO PROT_READ 1 ENDM
+
+
+MACRO fputs
+  write 
+ENDM
+
+MACRO puts
+  stdout fputs
+ENDM
+
+MACRO eputs
+  stderr fputs
+ENDM

@@ -1,0 +1,24 @@
+
+VAR a u8 10 !a
+VAR b u16 12546 !b
+VAR c u32 123456789 !c
+VAR d u64 1234567890123456789 !d
+VAR z u8
+
+MACRO acc MEM ENDM
+a .
+b .
+c .
+d .
+
+acc a @8 
+acc $8 .
+acc b @16
+acc $16 .
+acc c @32
+acc $32 .
+acc d @64
+acc $64 .
+
+  
+

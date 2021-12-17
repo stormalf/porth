@@ -26,7 +26,6 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
     error = False    
     for ip in range(len(bytecode)):
         op = bytecode[ip]
-        #print(op)
         output.write(f"addr_{ip}: \n")
         if op['type']==get_OP_PUSH():
             generate_push_op(output, op['value'])
@@ -43,7 +42,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
         elif op['type']==get_OP_END():
             generate_end_op(output, op, ip)
         elif op['type']==get_OP_DUMP():
-            generate_dump_op(output, op, libc)
+            generate_dump_op(output, ip, libc)
         elif op['type']==get_OP_DUP():
             generate_dup_op(output)
         elif op['type']==get_OP_DUP2():
@@ -69,12 +68,19 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
         elif op['type']==get_OP_DO():
             generate_do_op(output, op)
         elif op['type']==get_OP_MEM(): 
-            output.write("; mem \n")
-            output.write("push mem\n")   
+            generate_mem_op(output)
         elif op['type']==get_OP_LOAD(): 
             generate_load_op(output)
         elif op['type']==get_OP_STORE(): 
             generate_store_op(output)
+        elif op['type']==get_OP_LOAD16():
+            generate_load16_op(output)
+        elif op['type']==get_OP_STORE16():
+            generate_store16_op(output)            
+        elif op['type']==get_OP_LOAD32():
+            generate_load32_op(output)
+        elif op['type']==get_OP_STORE32():
+            generate_store32_op(output)
         elif op['type']==get_OP_LOAD64():
             generate_load64_op(output)
         elif op['type']==get_OP_STORE64():
@@ -82,8 +88,7 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
         elif op['type']==get_OP_SWAP(): 
             generate_swap_op(output)
         elif op['type']==get_OP_DROP():
-            output.write("; drop \n")
-            output.write("pop rax\n")
+            generate_drop_op(output)
         elif op['type']==get_OP_SHL():
             generate_shl_op(output)
         elif op['type']==get_OP_SHR():
@@ -138,6 +143,8 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
                 generate_argv_op(output)
         elif op['type']==get_OP_VARTYPE():
             pass
+        elif op['type']==get_OP_ROTATE():
+            generate_rotate_op(output)
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True 

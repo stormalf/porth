@@ -18,7 +18,7 @@ from porth_interpreter import simulate, get_runtime_error
 from porth_error import check_errors, check_warnings, print_errors, print_warnings, get_counter_error, get_counter_warning
 from typing import *
 
-__version__ = "1.0.30"
+__version__ = "1.0.31"
 
 
 def porthVersion() -> str:
@@ -37,15 +37,14 @@ def main(args, filename: str) -> None:
     program, tokens, isOK = load_program(filename)
     if isOK==False:
         error = True
-    # if args.ast and not error:
-    #     print_ast(tokens)        
+    #simulation         
     if not error and args.simulate:
         #print("simulating...")
-
         stack, error, exit_code = simulate(program, args.parameter, args.outfile)
         if error:
             print("simulation failed!")
             print(f"Errors found during runtime simulation: {get_runtime_error()}")
+    #compilation
     if not error and (args.compile or args.run):
         #print("compiling...")
         error = compile(program, args.outfile, args.libc, args.parameter)
@@ -59,6 +58,9 @@ def main(args, filename: str) -> None:
         print_errors()
         print(f"Errors found in program : {get_counter_error()}")
     if args.warning:
+        #check by simulating without printing anything (only if simulation is not done previously)
+        # if not args.simulate:
+        #     simulate(program, args.parameter, args.outfile, istoprint=False)
         if check_warnings(filename):
             print_warnings()
             print(f"Warnings found in program {filename} : {get_counter_warning()}")            

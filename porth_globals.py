@@ -3,7 +3,7 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 56
+MAX_OPS = 61
 MAX_ERROR_TABLE = 31
 MAX_WARNING_TABLE=1
 
@@ -25,9 +25,11 @@ include_file=[]
 iota_counter= 0
 exit_code = 0
 error_counter = 0
+stack_counter = 0
 warning_counter = 0
 error_table_counter = 0
 warning_table_counter = 0
+
 
 #list of comments types probably I'll prefer the python comment syntax for myself
 #I keep only two // and # I removed the ; perhaps we need it later for other operation code
@@ -37,6 +39,16 @@ COMMENTS = ["//", "#"]
 SINGLE_QUOTE = "'"
 DOUBLE_QUOTE = '"'
 #STRING_LITERAL = [DOUBLE_QUOTE, " "]
+
+
+#returns the number of warnings found
+def get_stack_counter() -> int:
+    global stack_counter
+    return stack_counter    
+
+def set_stack_counter(value: int = 1) -> None:
+    global stack_counter
+    stack_counter += value
 
 #enum function in python 
 def iota(reset=False) -> int:
@@ -136,10 +148,16 @@ OP_VAR=iota()
 OP_IDVAR=iota()
 OP_VARTYPE=iota()
 OP_ASSIGN_VAR=iota()
+OP_LOAD16=iota()
+OP_STORE16=iota()
+OP_LOAD32=iota()
+OP_STORE32=iota()
 OP_LOAD64=iota()
 OP_STORE64=iota()
 OP_ARGC=iota()
 OP_ARGV=iota()
+OP_ROTATE=iota()
+
 
 #keep in last line to have the counter working
 COUNT_OPS=iota()
@@ -170,6 +188,7 @@ ERR_VAR_NOT_ALW=iota()
 #warning code 
 WARN_NO_WARNING=iota(True)
 WARN_VAR_UNUSED=iota()
+WARN_STACK_NOTEMPTY=iota()
 
 #error codes runtime
 RUN_NO_ERROR=iota(True)
@@ -240,10 +259,18 @@ OPU16="u16"
 OPU32="u32"
 OPU64="u64"
 OPASSIGNVAR= OPASSIGN + OPIDVAR
+OPS8="@8"
+OPL8="$8"
+OPS16="@16"
+OPL16="$16"
+OPS32="@32"
+OPL32="$32"
 OPS64="@64"
 OPL64="$64"
 OPARGC="ARGC"
 OPARGV="ARGV"
+OPROTATE="ROT"
+
 
 # OPI8="i8"
 # OPI16="i16"
@@ -350,6 +377,24 @@ def get_OP_LOAD() -> int:
 def get_OP_STORE() -> int:
     return OP_STORE   
 
+def get_OP_LOAD8() -> int:
+    return OP_LOAD
+
+def get_OP_STORE8() -> int:
+    return OP_STORE   
+
+def get_OP_LOAD16() -> int:
+    return OP_LOAD16
+
+def get_OP_STORE16() -> int:
+    return OP_STORE16
+
+def get_OP_LOAD32() -> int:
+    return OP_LOAD32
+
+def get_OP_STORE32() -> int:
+    return OP_STORE32
+
 def get_OP_LOAD64() -> int:
     return OP_LOAD64
 
@@ -435,6 +480,9 @@ def get_OP_ARGC() -> int:
 def get_OP_ARGV() -> int:
     return OP_ARGV
 
+def get_OP_ROTATE() -> int:
+    return OP_ROTATE
+
 
 keyword_table: Dict = {
     PLUS: OP_ADD,
@@ -453,6 +501,12 @@ keyword_table: Dict = {
     OPMEM: OP_MEM,
     OPSTORE: OP_STORE,
     OPLOAD: OP_LOAD,
+    OPL8: OP_LOAD,
+    OPS8: OP_STORE,
+    OPS16: OP_STORE16,
+    OPL16: OP_LOAD16,
+    OPS32: OP_STORE32,
+    OPL32: OP_LOAD32,
     OPS64: OP_STORE64,
     OPL64: OP_LOAD64,
     OPSYSCALL0: OP_SYSCALL0,
@@ -483,7 +537,8 @@ keyword_table: Dict = {
     OPINCLUDE: OP_INCLUDE,
     OPVAR: OP_VAR,
     OPARGC: OP_ARGC,
-    OPARGV: OP_ARGV
+    OPARGV: OP_ARGV,
+    OPROTATE: OP_ROTATE
 }
 
 special_chars: Dict = {

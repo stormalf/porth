@@ -83,8 +83,14 @@ Keyword, operators, and constants are defined in the language.
     LOOP: keyword to close the loop
     COMMENTS : are ignored by the compiler 3 possible comments allowed for now : //, #.
     MEM: keyword to push the address of the beginning of the memory onto the stack
-    @: operator loads value from the memory
-    $: operator stores value to the memory
+    @ or @8: operator loads value from the memory 1 byte
+    $ or $8: operator stores value to the memory 1 byte
+    @16: operator loads value from the memory 2 bytes
+    $16: operator stores value to the memory 2 bytes
+    @32: operator loads value from the memory 4 bytes
+    $32: operator stores value to the memory 4 bytes
+    @64: operator loads value from the memory 8 bytes
+    $64: operator stores value to the memory 8 bytes
     2DUP: keyword to duplicate the top 2 values of the stack
     SWAP: keyword to swap the top 2 values of the stack
     DROP: keyword to drop the top value of the stack
@@ -111,6 +117,7 @@ Keyword, operators, and constants are defined in the language.
     u8, u16, u32, u64 : variables types allowed for now.
     ARGC: keyword to push the number of arguments passed to the program
     ARGV: keyword to push the arguments passed to the program
+    ROT: rotate the top 3 values of the stack: a b c -> b c a
 
 ## release notes
 
@@ -182,6 +189,8 @@ The non-initialized variables are not taken into account for now (segment fault 
 
 1.0.30 refactoring compile function. Changing the way to manage argc and argv. Adding standard input management for testing ".input" extension file.
 
+1.0.31 Managing negative numbers at compilation. Adding new operators ROT for rotating 3 elements on the stack. Adding mem operators $16, $32 for read 16, 32 bits from memory. Adding mem operators @16, @32 for write 16, 32 bits to memory. Merging all includes into std.porth easier to manage. Adding detection of stack not empty. In the stack variables declaration and values and argc, argv still remains at the end of program execution.
+
 ## simulation
 
 The simulation/interpreter mode is too long. By generating a shared library using cython it seems a little bit faster (I used my pytoc tool to generate the shared library). The euler6 example takes :
@@ -224,8 +233,10 @@ link to pypy : https://www.pypy.org/download.html
 
 ## TODO
 
-- Manage negative numbers at compilation.
+- Adding controls to avoid to define unsigned variables with a negative value.
+- Adding pointers and how to dereference them ?
 - Adding other types for variables (bool, signed int, char, string, float)
 - Refactoring code to be simpler and more readable.
 - Trying to implement similar language but using ANTLR4.
 - Generate a real AST and symbol table.
+- rewriting porth in porth

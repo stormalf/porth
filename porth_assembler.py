@@ -3,7 +3,6 @@
 from porth_globals import *
 
 
-
 HEADER2 = '''%define SYS_EXIT 60
 BITS 64
 segment .text
@@ -89,7 +88,6 @@ print:
     call    fflush             ; fflush(stdout) without it, the output is not printed!!!!!
     ret
 main:
-
 '''
 
 #footer assembly that exit function followed by data section with format
@@ -101,17 +99,18 @@ syscall
 
 DATA=f'''
 section .data 
-format db  "%llu", 10, 0
+format db  "%lld", 10, 0
 format2 db "%s", 10, 0
 char db  "%c", 0
+negative db "-", 0
 security  dq  {MAX_LOOP_SECURITY}
+
 '''
 
 BSS=f'''
 section .bss    ; uninitialized data section
 mem: resb {get_MEM_CAPACITY()}
 '''
-
 
 
 #with libc argc, argv are not passed by the stack but by the registers rdi contains argc and rsi contains argv
@@ -243,6 +242,32 @@ def generate_store_op(output):
     output.write("pop rax\n")
     output.write("mov [rax], bl\n")    
 
+def generate_load16_op(output):
+    output.write("; load16 \n")
+    output.write("pop rax\n")    
+    output.write("xor rbx, rbx\n")           
+    output.write("mov bx, [rax]\n")
+    output.write("push rbx\n")
+
+def generate_store16_op(output):
+    output.write("; store16 \n")
+    output.write("pop rbx\n")
+    output.write("pop rax\n")
+    output.write("mov [rax], bx\n")
+
+def generate_load32_op(output):
+    output.write("; load32 \n")
+    output.write("pop rax\n")    
+    output.write("xor rbx, rbx\n")           
+    output.write("mov ebx, [rax]\n")
+    output.write("push rbx\n")
+
+def generate_store32_op(output):
+    output.write("; store32 \n")
+    output.write("pop rbx\n")
+    output.write("pop rax\n")
+    output.write("mov [rax], ebx\n")
+        
 def generate_load64_op(output):
     output.write("; load64 \n")
     output.write("pop rax\n")
@@ -412,12 +437,20 @@ def generate_end_op(output, op, ip):
     if ip + 1 != op['jmp']:
         output.write(f"jmp    addr_{op['jmp']} \n")       
 
-def generate_dump_op(output, op, libc):
+def generate_dump_op(output, ip, libc):
     output.write("; dump \n")
     if libc:
         output.write("pop rax \n")
     else:
         output.write("pop rdi \n")
+        output.write("cmp rdi, 0 \n")
+        output.write(f"jge pos_{ip}\n")
+        output.write("push rdi\n")
+        output.write("mov rdi, [negative]\n")
+        output.write("call print_char\n")
+        output.write("pop rdi\n")
+        output.write("neg rdi\n")
+        output.write(f"pos_{ip}:\n")
     output.write("call print\n")   
 
 def generate_div_op(output, ip, libc):
@@ -607,3 +640,20 @@ def generate_infinite_loop_op(output, libc):
         output.write("mov rax, SYS_EXIT\n")
         output.write(f"mov rdi, {RUN_INFINITE_LOOP}\n")            
         output.write("syscall\n")       
+
+def generate_drop_op(output):
+    output.write("; drop \n")
+    output.write("pop rax\n")
+
+def generate_mem_op(output):
+    output.write("; mem \n")
+    output.write("push mem\n") 
+
+def generate_rotate_op(output):
+    output.write("; rotate \n")
+    output.write("pop rax\n")
+    output.write("pop rcx\n")
+    output.write("pop rdx\n")    
+    output.write("push rcx\n")
+    output.write("push rax\n")
+    output.write("push rdx\n")    
