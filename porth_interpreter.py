@@ -721,6 +721,24 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                     stack.append(a)
                     set_stack_counter(3)
                 ip += 1
+            elif op['type']==get_OP_OPEN():
+                b = stack.pop() #addr
+                a = stack.pop() #length
+                addr = get_var_value(b)
+                length = get_var_value(a)
+                set_stack_counter(-2)
+                offset = (addr+length) 
+                s = mem[addr:offset].decode('utf-8')
+                fd = os.open(s, os.O_RDONLY)
+                stack.append(fd)
+                set_stack_counter()
+                ip += 1
+            elif op['type']==get_OP_CLOSE():
+                a = stack.pop()
+                fd = get_var_value(a)
+                set_stack_counter(-1)
+                os.close(fd)
+                ip += 1
             else:
                 ip += 1                
                 error = True

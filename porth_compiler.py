@@ -145,6 +145,10 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
             pass
         elif op['type']==get_OP_ROTATE():
             generate_rotate_op(output)
+        elif op['type']==get_OP_OPEN():
+            generate_open_op(output, op)
+        elif op['type']==get_OP_CLOSE():
+            generate_close_op(output, op)
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True 
@@ -156,6 +160,8 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
     output.write(DATA)
     for index, s in enumerate(strs):
         output.write(f"str_{index}: db {','.join(map(hex, list(bytes(s, 'utf-8'))))}, 0\n")
+    for i, _ in enumerate(files_struct):
+        output.write(f"file_{i}: db `{files_struct[i]['filename']}\\0`\n")
     for i in RUNTIME_ERROR:
         output.write(f'error_message_{i} db "{RUNTIME_ERROR[i]}", 10, 0\n')
     for i, var in enumerate(var_struct):
@@ -179,6 +185,8 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
             output.write(f"{var}: resd 4\n")
         elif var_struct[var]['type']==OPU64:
             output.write(f"{var}: resq 8\n")
+    for i, _ in enumerate(files_struct):
+        output.write(f"fd_{i}: resq 1\n")
     output.write("args_ptr: resq 1\n")
     output.close()
     if libc:

@@ -1,0 +1,5 @@
+
+VAR fd u32 
+"./bin/pgm12.asm" OPEN !fd 
+fd .
+fd CLOSE

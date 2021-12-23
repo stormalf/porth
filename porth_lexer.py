@@ -427,13 +427,15 @@ def pre_processing_macros(program: List) -> Tuple[List, bool]:
 
 #cross references to store the link between a IF and this corresponding END operation!
 def cross_reference_block(program: List) -> Tuple[List, bool]:
-    global error_counter, macro_struct, var_struct, error_msg
+    global error_counter, macro_struct, var_struct, error_msg, files_struct
     errfunction = 'cross_reference_block'
     stack = []
     ifarray= []
     error = False
     level = 0
     var_used = 0
+    index_file = 0
+    close_index = 0
     for ip in range(len(program)):
         filename, line, col, *_ = program[ip]['loc']
         op = program[ip]
@@ -509,7 +511,15 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
                 generate_error(filename=filename, errfunction=errfunction, msgid= 27, fromline=line, column=col)                 
             elif program[ip - 1]['type'] != OP_IDVAR or program[ip - 2]['type'] != OP_VAR:
                 #print(f"Error code {ERR_VAR_TYPE} Incorrect use of VAR_TYPE keyword in file {filename}, line {line} column {col}")
-                generate_error(filename=filename, errfunction=errfunction, msgid= 27, fromline=line, column=col)                 
+                generate_error(filename=filename, errfunction=errfunction, msgid= 27, fromline=line, column=col)  
+        elif op['type'] == OP_OPEN:
+            files_struct[index_file] = {"filename": program[ip - 1]['value'], "fd": -1, "close": False, "index": index_file, "options": 0}
+            op['index'] = index_file
+            op['options'] = 0
+            index_file += 1
+        elif op['type'] == OP_CLOSE:
+            op['index'] = close_index
+            close_index += 1
     if len(ifarray) > 0:
         #print(f"Error Code {ERR_TOK_BLOCK} DO IF ELSE END missing one")
         generate_error(filename=filename, errfunction=errfunction, msgid= 28) 

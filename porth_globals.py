@@ -3,7 +3,7 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 61
+MAX_OPS = 63
 MAX_ERROR_TABLE = 31
 MAX_WARNING_TABLE=1
 
@@ -19,7 +19,7 @@ var_struct = {}
 macro_struct= {}
 warning_msg = {}
 error_msg = {}
-
+files_struct = {}
 include_file=[]
 
 iota_counter= 0
@@ -29,7 +29,6 @@ stack_counter = 0
 warning_counter = 0
 error_table_counter = 0
 warning_table_counter = 0
-
 
 #list of comments types probably I'll prefer the python comment syntax for myself
 #I keep only two // and # I removed the ; perhaps we need it later for other operation code
@@ -157,6 +156,8 @@ OP_STORE64=iota()
 OP_ARGC=iota()
 OP_ARGV=iota()
 OP_ROTATE=iota()
+OP_OPEN=iota()
+OP_CLOSE=iota()
 
 
 #keep in last line to have the counter working
@@ -272,6 +273,8 @@ OPL64="$64"
 OPARGC="ARGC"
 OPARGV="ARGV"
 OPROTATE="ROT"
+OPOPEN="OPEN"
+OPCLOSE="CLOSE"
 
 
 # OPI8="i8"
@@ -491,6 +494,11 @@ def get_OP_ARGV() -> int:
 def get_OP_ROTATE() -> int:
     return OP_ROTATE
 
+def get_OP_OPEN() -> int:
+    return OP_OPEN
+
+def get_OP_CLOSE() -> int:
+    return OP_CLOSE
 
 keyword_table: Dict = {
     PLUS: OP_ADD,
@@ -548,7 +556,9 @@ keyword_table: Dict = {
     OPVAR: OP_VAR,
     OPARGC: OP_ARGC,
     OPARGV: OP_ARGV,
-    OPROTATE: OP_ROTATE
+    OPROTATE: OP_ROTATE,
+    OPOPEN: OP_OPEN,
+    OPCLOSE: OP_CLOSE
 }
 
 special_chars: Dict = {

@@ -6,6 +6,22 @@ from porth_globals import *
 HEADER2 = '''%define SYS_EXIT 60
 BITS 64
 segment .text
+myopen:
+    mov rax, 2  ; sys_open
+    mov rdi, [_file]   ; get file name address
+    mov rsi, [_options] ; read only
+    syscall
+    ;add eax, '0'     ; load fd
+    mov dword [_fd], eax  ; move _fd to buf
+    ret
+
+myclose:
+    mov rsi, _fd
+    mov rdi, 3
+    mov rax, 0
+    syscall
+    ret
+
 print:
     mov r9, -3689348814741910323
     sub rsp, 40
@@ -64,8 +80,22 @@ BITS 64
 segment .text
 global main
 extern printf, fflush 
-push_args:
-ret
+myopen:
+    mov rax, 2  ; sys_open
+    mov rdi, [_file]   ; get file name address
+    mov rsi, [_options] ; read only
+    syscall
+    ;add eax, '0'     ; load fd
+    mov dword [_fd], eax  ; move fd to buf
+    ret
+
+myclose:
+    mov rsi, _fd
+    mov rdi, 3
+    mov rax, 0
+    syscall
+    ret
+
 print_char:
     mov     rdi, char             ; set 1st parameter (format)
     mov     rsi, rax 
@@ -109,6 +139,9 @@ security  dq  {MAX_LOOP_SECURITY}
 
 BSS=f'''
 section .bss    ; uninitialized data section
+_file RESQ 1
+_options RESQ 1
+_fd RESQ 1
 mem: resb {get_MEM_CAPACITY()}
 '''
 
@@ -599,9 +632,9 @@ def generate_idvar_op(output, bytecode_prev_ip, op):
         value = var_struct[op['value']]['value']
         if value != None:
             output.write("; idvar \n")
-            type=get_var_type(op['value'])
-            qualifier=get_var_qualifier(type)
-            register=get_register(type)
+            typev=get_var_type(op['value'])
+            qualifier=get_var_qualifier(typev)
+            register=get_register(typev)
             output.write(f"xor rax, rax\n")
             output.write(f"mov {register},  {qualifier} [{op['value']}]\n")
             output.write(f"push rax\n")
@@ -614,9 +647,9 @@ def generate_assign_op(output, bytecode_prev_ip, op):
         value = var_struct[var]['value']
         if value != None:
             output.write("; idvar \n")
-            type=get_var_type(var)
-            qualifier=get_var_qualifier(type)
-            register=get_register(type)
+            typev=get_var_type(var)
+            qualifier=get_var_qualifier(typev)
+            register=get_register(typev)
             output.write(f"pop rax\n")
             output.write(f"mov {qualifier} [{var}], {register}\n")
             output.write(f"push rax\n")  
@@ -657,3 +690,23 @@ def generate_rotate_op(output):
     output.write("push rcx\n")
     output.write("push rax\n")
     output.write("push rdx\n")    
+
+#probably array of files to open and array of fd's
+def generate_open_op(output, op):
+    global index_file
+    output.write("; open \n")
+    output.write(f"mov rax, file_{op['index']}\n") #file index
+    output.write("mov [_file], rax\n")
+    output.write(f"mov qword [_options], {op['options']}\n") #mode
+    output.write("call myopen\n")
+    output.write(f"mov eax, dword[_fd]\n")
+    output.write(f"mov dword[fd_{op['index']}], eax\n")
+    output.write(f"push rax\n")
+
+
+def generate_close_op(output, op):
+    output.write("; close \n")
+    output.write(f"mov eax, dword [fd_{op['index']}]\n") #file descriptor
+    output.write(f"mov dword[_fd], eax\n")
+    output.write("call myclose\n")
+    output.write(f"push rax\n")

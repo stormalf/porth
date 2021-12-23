@@ -118,6 +118,8 @@ Keyword, operators, and constants are defined in the language.
     ARGC: keyword to push the number of arguments passed to the program
     ARGV: keyword to push the arguments passed to the program
     ROT: rotate the top 3 values of the stack: a b c -> b c a
+    OPEN: keyword to open a file
+    CLOSE: keyword to close a file
 
 ## release notes
 
@@ -191,6 +193,8 @@ The non-initialized variables are not taken into account for now (segment fault 
 
 1.0.31 Managing negative numbers at compilation. Adding new operators ROT for rotating 3 elements on the stack. Adding mem operators $16, $32 for read 16, 32 bits from memory. Adding mem operators @16, @32 for write 16, 32 bits to memory. Merging all includes into std.porth easier to manage. Adding detection of stack not empty. In the stack variables declaration and values and argc, argv still remains at the end of program execution.
 
+1.0.32 Adding OPEN and CLOSE operators to manage files. Miss some controls to avoid segmentation fault. Note that some wrong implementation can cause crash on linux (writing shared libraries, in my case libncursesw6 not working anymore lots of programs don't work anymore like gdb, nano... need to reinstall linux).
+
 ## simulation
 
 The simulation/interpreter mode is too long. By generating a shared library using cython it seems a little bit faster (I used my pytoc tool to generate the shared library). The euler6 example takes :
@@ -236,6 +240,7 @@ link to pypy : https://www.pypy.org/download.html
 - Adding controls to avoid to define unsigned variables with a negative value.
 - Adding pointers and how to dereference them ?
 - Adding other types for variables (bool, signed int, char, string, float)
+- Adding controls to avoid crash on open and close operators
 - Refactoring code to be simpler and more readable.
 - Trying to implement similar language but using ANTLR4.
 - Generate a real AST and symbol table.
