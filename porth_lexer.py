@@ -149,6 +149,9 @@ def parse_var(filename:str, row: int, line: str, tokens: List) -> Dict:
             _, first_definition, _ = macro_struct[tokens[1]]['definition']
             #print(f"Error Code {ERR_TOK_VAR_ID} line {row} VAR identifier {tokens[1]} already defined as macro at line {first_definition}")
             generate_error(filename=filename, errfunction=errfunction, msgid= 7, token=tokens[1], fromline=first_definition)              
+        elif tokens[1] in reserved_words:
+            #print(f"Error Code {ERR_TOK_VAR_ID} line {row} VAR identifier {tokens[1]} is a reserved word")
+            generate_error(filename=filename, errfunction=errfunction, msgid= 16, token=tokens[1], fromline=row)
         else:
             if len(tokens) > 3:
                 var_struct[tokens[1]] = {'definition': (filename, row, line[start:].find(tokens[1])), 'type': tokens[2], 'value': tokens[3], 'used': 0}
@@ -202,6 +205,8 @@ def parse_word(token: Dict) -> Dict:
                 return {'type': OP_VARTYPE, 'loc': loc, 'value': word, 'jmp': None}
             elif check_if_var_assign_operator(word) ==True:
                 return {'type': OP_ASSIGN_VAR, 'loc': loc, 'value': word, 'jmp': None, 'variable': word[1:]}
+            elif word in reserved_words:
+                return {'type': OP_UNKNOWN, 'loc': (filename, line, column), 'value': word, 'jmp': None}
             else:
                 #print(f"Error Code {ERR_TOK_UNKNOWN} Unknown word: {word} at line {line}, column {column} in file {filename}")
                 generate_error(filename=filename, errfunction=errfunction, msgid= 8, token=word, fromline=line, column=column)                  
@@ -233,6 +238,9 @@ def parse_macro(filename:str, row: int, line: str, tokens: List) -> List[Tuple]:
             _, first_definition, _ = macro_struct[tokens[1]]['definition']
             #print(f"Error Code {ERR_TOK_MACRO_ID} line {row} Macro identifier {tokens[1]} already defined at line {first_definition}")
             generate_error(filename=filename, errfunction=errfunction, msgid= 13, token=tokens[1], fromline=row, toline=first_definition)                          
+        elif tokens[1] in reserved_words:
+            #print(f"Error Code {ERR_TOK_MACRO_ID} line {row} Macro identifier {tokens[1]} is a reserved word")
+            generate_error(filename=filename, errfunction=errfunction, msgid= 29, token=tokens[1], fromline=row)
         else:
             macro_struct[tokens[1]] = {'args': None, 'definition': (filename, row, line[start:].find(tokens[1]))}
         for token in tokens:
@@ -434,8 +442,7 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
     error = False
     level = 0
     var_used = 0
-    index_file = 0
-    close_index = 0
+    index_file = 3
     for ip in range(len(program)):
         filename, line, col, *_ = program[ip]['loc']
         op = program[ip]
@@ -493,7 +500,11 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
         elif op['type'] == OP_ASSIGN_VAR:
             var =  op['value'][1:]            
             def_line = var_struct[var]['definition'][1] 
-            current_line = op['loc'][1]            
+            current_line = op['loc'][1]       
+            if program[ip - 1]['type'] in (OP_OPEN, OP_CLOSE, OP_OPENW, OP_READF, OP_WRITEF):
+                op['index'] = program[ip - 1]['index']
+                var_struct[var]['value'] =  program[ip - 1]['index']   
+                #print(var_struct,  program[ip - 1]['value'])
             if current_line < def_line:
                 #print(f"Error Code {ERR_VAR_UNDEF} variable `{op['value']}` used before definition in file {filename}, line {line} column {col}")
                 generate_error(filename=filename, errfunction=errfunction, msgid= 24, token=op['value'], fromline=line, column=col) 
@@ -502,24 +513,35 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
                 #print(f"Error Code {ERR_VAR_NOT_ALW} variable `{op['value']}` can't be used after DIVMOD operator. Error in file {filename}, line {line} column {col}")
                 generate_error(filename=filename, errfunction=errfunction, msgid= 14, token=op['value'], fromline=line, column=col)
             elif current_line != def_line:
+                #print(program[ip])
                 var_used = var_struct[var]['used']
                 var_used += 1
                 var_struct[var]['used'] = var_used
         elif op['type'] == OP_VARTYPE:
             if ip <= 1:
-                #print(f"Error Code {ERR_VAR_TYPE} Incorrect use of  VAR_TYPE keyword in file {filename}, line {line} column {col}")
                 generate_error(filename=filename, errfunction=errfunction, msgid= 27, fromline=line, column=col)                 
-            elif program[ip - 1]['type'] != OP_IDVAR or program[ip - 2]['type'] != OP_VAR:
-                #print(f"Error code {ERR_VAR_TYPE} Incorrect use of VAR_TYPE keyword in file {filename}, line {line} column {col}")
-                generate_error(filename=filename, errfunction=errfunction, msgid= 27, fromline=line, column=col)  
+            elif  program[ip - 1]['type'] != OP_IDVAR or program[ip - 2]['type'] != OP_VAR:
+                generate_error(filename=filename, errfunction=errfunction, msgid= 27, fromline=line, column=col)                 
+        # open file and store it in the files_struct
         elif op['type'] == OP_OPEN:
-            files_struct[index_file] = {"filename": program[ip - 1]['value'], "fd": -1, "close": False, "index": index_file, "options": 0}
+            files_struct[index_file] = {"filename": program[ip - 1]['value'], "close": False, "index": index_file, "options": 0}
             op['index'] = index_file
             op['options'] = 0
             index_file += 1
-        elif op['type'] == OP_CLOSE:
-            op['index'] = close_index
-            close_index += 1
+
+        # open file for writing mode and store it in the files_struct            
+        elif op['type'] == OP_OPENW:
+            files_struct[index_file] = {"filename": program[ip - 1]['value'], "close": False, "index": index_file, "options": 1}
+            op['index'] = index_file
+            op['options'] = O_CREAT|O_WRONLY|O_TRUNC
+            index_file += 1 
+        # close or readf or writef : update file index in the op code
+        elif op['type'] == OP_CLOSE or op['type'] == OP_READF or op['type'] == OP_WRITEF:
+            if program[ip - 1]['value'] in var_struct:
+                #print(var_struct[program[ip - 1]['value']])
+                op['index'] = var_struct[program[ip - 1]['value']]['value']
+            else:
+                op['index'] = program[ip - 1]['value']
     if len(ifarray) > 0:
         #print(f"Error Code {ERR_TOK_BLOCK} DO IF ELSE END missing one")
         generate_error(filename=filename, errfunction=errfunction, msgid= 28) 

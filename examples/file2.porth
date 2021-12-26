@@ -1,0 +1,9 @@
+VAR _file u8
+VAR _fd u16
+VAR _file u32
+VAR _mem u64
+VAR _format u8
+VAR _char u8
+VAR _format2 u8
+VAR _negative u8  
+VAR _security u8

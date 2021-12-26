@@ -46,7 +46,7 @@ def error_management(filename:str, errfunction:str, msgid: int, fromline: int = 
     error_table[13] = f"Error Code {ERR_TOK_MACRO_ID} line {column} Macro identifier {token} already defined at line {fromline}"
     error_table[14] = f"Error Code {ERR_VAR_NOT_ALW} assignment variable `{token}` can't be used after DIVMOD operator. Error in file {filename}, line {fromline} column {column}"
     error_table[15] = f"Error Code {ERR_TOK_INCLUDE} File {token} not found"
-    error_table[16] = "NOT USED"
+    error_table[16] = f"Error Code {ERR_TOK_VAR_ID} line {column} VAR identifier {token} is a reserved word"
     error_table[17] = f"Error Code {ERR_MACRO_EMPTY} empty body macro {token} in file {filename} between line {fromline} line {toline}"
     error_table[18] = f"Error Code {ERR_TOK_BLOCK} ENDM without MACRO in file {filename}, line {fromline} column {column}"
     error_table[19] = f"Error Code {ERR_MACRO_ENDM} ENDM missing one"
@@ -59,7 +59,7 @@ def error_management(filename:str, errfunction:str, msgid: int, fromline: int = 
     error_table[26] = f"Error code {ERR_VAR_ASSIGN} impossible to assign something to a non variable in file {filename}, line {fromline} column {column}"
     error_table[27] = f"Error Code {ERR_VAR_TYPE} Incorrect use of VAR_TYPE keyword in file {filename}, line {fromline} column {column}"
     error_table[28] = f"Error Code {ERR_TOK_BLOCK} DO IF ELSE END missing one"
-    error_table[29] = "NOT USED"
+    error_table[29] = f"Error Code {ERR_TOK_MACRO_ID} line {column} Macro identifier {token} is a reserved word at line {fromline}"
     error_table[30] = "NOT USED"
     assert len(error_table) == get_MAX_ERROR(), "Max error table implemented!"      
     return error_table[msgid]

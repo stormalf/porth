@@ -26,7 +26,7 @@ def print_output_simulation(value, file: FileIO = sys.stdout, end: str = None, i
 #simulate the program execution without compiling it. To be able to re-use the simulate function to detect some warnings and errors
 #the output is printed only if the function is requested with istoprint=True (default behaviour)
 def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tuple[List,bool, int]:
-    global exit_code, runtime_error_counter, MAX_LOOP_SECURITY, var_struct 
+    global exit_code, runtime_error_counter, MAX_LOOP_SECURITY, var_struct, BUFFER_SIZE
     conditions_stack = {}
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
     stack=[]
@@ -35,10 +35,12 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
     ip = 0
     str_size= NULL_POINTER_PADDING
     mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY() + get_MEM_CAPACITY())
+    buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
     outlist=[outfile]
     parameter.insert(0, outlist)
     argv_buf_ptr = NULL_POINTER_PADDING + get_STR_CAPACITY()
     str_buf_ptr  = NULL_POINTER_PADDING
+    buf_file_ptr = NULL_POINTER_PADDING
     mem_buf_ptr  = NULL_POINTER_PADDING + get_STR_CAPACITY() + get_ARGV_CAPACITY()
     argc = 0
     for arg in parameter:        
@@ -550,6 +552,16 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 if program[ip-1]['type']==get_OP_CHAR():
                     #print(chr(program[ip - 1]['value']), end="")
                     print_output_simulation(chr(program[ip - 1]['value']), end="", istoprint=istoprint)
+                elif program[ip-1]['type']==get_OP_READF():
+                    b = stack.pop() #addr
+                    a = stack.pop() #length
+                    set_stack_counter(-2)
+                    addr = get_var_value(b)
+                    length = get_var_value(a)
+                    offset = (addr+length)
+                    if length > 0: 
+                        s = buffer_file[addr:offset].decode('utf-8')                    
+                        print_output_simulation(s, end='', istoprint=istoprint)
                 elif len(stack) < 2:
                         print("WRITE impossible not enough element in stack")
                         runtime_error_counter += 1
@@ -557,9 +569,11 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 else:
                     b = stack.pop() #addr
                     a = stack.pop() #length
+                    addr = get_var_value(b)
+                    length = get_var_value(a)
                     set_stack_counter(-2)
-                    offset = (b+a) 
-                    s = mem[b:offset].decode('utf-8')
+                    offset = (addr+length) 
+                    s = mem[addr:offset].decode('utf-8')
                     #print(s, end='')
                     print_output_simulation(s, end='', istoprint=istoprint)
                 ip += 1
@@ -730,7 +744,54 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 offset = (addr+length) 
                 s = mem[addr:offset].decode('utf-8')
                 fd = os.open(s, os.O_RDONLY)
+                #print(files_struct, op)
                 stack.append(fd)
+                set_stack_counter()
+                ip += 1
+            elif op['type']==get_OP_OPENW():
+                b = stack.pop() #addr
+                a = stack.pop() #length
+                addr = get_var_value(b)
+                length = get_var_value(a)
+                set_stack_counter(-2)
+                offset = (addr+length) 
+                s = mem[addr:offset].decode('utf-8')
+                fd = os.open(s, os.O_CREAT|os.O_WRONLY|os.O_TRUNC)
+                stack.append(fd)
+                set_stack_counter()
+                ip += 1
+            elif op['type']==get_OP_READF():
+                a = stack.pop()
+                set_stack_counter(-1)
+                fd = get_var_value(a)
+                buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
+                readbuf = os.read(fd, BUFFER_SIZE)
+                buflen = len(readbuf)
+                if buflen == 0:
+                    stack.append(0)
+                    stack.append(0)
+                else:
+                    stack.append(buflen)
+                    op['addr'] = buf_file_ptr
+                    buffer_file[buf_file_ptr:buflen] = readbuf
+                    stack.append(op['addr'])
+                    #print(buffer_file)
+                op['index'] = files_struct[fd]['index']
+                set_stack_counter(2)
+                ip += 1
+            elif op['type']==get_OP_WRITEF():
+                #print(stack)
+                a = stack.pop()
+                fd = get_var_value(a)
+                op['index'] = files_struct[fd]['index']
+                b = stack.pop() #buffer length
+                length = get_var_value(b)
+                #c = stack.pop()
+                #length = get_var_value(c)
+                #offset = (addr + length)
+                set_stack_counter(-2)
+                writebuf = os.write(fd, buffer_file[1:length])
+                stack.append(writebuf)
                 set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_CLOSE():
@@ -738,6 +799,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 fd = get_var_value(a)
                 set_stack_counter(-1)
                 os.close(fd)
+                op['index'] = files_struct[fd]['index']
                 ip += 1
             else:
                 ip += 1                

@@ -1,0 +1,12 @@
+
+VAR fd u32 
+VAR fw u32
+"./bin/pgm12.asm" OPEN !fd
+"./bin/output.txt" OPENW !fw 
+
+fd READF WHILE 0 != DO
+    fw WRITEF DROP //to remove the number of bytes written
+    fd READF 
+END
+fd CLOSE
+fw CLOSE

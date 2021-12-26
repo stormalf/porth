@@ -83,14 +83,14 @@ Keyword, operators, and constants are defined in the language.
     LOOP: keyword to close the loop
     COMMENTS : are ignored by the compiler 3 possible comments allowed for now : //, #.
     MEM: keyword to push the address of the beginning of the memory onto the stack
-    @ or @8: operator loads value from the memory 1 byte
-    $ or $8: operator stores value to the memory 1 byte
-    @16: operator loads value from the memory 2 bytes
-    $16: operator stores value to the memory 2 bytes
-    @32: operator loads value from the memory 4 bytes
-    $32: operator stores value to the memory 4 bytes
-    @64: operator loads value from the memory 8 bytes
-    $64: operator stores value to the memory 8 bytes
+    $ or $8: operator loads value from the memory 1 byte
+    @ or @8: operator stores value to the memory 1 byte
+    $16: operator loads value from the memory 2 bytes
+    @16: operator stores value to the memory 2 bytes
+    $32: operator loads value from the memory 4 bytes
+    @32: operator stores value to the memory 4 bytes
+    $64: operator loads value from the memory 8 bytes
+    @64: operator stores value to the memory 8 bytes
     2DUP: keyword to duplicate the top 2 values of the stack
     SWAP: keyword to swap the top 2 values of the stack
     DROP: keyword to drop the top value of the stack
@@ -118,8 +118,11 @@ Keyword, operators, and constants are defined in the language.
     ARGC: keyword to push the number of arguments passed to the program
     ARGV: keyword to push the arguments passed to the program
     ROT: rotate the top 3 values of the stack: a b c -> b c a
-    OPEN: keyword to open a file
+    OPEN: keyword to open a file (read mode only)
     CLOSE: keyword to close a file
+    OPENW: keyword to open a file (write mode only)
+    READF: read content from file to a buffer
+    WRITEF: write content from buffer to a file
 
 ## release notes
 
@@ -195,6 +198,9 @@ The non-initialized variables are not taken into account for now (segment fault 
 
 1.0.32 Adding OPEN and CLOSE operators to manage files. Miss some controls to avoid segmentation fault. Note that some wrong implementation can cause crash on linux (writing shared libraries, in my case libncursesw6 not working anymore lots of programs don't work anymore like gdb, nano... need to reinstall linux).
 
+1.0.33 Adding OPENW, READF, WRITEF to have the capability to read file content and to write into a new file. Fixing README mistake between $ and @.
+Missing controls on File like if open failed negative numbers return in RAX not checked.
+
 ## simulation
 
 The simulation/interpreter mode is too long. By generating a shared library using cython it seems a little bit faster (I used my pytoc tool to generate the shared library). The euler6 example takes :
@@ -237,6 +243,7 @@ link to pypy : https://www.pypy.org/download.html
 
 ## TODO
 
+- Adding controls to check if open/read/write returns negative values.
 - Adding controls to avoid to define unsigned variables with a negative value.
 - Adding pointers and how to dereference them ?
 - Adding other types for variables (bool, signed int, char, string, float)

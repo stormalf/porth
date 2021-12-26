@@ -3,9 +3,11 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 63
+MAX_OPS = 66
 MAX_ERROR_TABLE = 31
 MAX_WARNING_TABLE=1
+
+BUFFER_SIZE = 2048
 
 #max memory size
 NULL_POINTER_PADDING = 1
@@ -39,6 +41,29 @@ SINGLE_QUOTE = "'"
 DOUBLE_QUOTE = '"'
 #STRING_LITERAL = [DOUBLE_QUOTE, " "]
 
+reserved_words = ["_format", "_format2", "_negative", "_security", "_file", "_options", "_fd", "_mem", "_char", "_open", \
+    "_close", "print", ".L2", "print_char", "_start", "main", "print_error", ".bss", ".data", ".text", "_file_buffer", "_write_buffer"]
+
+
+#files mode
+O_ACCMODE = 3
+O_RDONLY = 0
+O_WRONLY = 1
+O_RDWR = 2
+O_CREAT = 100
+O_EXCL = 200
+O_NOCTTY = 400
+O_TRUNC = 1000
+O_APPEND = 2000
+O_NONBLOCK = 4000
+O_DSYNC = 10000
+O_FASYNC = 20000
+O_DIRECT = 40000
+O_LARGEFILE = 100000
+O_DIRECTORY = 200000
+O_NOFOLLOW = 400000
+O_NOATIME = 1000000
+O_CLOEXEC = 2000000
 
 #returns the number of warnings found
 def get_stack_counter() -> int:
@@ -158,6 +183,9 @@ OP_ARGV=iota()
 OP_ROTATE=iota()
 OP_OPEN=iota()
 OP_CLOSE=iota()
+OP_OPENW=iota()
+OP_READF=iota()
+OP_WRITEF=iota()
 
 
 #keep in last line to have the counter working
@@ -275,7 +303,9 @@ OPARGV="ARGV"
 OPROTATE="ROT"
 OPOPEN="OPEN"
 OPCLOSE="CLOSE"
-
+OPOPENW="OPENW"
+OPREADF="READF"
+OPWRITEF="WRITEF"
 
 # OPI8="i8"
 # OPI16="i16"
@@ -500,6 +530,15 @@ def get_OP_OPEN() -> int:
 def get_OP_CLOSE() -> int:
     return OP_CLOSE
 
+def get_OP_OPENW() -> int:
+    return OP_OPENW
+
+def get_OP_READF() -> int:
+    return OP_READF
+
+def get_OP_WRITEF() -> int:
+    return OP_WRITEF
+
 keyword_table: Dict = {
     PLUS: OP_ADD,
     MINUS: OP_SUB,
@@ -558,7 +597,10 @@ keyword_table: Dict = {
     OPARGV: OP_ARGV,
     OPROTATE: OP_ROTATE,
     OPOPEN: OP_OPEN,
-    OPCLOSE: OP_CLOSE
+    OPCLOSE: OP_CLOSE,
+    OPOPENW: OP_OPENW,
+    OPREADF: OP_READF,
+    OPWRITEF: OP_WRITEF
 }
 
 special_chars: Dict = {

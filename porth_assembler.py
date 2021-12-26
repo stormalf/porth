@@ -2,26 +2,50 @@
 # -*- coding: utf-8 -*-
 from porth_globals import *
 
-
-HEADER2 = '''%define SYS_EXIT 60
+COMMON_HEADER=f'''
+%define SYS_EXIT 60
+%define SYS_READ 0
+%define SYS_WRITE 1
+%define SYS_OPEN 2
+%define SYS_CLOSE 3
+%define BUFFER_SIZE {BUFFER_SIZE}
+%define STDOUT 1
 BITS 64
 segment .text
-myopen:
-    mov rax, 2  ; sys_open
+_read_write:
+  ; read file into a buffer
+  mov rax, SYS_READ
+  mov rdi, [_fd]
+  mov rsi, _file_buffer
+  mov rdx, BUFFER_SIZE
+  syscall
+  ret
+_open:
+    mov rax, SYS_OPEN  ; sys_open
     mov rdi, [_file]   ; get file name address
     mov rsi, [_options] ; read only
     syscall
     ;add eax, '0'     ; load fd
     mov dword [_fd], eax  ; move _fd to buf
     ret
-
-myclose:
+_close:
     mov rsi, _fd
-    mov rdi, 3
+    mov rdi, SYS_CLOSE
     mov rax, 0
     syscall
     ret
+_write_buffer:
+  ; write the buffer content to the file descriptor
+  mov rdx, [_bufread] ; message length
+  mov rax, SYS_WRITE ; system call number (sys_write)
+  mov rdi, [_fd]; file descriptor
+  mov rsi, _file_buffer
+  syscall
+  ret
+'''
 
+
+HEADER2 = f'''
 print:
     mov r9, -3689348814741910323
     sub rsp, 40
@@ -75,29 +99,11 @@ _start:
 '''
 
 #using printf standard function to print on the screen
-HEADER = f'''%define SYS_EXIT 60\n
-BITS 64
-segment .text
+HEADER = f'''
 global main
 extern printf, fflush 
-myopen:
-    mov rax, 2  ; sys_open
-    mov rdi, [_file]   ; get file name address
-    mov rsi, [_options] ; read only
-    syscall
-    ;add eax, '0'     ; load fd
-    mov dword [_fd], eax  ; move fd to buf
-    ret
-
-myclose:
-    mov rsi, _fd
-    mov rdi, 3
-    mov rax, 0
-    syscall
-    ret
-
 print_char:
-    mov     rdi, char             ; set 1st parameter (format)
+    mov     rdi, _char             ; set 1st parameter (format)
     mov     rsi, rax 
     call printf 
     xor    rdi, rdi                ; clear rdi
@@ -109,7 +115,7 @@ print_error:
     call    fflush  
     ret
 print:
-    mov     rdi, format             ; set 1st parameter (format)
+    mov     rdi, _format             ; set 1st parameter (format)
     mov     rsi, rax                ; set 2nd parameter (current_number)
     xor     rax, rax                ; because printf is varargs
     call    printf                ; printf(format, current_number)
@@ -129,11 +135,11 @@ syscall
 
 DATA=f'''
 section .data 
-format db  "%lld", 10, 0
-format2 db "%s", 10, 0
-char db  "%c", 0
-negative db "-", 0
-security  dq  {MAX_LOOP_SECURITY}
+_format db  "%lld", 10, 0
+_format2 db "%s", 10, 0
+_char db  "%c", 0
+_negative db "-", 0
+_security  dq  {MAX_LOOP_SECURITY}
 
 '''
 
@@ -142,7 +148,9 @@ section .bss    ; uninitialized data section
 _file RESQ 1
 _options RESQ 1
 _fd RESQ 1
-mem: resb {get_MEM_CAPACITY()}
+_file_buffer resb BUFFER_SIZE
+_bufread RESQ 1
+_mem: resb {get_MEM_CAPACITY()}
 '''
 
 
@@ -479,7 +487,7 @@ def generate_dump_op(output, ip, libc):
         output.write("cmp rdi, 0 \n")
         output.write(f"jge pos_{ip}\n")
         output.write("push rdi\n")
-        output.write("mov rdi, [negative]\n")
+        output.write("mov rdi, [_negative]\n")
         output.write("call print_char\n")
         output.write("pop rdi\n")
         output.write("neg rdi\n")
@@ -553,9 +561,9 @@ def generate_divmod_op(output, ip, libc):
 def generate_do_op(output, op):
     output.write("; do \n") 
     #adding security for infinite loops I defined 1_000_000
-    output.write("mov rcx, [security]\n")
+    output.write("mov rcx, [_security]\n")
     output.write("dec rcx\n")
-    output.write("mov [security], rcx\n")
+    output.write("mov [_security], rcx\n")
     output.write("jz infinite_loop\n")            
     output.write("pop    rax \n")
     output.write("test    rax, rax \n")
@@ -680,7 +688,7 @@ def generate_drop_op(output):
 
 def generate_mem_op(output):
     output.write("; mem \n")
-    output.write("push mem\n") 
+    output.write("push _mem\n") 
 
 def generate_rotate_op(output):
     output.write("; rotate \n")
@@ -693,20 +701,36 @@ def generate_rotate_op(output):
 
 #probably array of files to open and array of fd's
 def generate_open_op(output, op):
-    global index_file
     output.write("; open \n")
     output.write(f"mov rax, file_{op['index']}\n") #file index
     output.write("mov [_file], rax\n")
     output.write(f"mov qword [_options], {op['options']}\n") #mode
-    output.write("call myopen\n")
+    output.write("call _open\n")
     output.write(f"mov eax, dword[_fd]\n")
-    output.write(f"mov dword[fd_{op['index']}], eax\n")
-    output.write(f"push rax\n")
+    output.write(f"push rax\n") #push file descriptor
 
 
 def generate_close_op(output, op):
     output.write("; close \n")
-    output.write(f"mov eax, dword [fd_{op['index']}]\n") #file descriptor
+    output.write("pop rax\n") # file descriptor 
     output.write(f"mov dword[_fd], eax\n")
-    output.write("call myclose\n")
+    output.write("call _close\n")
     output.write(f"push rax\n")
+
+def generate_readf_op(output, op):
+    output.write("; readf \n")
+    output.write("pop rax\n") # file descriptor
+    output.write(f"mov dword[_fd], eax\n")    
+    output.write("call _read_write\n")
+    output.write(f"mov qword [_bufread], rax\n")
+    output.write(f"push rax\n")
+
+def generate_writef_op(output, op):
+    output.write("; writef \n")
+    output.write("pop rax\n") # file descriptor  
+    output.write(f"mov dword[_fd], eax\n")
+    output.write("pop rax\n") #length of buffer
+    #output.write("mov qword [_bufread], rax\n")    
+    output.write("call _write_buffer\n")   
+    output.write(f"push rax\n")
+
