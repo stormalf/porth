@@ -78,7 +78,7 @@ def test():
                 print("  Actual:")
                 print(f"    {sim_output}")
             args = get_args(args_path, sim=False)
-            com_args = ["./porth.py", "-c", "-i", entry.path, "-o",  exe_path]
+            com_args = ["./porth.py", "-c",  "-i", entry.path, "-o",  exe_path]
             cmd_run_echoed(com_args, check=True)
             com_args = [exe_path]
             com_args.extend(shlex.split(args))     

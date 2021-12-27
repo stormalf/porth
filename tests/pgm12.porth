@@ -18,10 +18,12 @@
     DUP .
     1 +
 END    
+DROP DROP 
 
 //print number from 100 to 31
 30 100 WHILE 2DUP < DO
     DUP .
     1 -
 END    
+DROP DROP
 1 EXIT //exit with error code 1 same as syscall1 

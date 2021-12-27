@@ -8,6 +8,7 @@ INCLUDE "include/std.porth"
     MEM 2DUP load64 + store64
     1 +
 END
+DROP 
 
 MEM load64 .
 MEM 0 store64

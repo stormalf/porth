@@ -2,6 +2,8 @@ INCLUDE "include/std.porth"
 
 "Hello world!\n" STDOUT write
 //todo
-
+DROP
 "Error!\n" error
+
+DROP
 

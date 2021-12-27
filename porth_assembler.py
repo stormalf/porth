@@ -154,26 +154,6 @@ _mem: resb {get_MEM_CAPACITY()}
 '''
 
 
-#with libc argc, argv are not passed by the stack but by the registers rdi contains argc and rsi contains argv
-#to be able to use the same program with or without libc we need to push the arguments on the stack before executing the porth program
-# def generate_read_argv(output):
-#         output.write("mov rax, [rsi + (rdi * 8) + 8]\n") 
-#         output.write("mov rdx, rdi\n")
-#         output.write("check_args:\n")
-#         output.write("cmp rdi, 0 \n") 
-#         output.write("jz no_args\n")
-#         output.write("push rax\n")
-#         output.write("mov rax, [rsi + (rdi * 8)]\n")            
-#         output.write("dec rdi\n")
-#         output.write("jmp check_args\n")
-#         output.write("no_args:\n")
-#         output.write(f"mov rax, [rsi + 8] \n") 
-#         output.write("push rax\n")    
-#         output.write(f"mov rax, [rsi] \n")             
-#         output.write(f"push rax\n") 
-#         output.write(f"push rdx\n")      
-
-
 def generate_add_op(output):
     output.write("; add \n")
     output.write("pop    rax \n")

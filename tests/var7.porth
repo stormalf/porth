@@ -8,3 +8,7 @@ x .
 y .
 
 VAR isOK bool 0 !isOK
+
+isOK .
+1 !isOK
+isOK .

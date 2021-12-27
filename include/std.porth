@@ -404,9 +404,9 @@ MACRO fputs
 ENDM
 
 MACRO puts
-  stdout fputs
+  stdout fputs 
 ENDM
 
 MACRO eputs
-  stderr fputs
+  stderr fputs 
 ENDM

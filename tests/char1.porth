@@ -1,6 +1,6 @@
-'x' WRITE
-' ' WRITE
-'*' WRITE
-''' WRITE
-'"' WRITE
+'x' WRITE 
+' ' WRITE 
+'*' WRITE 
+''' WRITE 
+'"' WRITE 
 ":" 1 1 SYSCALL3 DROP
