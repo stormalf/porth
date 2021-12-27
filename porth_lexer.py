@@ -432,17 +432,6 @@ def pre_processing_macros(program: List) -> Tuple[List, bool]:
         error= True             
     return program, error
 
-def check_valid_value(type: str, value: int) -> bool:
-    isValid = True
-    if type == OPU8 and (value < MIN_U8 or value > MAX_U8) :
-        isValid = False
-    elif type == OPU16 and (value < MIN_U16 or value > MAX_U16):
-        isValid = False
-    elif type == OPU32 and (value < MIN_U32 or value > MAX_U32):
-        isValid = False
-    elif type == OPU64 and (value < MIN_U64 or value > MAX_U64):
-        isValid = False        
-    return isValid
 
 #cross references to store the link between a IF and this corresponding END operation!
 def cross_reference_block(program: List) -> Tuple[List, bool]:
@@ -560,9 +549,19 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
                 op['index'] = var_struct[previous_op['value']]['value']
             else:
                 op['index'] = previous_op['value']
+            if op['type'] == OP_CLOSE:
+                if files_struct[op['index']]['close'] == True:
+                    #print(f"Error Code {ERR_FILE_CLOSE} file already closed in file {filename}, line {line} column {col}")
+                    generate_error(filename=filename, errfunction=errfunction, msgid= 32, token=files_struct[op['index']]['filename'], fromline=line, column=col)
+                else:
+                    files_struct[op['index']]['close'] = True
     if len(ifarray) > 0:
         #print(f"Error Code {ERR_TOK_BLOCK} DO IF ELSE END missing one")
         generate_error(filename=filename, errfunction=errfunction, msgid= 28) 
+    for fd in files_struct:
+        if files_struct[fd]['close'] == False:
+            #print(f"Error Code {ERR_TOK_FILE} file {files_struct[fd]['filename']} not closed")
+            generate_error(filename=filename, errfunction=errfunction, msgid= 31, token=files_struct[fd]['filename'])
     if check_errors():
         error= True
     return program, error

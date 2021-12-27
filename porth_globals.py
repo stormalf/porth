@@ -4,7 +4,7 @@ from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
 MAX_OPS = 66
-MAX_ERROR_TABLE = 31
+MAX_ERROR_TABLE = 33
 MAX_WARNING_TABLE=1
 
 BUFFER_SIZE = 2048
@@ -152,7 +152,14 @@ def check_valid_value(type: str, value: int) -> bool:
         isValid = False        
     return isValid
 
-    
+def check_file_closed(fd: int) -> bool:
+    global files_struct
+    if fd in files_struct:
+        return files_struct[fd]['close']
+    else:
+        return False
+
+
 OP_PUSH=iota(True)    
 OP_ADD=iota()
 OP_SUB=iota()

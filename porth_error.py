@@ -61,6 +61,8 @@ def error_management(filename:str, msgid: int, fromline: int = 0, column: int = 
     error_table[28] = f"Error Code {ERR_TOK_BLOCK} DO IF ELSE END missing one"
     error_table[29] = f"Error Code {ERR_TOK_MACRO_ID} line {column} Macro identifier {token} is a reserved word at line {fromline}"
     error_table[30] = f"Error Code {ERR_VAR_ASSIGN} impossible to assign specified value for the variable type in file {filename}, line {fromline} column {column}"
+    error_table[31] = f"Error Code {ERR_TOK_FILE} file {token} not closed in file {filename}"
+    error_table[32] = f"Error Code {ERR_TOK_FILE} file already closed in file {filename}, line {fromline} column {column}"
     assert len(error_table) == get_MAX_ERROR(), "Max error table implemented!"      
     return error_table[msgid]
 
