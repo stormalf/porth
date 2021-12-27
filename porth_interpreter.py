@@ -692,8 +692,11 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
             elif op['type']==get_OP_VAR():
                 ip += 1
             elif op['type']==get_OP_IDVAR():
-                stack.append(op['value'])
-                set_stack_counter()
+                if program[ip - 1]['type'] != get_OP_VAR():
+                    #print(op)
+                    stack.append(op['value'])
+                    set_stack_counter()
+                    #print(stack, op, get_OP_VAR())
                 ip += 1
             elif op['type']==get_OP_ARGC():
                 stack.append(argc)
@@ -714,9 +717,15 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                     set_stack_counter(-1)
                     a_value = get_var_value(a)
                     var = op['value'][1:]
-                    var_struct[var]['value'] = a_value
-                    stack.append(var_struct[var]['value']) 
-                    set_stack_counter()
+                    typevar = var_struct[var]['type']
+                    if check_valid_value(type=typevar, value=a_value):
+                        var_struct[var]['value'] = a_value
+                    else:
+                        print(f"! invalid value {a_value} for the variable type: {typevar}")
+                        runtime_error_counter += 1
+                        error = True
+                    #stack.append(var_struct[var]['value']) 
+                    #set_stack_counter()
                 ip += 1                                         
             elif op['type']==get_OP_VARTYPE():              
                 ip += 1

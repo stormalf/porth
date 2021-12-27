@@ -123,6 +123,7 @@ Keyword, operators, and constants are defined in the language.
     OPENW: keyword to open a file (write mode only)
     READF: read content from file to a buffer
     WRITEF: write content from buffer to a file
+    DIVMOD: keyword to divide and return 2 values on stack (result and reminder)
 
 ## release notes
 

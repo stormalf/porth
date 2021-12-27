@@ -1,0 +1,4 @@
+VAR x u8 1000 !x
+VAR y u16 -10 !y
+VAR z u32 -100 !z
+VAR w u64 -1000 !w

@@ -432,6 +432,17 @@ def pre_processing_macros(program: List) -> Tuple[List, bool]:
         error= True             
     return program, error
 
+def check_valid_value(type: str, value: int) -> bool:
+    isValid = True
+    if type == OPU8 and (value < MIN_U8 or value > MAX_U8) :
+        isValid = False
+    elif type == OPU16 and (value < MIN_U16 or value > MAX_U16):
+        isValid = False
+    elif type == OPU32 and (value < MIN_U32 or value > MAX_U32):
+        isValid = False
+    elif type == OPU64 and (value < MIN_U64 or value > MAX_U64):
+        isValid = False        
+    return isValid
 
 #cross references to store the link between a IF and this corresponding END operation!
 def cross_reference_block(program: List) -> Tuple[List, bool]:
@@ -446,6 +457,7 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
     for ip in range(len(program)):
         filename, line, col, *_ = program[ip]['loc']
         op = program[ip]
+        previous_op = program[ip - 1]
         if op['type'] == OP_IF:
             stack.append(ip)
             ifarray.append(ip)
@@ -499,19 +511,26 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
                 var_struct[op['value']]['used'] = var_used
         elif op['type'] == OP_ASSIGN_VAR:
             var =  op['value'][1:]            
-            def_line = var_struct[var]['definition'][1] 
+            def_line = var_struct[var]['definition'][1]
+            typevar = var_struct[var]['type'] 
             current_line = op['loc'][1]       
-            if program[ip - 1]['type'] in (OP_OPEN, OP_CLOSE, OP_OPENW, OP_READF, OP_WRITEF):
-                op['index'] = program[ip - 1]['index']
-                var_struct[var]['value'] =  program[ip - 1]['index']   
+            if previous_op['type'] in (OP_OPEN, OP_CLOSE, OP_OPENW, OP_READF, OP_WRITEF):
+                op['index'] = previous_op['index']
+                var_struct[var]['value'] =  previous_op['index']   
                 #print(var_struct,  program[ip - 1]['value'])
+            else: 
+                value = previous_op['value']
+                try:
+                    value = int(value)
+                    if check_valid_value(typevar, value):
+                        var_struct[var]['value'] = value
+                    else:
+                        generate_error(filename=filename, errfunction=errfunction, msgid= 30, token=var, fromline=line, column=col)
+                except ValueError:
+                    pass
             if current_line < def_line:
                 #print(f"Error Code {ERR_VAR_UNDEF} variable `{op['value']}` used before definition in file {filename}, line {line} column {col}")
                 generate_error(filename=filename, errfunction=errfunction, msgid= 24, token=op['value'], fromline=line, column=col) 
-            #store the number of a variable is used    
-            elif program[ip - 1]['type'] == OP_DIVMOD:
-                #print(f"Error Code {ERR_VAR_NOT_ALW} variable `{op['value']}` can't be used after DIVMOD operator. Error in file {filename}, line {line} column {col}")
-                generate_error(filename=filename, errfunction=errfunction, msgid= 14, token=op['value'], fromline=line, column=col)
             elif current_line != def_line:
                 #print(program[ip])
                 var_used = var_struct[var]['used']
@@ -520,28 +539,27 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
         elif op['type'] == OP_VARTYPE:
             if ip <= 1:
                 generate_error(filename=filename, errfunction=errfunction, msgid= 27, fromline=line, column=col)                 
-            elif  program[ip - 1]['type'] != OP_IDVAR or program[ip - 2]['type'] != OP_VAR:
+            elif  previous_op['type'] != OP_IDVAR or program[ip - 2]['type'] != OP_VAR:
                 generate_error(filename=filename, errfunction=errfunction, msgid= 27, fromline=line, column=col)                 
         # open file and store it in the files_struct
         elif op['type'] == OP_OPEN:
-            files_struct[index_file] = {"filename": program[ip - 1]['value'], "close": False, "index": index_file, "options": 0}
+            files_struct[index_file] = {"filename": previous_op['value'], "close": False, "index": index_file, "options": 0}
             op['index'] = index_file
             op['options'] = 0
             index_file += 1
-
         # open file for writing mode and store it in the files_struct            
         elif op['type'] == OP_OPENW:
-            files_struct[index_file] = {"filename": program[ip - 1]['value'], "close": False, "index": index_file, "options": 1}
+            files_struct[index_file] = {"filename": previous_op['value'], "close": False, "index": index_file, "options": 1}
             op['index'] = index_file
             op['options'] = O_CREAT|O_WRONLY|O_TRUNC
             index_file += 1 
         # close or readf or writef : update file index in the op code
         elif op['type'] == OP_CLOSE or op['type'] == OP_READF or op['type'] == OP_WRITEF:
-            if program[ip - 1]['value'] in var_struct:
+            if previous_op['value'] in var_struct:
                 #print(var_struct[program[ip - 1]['value']])
-                op['index'] = var_struct[program[ip - 1]['value']]['value']
+                op['index'] = var_struct[previous_op['value']]['value']
             else:
-                op['index'] = program[ip - 1]['value']
+                op['index'] = previous_op['value']
     if len(ifarray) > 0:
         #print(f"Error Code {ERR_TOK_BLOCK} DO IF ELSE END missing one")
         generate_error(filename=filename, errfunction=errfunction, msgid= 28) 

@@ -520,7 +520,6 @@ def generate_div_op(output, ip, libc):
         output.write(f"mov rdx, {len(RUNTIME_ERROR[RUN_DIV_ZERO]) + 1}\n")            
         output.write(f"mov rsi, error_message_{RUN_DIV_ZERO}\n")            
         output.write("syscall\n")  
-    #output.write(f"pop rbp\n")
     output.write("mov rax, SYS_EXIT\n")
     output.write(f"mov rdi, {RUN_DIV_ZERO}\n")            
     output.write("syscall\n")  
@@ -660,7 +659,7 @@ def generate_assign_op(output, bytecode_prev_ip, op):
             register=get_register(typev)
             output.write(f"pop rax\n")
             output.write(f"mov {qualifier} [{var}], {register}\n")
-            output.write(f"push rax\n")  
+            #output.write(f"push rax\n")  
 
 def generate_infinite_loop_op(output, libc):
     output.write("infinite_loop: \n")

@@ -22,13 +22,13 @@ def get_counter_warning() -> int:
 
 def generate_error(filename:str, errfunction: str, msgid: int, fromline: int = 0, column: int = 0, token: str = None, toline: int = 0, increment=True) -> str:
     global error_counter, error_msg
-    error_msg[error_counter]= {'msg': error_management(filename=filename, errfunction=errfunction, msgid= msgid, fromline=fromline, column=column, token=token, toline=toline), 'function': errfunction}
+    error_msg[error_counter]= {'msg': error_management(filename=filename, msgid= msgid, fromline=fromline, column=column, token=token, toline=toline), 'function': errfunction}
     if increment:
         error_counter += 1
     #return error_management(filename, msgid, fromline, column, token, toline)
 
 
-def error_management(filename:str, errfunction:str, msgid: int, fromline: int = 0, column: int = 0, token: str = None, toline: int = 0) -> str:
+def error_management(filename:str, msgid: int, fromline: int = 0, column: int = 0, token: str = None, toline: int = 0) -> str:
     global error_table, error_counter, error_xrefs
     error_table[0] = f"Error Code {ERR_TOK_FILE} File {filename} not found"
     error_table[1] = f"Error Code {ERR_TOK_VAR} VAR keyword should be the first token in variable definition line {column}"
@@ -60,7 +60,7 @@ def error_management(filename:str, errfunction:str, msgid: int, fromline: int = 
     error_table[27] = f"Error Code {ERR_VAR_TYPE} Incorrect use of VAR_TYPE keyword in file {filename}, line {fromline} column {column}"
     error_table[28] = f"Error Code {ERR_TOK_BLOCK} DO IF ELSE END missing one"
     error_table[29] = f"Error Code {ERR_TOK_MACRO_ID} line {column} Macro identifier {token} is a reserved word at line {fromline}"
-    error_table[30] = "NOT USED"
+    error_table[30] = f"Error Code {ERR_VAR_ASSIGN} impossible to assign specified value for the variable type in file {filename}, line {fromline} column {column}"
     assert len(error_table) == get_MAX_ERROR(), "Max error table implemented!"      
     return error_table[msgid]
 

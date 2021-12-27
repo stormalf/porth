@@ -17,12 +17,34 @@ ARGV_CAPACITY = 640_000
 
 MAX_LOOP_SECURITY = 10_000_000
 
+#max min values
+MAX_U8 = 255
+MAX_U16 = 65535
+MAX_U32 = 4294967295
+MAX_U64 = 18446744073709551615
+
+MIN_U8 = 0
+MIN_U16 = 0
+MIN_U32 = 0
+MIN_U64 = 0
+
+MAX_I8 = 127
+MAX_I16 = 32767
+MAX_I32 = 2147483647
+MAX_I64 = 9223372036854775807
+MIN_I8 = -128
+MIN_I16 = -32768
+MIN_I32 = -2147483648
+MIN_I64 = -9223372036854775808
+
+#struct 
 var_struct = {}
 macro_struct= {}
 warning_msg = {}
 error_msg = {}
 files_struct = {}
 include_file=[]
+
 
 iota_counter= 0
 exit_code = 0
@@ -99,24 +121,36 @@ def get_var_type(var: Union[str, int]) -> Union[str, None]:
         return None        
 
 def get_var_qualifier(type: str) -> str:
-    if type == "u8":
+    if type == OPU8:
         return "byte"
-    elif type == "u16":
+    elif type == OPU16:
         return "word"
-    elif type == "u32":
+    elif type == OPU32:
         return "dword"
-    elif type == "u64":
+    elif type == OPU64:
         return "qword"
 
 def get_register(type: str) -> str:
-    if type == "u8":
+    if type == OPU8:
         return "al"
-    elif type == "u16":
+    elif type == OPU16:
         return "ax"
-    elif type == "u32":
+    elif type == OPU32:
         return "eax"
-    elif type == "u64":
+    elif type == OPU64:
         return "rax"
+
+def check_valid_value(type: str, value: int) -> bool:
+    isValid = True
+    if type == OPU8 and (value < MIN_U8 or value > MAX_U8) :
+        isValid = False
+    elif type == OPU16 and (value < MIN_U16 or value > MAX_U16):
+        isValid = False
+    elif type == OPU32 and (value < MIN_U32 or value > MAX_U32):
+        isValid = False
+    elif type == OPU64 and (value < MIN_U64 or value > MAX_U64):
+        isValid = False        
+    return isValid
 
     
 OP_PUSH=iota(True)    

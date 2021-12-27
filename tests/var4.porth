@@ -9,15 +9,15 @@ VAR test2 u8 3 !test2
 VAR result u16 0 !result
 VAR reminder u16 0 !reminder
 
-"40 + 3 = " WRITE test test2 + !result .
-"40 * 3 = " WRITE test test2 MUL !result .
-"40 / 3 = " WRITE test test2 DIV !result .
-"40 % 3 = " WRITE test test2 MOD !reminder .
-"40 & 3 = " WRITE test test2 ANDB !result .
-"40 | 3 = " WRITE test test2 ORB !result .
-"40 - 3 = " WRITE test test2 - !result .
-"40 <<< 3 = " WRITE test test2 SHL !result .
-"40 >>> 3 = " WRITE test test2 SHR !result .
+"40 + 3 = " WRITE test test2 + !result result .
+"40 * 3 = " WRITE test test2 MUL !result result .
+"40 / 3 = " WRITE test test2 DIV !result result .
+"40 % 3 = " WRITE test test2 MOD !reminder reminder .
+"40 & 3 = " WRITE test test2 ANDB !result result .
+"40 | 3 = " WRITE test test2 ORB !result result .
+"40 - 3 = " WRITE test test2 - !result result .
+"40 <<< 3 = " WRITE test test2 SHL !result result .
+"40 >>> 3 = " WRITE test test2 SHR !result result .
 
 // assignment variable can't be used after a DIVMOD operator
 //test test2 DIVMOD !result !reminder
