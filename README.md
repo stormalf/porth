@@ -114,7 +114,7 @@ Keyword, operators, and constants are defined in the language.
     '_': single quotes to create a char (1 character allowed except for some special characters see special_chars dictionary). It's possible to print some chars like '\n' or '\t' but some issues still yet with unicode characters that are coded in more than one byte.
     VAR: keyword to create a variable followed by the name of the variable, the type of the variable
     !variable_name: assignment operator pops the value and the variable and assign the value to the variable ex: !x pop the value and assign to x.
-    u8, u16, u32, u64 : variables types allowed for now.
+    u8, u16, u32, u64, i8, i16, i32, i64, bool : variables types allowed for now.
     ARGC: keyword to push the number of arguments passed to the program
     ARGV: keyword to push the arguments passed to the program
     ROT: rotate the top 3 values of the stack: a b c -> b c a
@@ -124,6 +124,12 @@ Keyword, operators, and constants are defined in the language.
     READF: read content from file to a buffer
     WRITEF: write content from buffer to a file
     DIVMOD: keyword to divide and return 2 values on stack (result and reminder)
+
+## Extra stack operators
+
+MEM => DROP required. Each program that uses MEM operator needs a DROP at the end.
+OVER => DROP required. Each program that uses OVER operator needs a DROP at the end.
+SYSCALLx => syscalls returns the result into the stack needs to DROP if you didn't care about the result.
 
 ## release notes
 
@@ -202,6 +208,8 @@ The non-initialized variables are not taken into account for now (segment fault 
 1.0.33 Adding OPENW, READF, WRITEF to have the capability to read file content and to write into a new file. Fixing README mistake between $ and @.
 Missing controls on File like if open failed negative numbers return in RAX not checked.
 
+1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64 and bool. Adding controls to forbid wrong values depending the variable types.
+
 ## simulation
 
 The simulation/interpreter mode is too long. By generating a shared library using cython it seems a little bit faster (I used my pytoc tool to generate the shared library). The euler6 example takes :
@@ -245,9 +253,8 @@ link to pypy : https://www.pypy.org/download.html
 ## TODO
 
 - Adding controls to check if open/read/write returns negative values.
-- Adding controls to avoid to define unsigned variables with a negative value.
 - Adding pointers and how to dereference them ?
-- Adding other types for variables (bool, signed int, char, string, float)
+- Adding other types for variables (char, string, float)
 - Adding controls to avoid crash on open and close operators
 - Refactoring code to be simpler and more readable.
 - Trying to implement similar language but using ANTLR4.

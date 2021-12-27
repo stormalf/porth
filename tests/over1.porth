@@ -1,0 +1,5 @@
+10 17 OVER . .
+DROP
+14 13 OVER . .
+DROP
+MEM DROP
