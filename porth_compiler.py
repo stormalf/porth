@@ -173,25 +173,25 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
     for i in RUNTIME_ERROR:
         output.write(f'error_message_{i} db "{RUNTIME_ERROR[i]}", 10, 0\n')
     for i, var in enumerate(var_struct):
-        if var_struct[var]['type']==OPU8 and var_struct[var]['value']!= None:
+        if var_struct[var]['type'] in (OPU8, OPI8, OPBOOL) and var_struct[var]['value']!= None:
             output.write(f"{var}: db {var_struct[var]['value']}, 0\n")
-        elif var_struct[var]['type']==OPU16 and var_struct[var]['value']!= None:
+        elif var_struct[var]['type'] in (OPU16, OPI16) and var_struct[var]['value']!= None:
             output.write(f"{var}: dw {var_struct[var]['value']}, 0\n")
-        elif var_struct[var]['type']==OPU32 and var_struct[var]['value']!= None:
+        elif var_struct[var]['type'] in (OPU32, OPI32) and var_struct[var]['value']!= None:
             output.write(f"{var}: dd {var_struct[var]['value']}, 0\n")
-        elif var_struct[var]['type']==OPU64 and var_struct[var]['value']!= None:
+        elif var_struct[var]['type'] in (OPU64, OPI64) and var_struct[var]['value']!= None:
             output.write(f"{var}: dq {var_struct[var]['value']}, 0\n")   
         else:
             bss_var.append(var)  
     output.write(BSS)
     for var in bss_var:
-        if var_struct[var]['type']==OPU8:
+        if var_struct[var]['type'] in (OPU8, OPI8, OPBOOL):
             output.write(f"{var}: resb 1\n")
-        elif var_struct[var]['type']==OPU16:
+        elif var_struct[var]['type'] in (OPU16, OPI16):
             output.write(f"{var}: resw 2\n")
-        elif var_struct[var]['type']==OPU32:
+        elif var_struct[var]['type'] in (OPU32, OPI32):
             output.write(f"{var}: resd 4\n")
-        elif var_struct[var]['type']==OPU64:
+        elif var_struct[var]['type'] in (OPU64, OPI64):
             output.write(f"{var}: resq 8\n")
     output.write("args_ptr: resq 1\n")
     output.close()

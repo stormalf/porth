@@ -37,6 +37,9 @@ MIN_I16 = -32768
 MIN_I32 = -2147483648
 MIN_I64 = -9223372036854775808
 
+MIN_BOOL = 0
+MAX_BOOL = 1
+
 #struct 
 var_struct = {}
 macro_struct= {}
@@ -121,23 +124,23 @@ def get_var_type(var: Union[str, int]) -> Union[str, None]:
         return None        
 
 def get_var_qualifier(type: str) -> str:
-    if type == OPU8:
+    if type in (OPU8, OPI8, OPBOOL):
         return "byte"
-    elif type == OPU16:
+    elif type in(OPU16, OPI16):
         return "word"
-    elif type == OPU32:
+    elif type in (OPU32, OPI32):
         return "dword"
-    elif type == OPU64:
+    elif type in (OPU64, OPI64):
         return "qword"
 
 def get_register(type: str) -> str:
-    if type == OPU8:
+    if type in (OPU8, OPI8, OPBOOL):
         return "al"
-    elif type == OPU16:
+    elif type in(OPU16, OPI16):
         return "ax"
-    elif type == OPU32:
+    elif type in(OPU32, OPI32):
         return "eax"
-    elif type == OPU64:
+    elif type in(OPU64, OPI64):
         return "rax"
 
 def check_valid_value(type: str, value: int) -> bool:
@@ -150,6 +153,16 @@ def check_valid_value(type: str, value: int) -> bool:
         isValid = False
     elif type == OPU64 and (value < MIN_U64 or value > MAX_U64):
         isValid = False        
+    elif type == OPI8 and (value < MIN_I8 or value > MAX_I8):
+        isValid = False
+    elif type == OPI16 and (value < MIN_I16 or value > MAX_I16):
+        isValid = False
+    elif type == OPI32 and (value < MIN_I32 or value > MAX_I32):
+        isValid = False
+    elif type == OPI64 and (value < MIN_I64 or value > MAX_I64):
+        isValid = False
+    elif type == OPBOOL and (value < MIN_BOOL or value > MAX_BOOL):
+        isValid = False
     return isValid
 
 def check_file_closed(fd: int) -> bool:
@@ -227,7 +240,6 @@ OP_CLOSE=iota()
 OP_OPENW=iota()
 OP_READF=iota()
 OP_WRITEF=iota()
-
 
 #keep in last line to have the counter working
 COUNT_OPS=iota()
@@ -347,11 +359,11 @@ OPCLOSE="CLOSE"
 OPOPENW="OPENW"
 OPREADF="READF"
 OPWRITEF="WRITEF"
-
-# OPI8="i8"
-# OPI16="i16"
-# OPI32="i32"
-# OPI64="i64"
+OPBOOL='bool'
+OPI8="i8"
+OPI16="i16"
+OPI32="i32"
+OPI64="i64"
 # OPF32="f32"
 # OPF64="f64"
 # OPSTRING="str"
@@ -359,7 +371,7 @@ OPWRITEF="WRITEF"
 
 OPERATORS=[OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_SHL, OP_SHR, OP_ANDB, OP_ORB, OP_MOD]
 
-VAR_TYPE=[OPU8,OPU16,OPU32,OPU64]
+VAR_TYPE=[OPU8,OPU16,OPU32,OPU64, OPBOOL, OPI8, OPI16, OPI32, OPI64]
 
 #forbidden_tokens = [PLUS, MINUS, DUMP]
 
@@ -579,6 +591,7 @@ def get_OP_READF() -> int:
 
 def get_OP_WRITEF() -> int:
     return OP_WRITEF
+
 
 keyword_table: Dict = {
     PLUS: OP_ADD,

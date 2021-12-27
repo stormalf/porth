@@ -6,3 +6,5 @@ y .
 x y DIVMOD !x !y
 x .
 y .
+
+VAR isOK bool 0 !isOK
