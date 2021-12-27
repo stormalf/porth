@@ -3,7 +3,7 @@
 10 . 20 . 30 .
 
 //push str 
-"Hello, World\n" 1 1 SYSCALL3 DROP "Test" "coucou" 10 10 + "echo" 3 
+"Hello, World\n" 1 1 SYSCALL3 DROP //"Test" "coucou" 10 10 + "echo" 3 
 "Hello, World\n" 1 1 SYSCALL3 DROP
 "Hello, World\n" 1 1 SYSCALL3 DROP 
 "Hello, World\n" 1 1 SYSCALL3 DROP
@@ -13,5 +13,5 @@
  "Hi!" 
  1 1 SYSCALL3 DROP
  1 +
-END
+END DROP DROP
 "\n" 1 1 SYSCALL3 DROP

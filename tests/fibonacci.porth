@@ -6,7 +6,8 @@ MACRO FIB
 1 2 WHILE OVER N < DO
     OVER . 
     SWAP OVER +
-END
+END 
 ENDM
 
 FIB
+DROP DROP //due to OVER ? 

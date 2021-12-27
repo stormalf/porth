@@ -55,8 +55,6 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
         mem[argv_ptr:argv_ptr+8] = arg_ptr.to_bytes(8, byteorder='little')
         argc += 1
         assert argc*8 <= get_ARGV_CAPACITY(), "argv buffer overflow!"
-    #stack.append(argc)
-    #set_stack_counter()
     if not error:
         while ip < len(program):
             op = program[ip]
@@ -347,7 +345,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                         error = True
                 else:
                     ip += 1    
-            elif op['type']==get_OP_MEM():
+            elif op['type']==get_OP_MEM():#when using mem the address is put on the stack and never removed 
                 #isMem = True
                 stack.append(mem_buf_ptr)
                 set_stack_counter()
@@ -363,9 +361,9 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
             elif op['type']==get_OP_STORE():
                 value = stack.pop()
                 addr = stack.pop()
+                set_stack_counter(-2)                
                 a_value = get_var_value(value)                
                 b_value = get_var_value(addr)                                
-                set_stack_counter(-2)
                 mem[b_value] = a_value & 0xFF
                 ip += 1  
             elif op['type']==get_OP_LOAD16():
@@ -380,11 +378,11 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 ip += 1                    
             elif op['type']==get_OP_STORE16():
                 a = stack.pop()
+                b = stack.pop()
+                set_stack_counter(-2)
                 store_value = get_var_value(a)                
                 store_value16 = store_value.to_bytes(length=2, byteorder="little",  signed=(store_value < 0))
-                b = stack.pop()
                 store_addr16 = get_var_value(b)                
-                set_stack_counter(-2)
                 for byte in store_value16:
                     mem[store_addr16] = byte
                     store_addr16 += 1
@@ -402,12 +400,12 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 ip += 1                     
             elif op['type']==get_OP_STORE32():
                 a = stack.pop()
+                b = stack.pop()                
+                set_stack_counter(-2)                
                 store_value = get_var_value(a)                
                 store_value32 = store_value.to_bytes(length=4, byteorder="little",  signed=(store_value < 0))
-                b = stack.pop()
                 store_addr32 = get_var_value(b)   
                 #print(store_value32, store_addr32, mem[store_addr32:20])                 
-                set_stack_counter(-2)
                 for byte in store_value32:
                     mem[store_addr32] = byte
                     store_addr32 += 1
@@ -425,12 +423,12 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 ip += 1
             elif op['type']==get_OP_STORE64():
                 a = stack.pop()
+                b = stack.pop()                
+                set_stack_counter(-2)                
                 store_value = get_var_value(a)                
                 store_value64 = store_value.to_bytes(length=8, byteorder="little",  signed=(store_value < 0))
-                b = stack.pop()
                 store_addr64 = get_var_value(b)                
                 #print("store64", store_addr64, mem[0:100])                
-                set_stack_counter(-2)
                 for byte in store_value64:
                     mem[store_addr64] = byte
                     store_addr64 += 1
@@ -551,7 +549,11 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
             elif op['type']==get_OP_WRITE():
                 if program[ip-1]['type']==get_OP_CHAR():
                     #print(chr(program[ip - 1]['value']), end="")
-                    print_output_simulation(chr(program[ip - 1]['value']), end="", istoprint=istoprint)
+                    a = stack.pop()
+                    set_stack_counter(-1)
+                    a_value = get_var_value(a)
+                    #print_output_simulation(chr(program[ip - 1]['value']), end="", istoprint=istoprint)
+                    print_output_simulation(chr(a_value), end="", istoprint=istoprint)
                 elif program[ip-1]['type']==get_OP_READF():
                     b = stack.pop() #addr
                     a = stack.pop() #length
@@ -615,7 +617,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 arg1 = stack.pop()
                 arg2 = stack.pop()
                 arg3 = stack.pop()
-                set_stack_counter(-3)
+                set_stack_counter(-4)
                 if syscall_number == 1:
                     fd = arg1
                     buffer = arg2
@@ -791,14 +793,14 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
             elif op['type']==get_OP_WRITEF():
                 #print(stack)
                 a = stack.pop()
+                b = stack.pop() #buffer length                
+                set_stack_counter(-2)                
                 fd = get_var_value(a)
                 op['index'] = files_struct[fd]['index']
-                b = stack.pop() #buffer length
                 length = get_var_value(b)
                 #c = stack.pop()
                 #length = get_var_value(c)
                 #offset = (addr + length)
-                set_stack_counter(-2)
                 writebuf = os.write(fd, buffer_file[1:length])
                 stack.append(writebuf)
                 set_stack_counter()

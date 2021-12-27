@@ -57,11 +57,8 @@ def main(args, filename: str) -> None:
     if check_errors():
         print_errors()
         print(f"Errors found in program : {get_counter_error()}")
-    if args.warning:
+    if args.warning and check_warnings(filename):
         #check by simulating without printing anything (only if simulation is not done previously)
-        # if not args.simulate:
-        #     simulate(program, args.parameter, args.outfile, istoprint=False)
-        if check_warnings(filename):
             print_warnings()
             print(f"Warnings found in program {filename} : {get_counter_warning()}")            
     if args.dump:

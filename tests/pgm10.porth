@@ -3,4 +3,5 @@ WHILE DUP 0 > DO
     DUP .
     1 -
 END 
+DROP
 100 .

@@ -21,7 +21,7 @@ my_number .
 
 VAR test u8
 
-test 9 !test
+9 !test
 test .
 
 VAR a u16 2550 !a

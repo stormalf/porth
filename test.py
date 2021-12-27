@@ -66,7 +66,7 @@ def test():
             with open(txt_path, "rb") as f:
                 expected_output = f.read()
             args = get_args(args_path, sim=True)
-            sim_args = ["./porth.py", "-s", "-i", entry.path, "-o", exe_path]
+            sim_args = ["./porth.py", "-s", "-w", "-i", entry.path, "-o", exe_path]
             sim_args.extend(shlex.split(args))
             input_data = get_input(input_path) 
             sim_output = cmd_run_echoed(sim_args, input=input_data, capture_output=True, check=True).stdout

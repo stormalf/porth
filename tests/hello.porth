@@ -49,3 +49,5 @@ MEM DUP 72 @
 1 + DUP 10 @ 
 1 +
 MEM - MEM 1 1 SYSCALL3 DROP
+DROP //using MEM push the memory address to the stack and it's never removed that's why each program using MEM should finish with DROP
+

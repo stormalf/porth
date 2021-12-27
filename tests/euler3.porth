@@ -22,6 +22,7 @@ ENDM
     OVER acc load64 + acc SWAP store64
     END
 SWAP OVER +
-END
+END DROP
 
 acc load64 .
+DROP
