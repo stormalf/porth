@@ -1,0 +1,59 @@
+INCLUDE "include/std.porth"
+
+MACRO OP_PUSH_INT 0 ENDM
+MACRO OP_PLUS 1 ENDM
+MACRO OP_PRINT 2 ENDM
+
+MACRO ops-count 
+MEM 
+ENDM
+
+MACRO ops 
+ops-count 8 + 
+ENDM
+
+MACRO sizeof(Op) 
+16 
+ENDM
+
+//0 34  (0*16) + 8) + index   
+MACRO push-op 
+ops-count $64 sizeof(Op) MUL ops + 
+DUP 8 + ROT @64 SWAP  //to reverse value addr to addr value before writing into the memory
+@64
+ops-count inc64 
+ENDM
+
+MACRO dump-ops
+0 WHILE DUP ops-count $64 < DO
+DUP sizeof(Op) MUL ops + 
+"Type:       " puts DUP $64 .
+"Operand:    " puts 8 + $64 .
+"----------\n" puts
+1 +
+END
+DROP
+ENDM
+
+//struct OP {
+//    type: u64,
+//    operand: u64
+//}
+
+MACRO simulate-op
+"TODO: simulation not implemented yet\n" puts 1 EXIT
+ENDM
+
+MACRO compile-ops 
+"TODO: compilation not implemented yet\n" puts 1 EXIT
+ENDM 
+
+
+OP_PUSH_INT 35 push-op
+OP_PUSH_INT 36 push-op
+OP_PLUS 0 push-op
+OP_PRINT 0 push-op
+
+dump-ops
+"TODO: implement Porth in itself\n" puts 1 EXIT
+

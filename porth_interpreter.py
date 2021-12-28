@@ -58,6 +58,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
     if not error:
         while ip < len(program):
             op = program[ip]
+            #print(stack)
             if op['type']==get_OP_PUSH():
                 ip += 1
                 stack.append(op['value'])
@@ -359,8 +360,8 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 set_stack_counter()
                 ip += 1                    
             elif op['type']==get_OP_STORE():
-                value = stack.pop()
-                addr = stack.pop()
+                value = stack.pop() 
+                addr = stack.pop() 
                 set_stack_counter(-2)                
                 a_value = get_var_value(value)                
                 b_value = get_var_value(addr)                                
@@ -392,7 +393,6 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 addr = get_var_value(a)      
                 set_stack_counter(-1)          
                 _bytes = bytearray(4)
-                #print(addr, mem[addr:20])                    
                 for offset in range(0,4):
                     _bytes[offset] = mem[addr + offset]
                 stack.append(int.from_bytes(_bytes, byteorder="little"))
@@ -405,7 +405,6 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 store_value = get_var_value(a)                
                 store_value32 = store_value.to_bytes(length=4, byteorder="little",  signed=(store_value < 0))
                 store_addr32 = get_var_value(b)   
-                #print(store_value32, store_addr32, mem[store_addr32:20])                 
                 for byte in store_value32:
                     mem[store_addr32] = byte
                     store_addr32 += 1
@@ -414,7 +413,6 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 a = stack.pop()
                 addr = get_var_value(a)
                 set_stack_counter(-1)
-                #print("load64", addr, mem[addr:20])
                 _bytes = bytearray(8)
                 for offset in range(0,8):
                     _bytes[offset] = mem[addr + offset]
@@ -423,12 +421,11 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 ip += 1
             elif op['type']==get_OP_STORE64():
                 a = stack.pop()
-                b = stack.pop()                
+                b = stack.pop()          
                 set_stack_counter(-2)                
                 store_value = get_var_value(a)                
                 store_value64 = store_value.to_bytes(length=8, byteorder="little",  signed=(store_value < 0))
                 store_addr64 = get_var_value(b)                
-                #print("store64", store_addr64, mem[0:100])                
                 for byte in store_value64:
                     mem[store_addr64] = byte
                     store_addr64 += 1

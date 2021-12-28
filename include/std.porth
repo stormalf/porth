@@ -378,7 +378,7 @@ MACRO store64
 ENDM
 
 MACRO inc64
-  DUP load64 1 + store64
+  DUP $64 1 + @64
 ENDM
 
 MACRO strlen
