@@ -637,7 +637,7 @@ def simulate_op_rotate(op: Dict) -> None:
         set_stack_counter(3)
 
 def simulate_op_open(op: Dict) -> None:
-    global stack, files_struct
+    global stack, files_struct, mem
     errfunction="simulate_op_open"
     if len(stack) < 2:
         #print("! impossible not enough element in stack")
@@ -654,6 +654,65 @@ def simulate_op_open(op: Dict) -> None:
         #print(files_struct, op)
         stack.append(fd)
         set_stack_counter()
+
+def simulate_op_openw(op: Dict) -> None:
+    global stack, mem
+    errfunction="simulate_op_openw"
+    if len(stack) < 2:
+        #print("! impossible not enough element in stack")
+        generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+    else:
+        b = stack.pop() #addr
+        a = stack.pop() #length
+        addr = get_var_value(b)
+        length = get_var_value(a)
+        set_stack_counter(-2)
+        offset = (addr+length) 
+        s = mem[addr:offset].decode('utf-8')
+        fd = os.open(s, os.O_CREAT|os.O_WRONLY|os.O_TRUNC)
+        stack.append(fd)
+        set_stack_counter()
+        
+def simulate_op_syscall0(op: Dict) -> None:
+    global stack, files_struct
+    errfunction="simulate_op_syscall0"
+    if len(stack) < 1:
+        #print("SYSCALL0 impossible not enough element in stack")
+        generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+    else:
+        syscall_number = stack.pop()
+        set_stack_counter(-1)
+        if syscall_number == 39:
+            stack.append(os.getpid())
+            set_stack_counter()
+        else:
+            #print(f"unknown syscall0 number: {syscall_number}")
+            generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
+            stack.append(exit_code)
+            set_stack_counter()          
+
+def simulate_op_syscall1(op: Dict) -> bool:
+    global stack, files_struct
+    exit = False
+    errfunction="simulate_op_syscall1"
+    if len(stack) < 2:
+        #print("SYSCALL1 impossible not enough element in stack")
+        generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+    else:
+        syscall_number = stack.pop()
+        exit_code = stack.pop()
+        set_stack_counter(-2)
+        if syscall_number == 60:
+            exit = True
+        else:
+            print(f"unknown syscall1: {syscall_number}")
+            generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
+            stack.append(exit_code)
+            set_stack_counter()                   
+    return exit
+
+
+
 
 #print only if requested
 def print_output_simulation(value, file: FileIO = sys.stdout, end: str = None, istoprint: bool = True) -> None:

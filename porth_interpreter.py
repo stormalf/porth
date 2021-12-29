@@ -149,14 +149,6 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 ip += 1                    
             elif op['type']==get_OP_STORE():
                 simulate_op_store(op)
-                #print("store!")
-                # value = stack.pop() 
-                # addr = stack.pop() 
-                # set_stack_counter(-2)                
-                # a_value = get_var_value(value)                
-                # b_value = get_var_value(addr)                                
-                # mem[b_value] = a_value & 0xFF
-                #print(stack, a_value, b_value, mem[b_value:1])
                 ip += 1  
             elif op['type']==get_OP_LOAD16():
                 simulate_op_load16(op)
@@ -209,88 +201,34 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 if len(stack) < 1:
                     #print("EXIT impossible not enough element in stack")
                     generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
-                syscall_number = 60
+                #syscall_number = 60
                 a = stack.pop()
                 set_stack_counter(-1)
                 exit_code = get_var_value(a)
                 break
             elif op['type']==get_OP_WRITE():
                 simulate_op_write(op=op, ip=ip, program=program, istoprint=istoprint)
-                # if program[ip-1]['type']==get_OP_CHAR():
-                #     if len(stack) < 1:
-                #         #print("WRITE impossible not enough element in stack")
-                #         generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
-                #     #print(chr(program[ip - 1]['value']), end="")
-                #     a = stack.pop()
-                #     set_stack_counter(-1)
-                #     a_value = get_var_value(a)
-                #     #print_output_simulation(chr(program[ip - 1]['value']), end="", istoprint=istoprint)
-                #     print_output_simulation(chr(a_value), end="", istoprint=istoprint)
-                # elif program[ip-1]['type']==get_OP_READF():
-                #     if len(stack) < 2:
-                #         #print("READF impossible not enough element in stack")
-                #         generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
-                #     b = stack.pop() #addr
-                #     a = stack.pop() #length
-                #     set_stack_counter(-2)
-                #     addr = get_var_value(b)
-                #     length = get_var_value(a)
-                #     offset = (addr+length)
-                #     if length > 0: 
-                #         s = buffer_file[addr:offset].decode('utf-8')                    
-                #         print_output_simulation(s, end='', istoprint=istoprint)
-                # elif len(stack) < 2:
-                #         #print("WRITE impossible not enough element in stack")
-                #         generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
-                # else:
-                #     b = stack.pop() #addr
-                #     a = stack.pop() #length
-                #     addr = get_var_value(b)
-                #     length = get_var_value(a)
-                #     set_stack_counter(-2)
-                #     offset = (addr+length) 
-                #     s = mem[addr:offset].decode('utf-8')
-                #     #print(s, end='')
-                #     print_output_simulation(s, end='', istoprint=istoprint)
                 ip += 1
             elif op['type']==get_OP_SYSCALL0():
-                if len(stack) < 1:
-                    #print("SYSCALL0 impossible not enough element in stack")
-                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
-                syscall_number = stack.pop()
-                set_stack_counter(-1)
-                if syscall_number == 39:
-                    stack.append(os.getpid())
-                    set_stack_counter()
-                else:
-                    #print(f"unknown syscall0 number: {syscall_number}")
-                    generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
-                stack.append(exit_code)
-                set_stack_counter()          
+                simulate_op_syscall0(op=op)
                 ip += 1
             elif op['type']==get_OP_SYSCALL1():
-                if len(stack) < 2:
-                    #print("SYSCALL1 impossible not enough element in stack")
-                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
-                syscall_number = stack.pop()
-                exit_code = stack.pop()
-                set_stack_counter(-2)
-                if syscall_number == 60:
+                exit = simulate_op_syscall1(op=op)
+                if exit:
                     break
-                else:
-                    print(f"unknown syscall1: {syscall_number}")
-                    generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
-                stack.append(exit_code)
-                set_stack_counter()                   
                 ip += 1 
             elif op['type']==get_OP_SYSCALL2():
                 #print("not implemented yet!")
                 generate_runtime_error(op=op, errfunction=errfunction, msgid=5)
                 ip += 1                     
             elif op['type']==get_OP_SYSCALL3():
+                # simulate_op_syscall3(op=op, istoprint=istoprint)
+                # pass
                 if len(stack) < 4:
                     #print("SYSCALL3 impossible not enough element in stack")
                     generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+                    stack.append(exit_code)
+                    set_stack_counter()                    
                 #save_stack = stack.copy()
                 else:
                     syscall_number = stack.pop()
@@ -302,6 +240,8 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                     if arg2 == 0:
                         #print(f"arg2 cannot be 0 {op}, {program[ip - 1]}, {program[ip - 2]}, {program[ip - 3]}, {save_stack}")
                         generate_runtime_error(op=op, errfunction=errfunction, msgid=6)
+                        stack.append(exit_code)
+                        set_stack_counter()
                     elif syscall_number == 1:
                         fd = get_var_value(arg1)
                         buffer = get_var_value(arg2)
@@ -311,13 +251,19 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                         if fd == 1:
                             #print(s, end='')
                             print_output_simulation(s, end='', istoprint=istoprint)
+                            stack.append(exit_code)
+                            set_stack_counter()                            
                         elif fd == 2:
                             #print(s, end='', file=sys.stderr)
                             print_output_simulation(s, end='', file=sys.stderr, istoprint=istoprint)
+                            stack.append(exit_code)
+                            set_stack_counter()                            
                         else:
                             os.write(fd, mem[buffer:buffer+count])
-                        stack.append(exit_code) 
-                        set_stack_counter()
+                            stack.append(exit_code)
+                            set_stack_counter()                            
+                        # stack.append(exit_code) 
+                        # set_stack_counter()
                     elif syscall_number == 0:
                         fd = arg1
                         buffer = arg2
@@ -331,9 +277,15 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                         else:
                             print(f"unknown file descriptor: {fd}")
                             generate_runtime_error(op=op, errfunction=errfunction, msgid=7)
+                            stack.append(exit_code)
+                            set_stack_counter()
                     else:
                         #print(f"unknown syscall3: {syscall_number}")
                         generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
+                        stack.append(exit_code)
+                        set_stack_counter()                        
+                #stack.append(exit_code)
+                #set_stack_counter()
                 ip += 1    
             elif op['type']==get_OP_SYSCALL4():
                 #print("not implemented yet!")
@@ -413,20 +365,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 simulate_op_open(op=op)
                 ip += 1
             elif op['type']==get_OP_OPENW():
-                if len(stack) < 2:
-                    #print("! impossible not enough element in stack")
-                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
-                else:
-                    b = stack.pop() #addr
-                    a = stack.pop() #length
-                    addr = get_var_value(b)
-                    length = get_var_value(a)
-                    set_stack_counter(-2)
-                    offset = (addr+length) 
-                    s = mem[addr:offset].decode('utf-8')
-                    fd = os.open(s, os.O_CREAT|os.O_WRONLY|os.O_TRUNC)
-                    stack.append(fd)
-                    set_stack_counter()
+                simulate_op_openw(op=op)
                 ip += 1
             elif op['type']==get_OP_READF():
                 simulate_op_readf(op=op, ip=ip, program=program, istoprint=istoprint)

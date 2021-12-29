@@ -12,7 +12,6 @@ DUP 0 <= IF
     1 exit
 END
 
-
 name OVER + 1 - $ '\n' = IF
  1 - 
 END
@@ -20,4 +19,3 @@ END
 "Hello, " STDOUT write 
 name STDOUT write 
 "! \n" STDOUT write  
-
