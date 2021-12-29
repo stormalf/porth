@@ -7,41 +7,30 @@ import os
 from typing import Tuple
 from porth_globals import *
 from typing import *
-
-
-runtime_error_counter = 0
-
-def get_runtime_error() -> int:
-    global runtime_error_counter
-    return runtime_error_counter
-
-#print only if requested
-def print_output_simulation(value, file: FileIO = sys.stdout, end: str = None, istoprint: bool = True) -> None:
-    if istoprint:
-        if end is None:
-            print(value, file=file)
-        else:
-            print(value, end=end, file=file)
+from porth_error import check_runtime_errors, generate_runtime_error, get_runtime_error, print_runtime_errors
+from porth_simulate import *
 
 #simulate the program execution without compiling it. To be able to re-use the simulate function to detect some warnings and errors
 #the output is printed only if the function is requested with istoprint=True (default behaviour)
 def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tuple[List,bool, int]:
-    global exit_code, runtime_error_counter, MAX_LOOP_SECURITY, var_struct, BUFFER_SIZE
+    global exit_code, MAX_LOOP_SECURITY, var_struct, BUFFER_SIZE, stack, mem, mem_buf_ptr
+    #print(program)
+    errfunction="simulate"
     conditions_stack = {}
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
-    stack=[]
+    #stack=[]
     error = False
     #isMem = False
     ip = 0
     str_size= NULL_POINTER_PADDING
-    mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY() + get_MEM_CAPACITY())
-    buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
+    #mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY() + get_MEM_CAPACITY())
+    #buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
     outlist=[outfile]
     parameter.insert(0, outlist)
     argv_buf_ptr = NULL_POINTER_PADDING + get_STR_CAPACITY()
     str_buf_ptr  = NULL_POINTER_PADDING
-    buf_file_ptr = NULL_POINTER_PADDING
-    mem_buf_ptr  = NULL_POINTER_PADDING + get_STR_CAPACITY() + get_ARGV_CAPACITY()
+    #buf_file_ptr = NULL_POINTER_PADDING
+    #mem_buf_ptr  = NULL_POINTER_PADDING + get_STR_CAPACITY() + get_ARGV_CAPACITY()
     argc = 0
     for arg in parameter:        
         value = arg[0].encode('utf-8')
@@ -59,264 +48,71 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
         while ip < len(program):
             op = program[ip]
             #print(stack)
+            if check_runtime_errors():
+                print_runtime_errors()
+                print(f"Errors found during runtime simulation: {get_runtime_error()}")                
+                sys.exit(-1)
             if op['type']==get_OP_PUSH():
                 ip += 1
-                stack.append(op['value'])
-                set_stack_counter()
+                simulate_op_push(op['value'])
             elif op['type']==get_OP_ADD():
-                ip += 1                
-                if len(stack) < 2:
-                    print("ADD impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)
-                    stack.append(a_value + b_value)
-                    set_stack_counter()
+                simulate_op_add(op)        
+                ip += 1
             elif op['type']==get_OP_SUB():
+                simulate_op_sub(op)
                 ip += 1                
-                if len(stack) < 2:
-                    print("SUB impossible not enough element in stack")
-                    runtime_error_counter += 1                    
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                  
-                    stack.append(a_value - b_value)
-                    set_stack_counter()
             elif op['type']==get_OP_EQUAL():
+                simulate_op_equal(op)
                 ip += 1                
-                if len(stack) < 2:
-                    print("EQUAL impossible not enough element in stack")
-                    runtime_error_counter += 1                    
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                
-                    stack.append(int(a_value == b_value)) 
-                    set_stack_counter()
             elif op['type']==get_OP_DUMP():
-                if len(stack) == 0:
-                    runtime_error_counter += 1                    
-                    print("stack is empty impossible to dump")
-                    error = True
-                else:
-                    a = stack.pop()
-                    set_stack_counter(-1)
-                    if program[ip - 1]['type'] == get_OP_IDVAR():
-                        #print(var_struct[a]['value'])
-                        print_output_simulation(var_struct[a]['value'], istoprint=istoprint)
-                    else:
-                        #print(a)
-                        print_output_simulation(a, istoprint=istoprint)
+                simulate_op_dump(op, ip, program, istoprint)
                 ip += 1   
             elif op['type']==get_OP_IF():
                 ip += 1                
-                if len(stack) == 0:
-                    print("stack is empty impossible to execute if statement")
-                    runtime_error_counter += 1                    
-                    error = True
-                else:
-                    a = stack.pop()
-                    a_value = get_var_value(a)
-                    set_stack_counter(-1)
-                    if a_value == 0:
-                        if len(op) >= 2:
-                            ip = op['jmp']
-                        else:
-                            print("if statement without jmp")
-                            runtime_error_counter += 1                    
-                            error = True
+                newip = simulate_op_if(op)
+                if newip != None:
+                    ip = newip
             elif op['type']==get_OP_ELSE():
                 if len(op) >= 2:
                     ip = op['jmp']
                 else:
-                    print("else statement without jmp")
-                    runtime_error_counter += 1                    
-                    error = True
+                    #print("else statement without jmp")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid= 1)
             elif op['type']==get_OP_END():
                 if len(op) >= 2:
                     ip = op['jmp']
                 else:
-                    print("end statement without jmp")
-                    runtime_error_counter += 1                    
-                    error = True
+                    #print("end statement without jmp")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid= 1)
             elif op['type']==get_OP_DUP():
-                if len(stack) == 0:
-                    print("stack is empty impossible to duplicate")
-                    runtime_error_counter += 1                    
-                    error = True
-                else:
-                    a = stack.pop()
-                    set_stack_counter(-1)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    stack.append(a_value)
-                    stack.append(a_value)
-                    set_stack_counter(2)
+                simulate_op_dup(op)
                 ip += 1 
             elif op['type']==get_OP_DUP2():
-                if len(stack) < 2:
-                    print("2DUP impossible not enough element in stack")
-                    runtime_error_counter += 1                    
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)               
-                    stack.append(a_value)
-                    stack.append(b_value)
-                    stack.append(a_value)
-                    stack.append(b_value)
-                    set_stack_counter(4)
+                simulate_op_dup2(op)
                 ip += 1                 
             elif op['type']==get_OP_GT():
-                if len(stack) < 2:
-                    print("> impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:                
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                  
-                    stack.append(int(a_value > b_value)) 
-                    set_stack_counter()
+                simulate_op_gt(op)
                 ip += 1        
             elif op['type']==get_OP_LT():
-                if len(stack) < 2:
-                    print("< impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                  
-                    stack.append(int(a_value < b_value))  
-                    set_stack_counter()               
+                simulate_op_lt(op)
                 ip += 1   
-            elif op['type']==get_OP_GE():                
-                if len(stack) < 2:
-                    print(">= impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                   
-                    stack.append(int(a_value >= b_value)) 
-                    set_stack_counter()                
+            elif op['type']==get_OP_GE(): 
+                simulate_op_ge(op)               
                 ip += 1
             elif op['type']==get_OP_LE():
-                if len(stack) < 2:
-                    print("<= impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    stack.append(int(a_value <= b_value))    
-                    set_stack_counter()            
+                simulate_op_le(op)
                 ip += 1
             elif op['type']==get_OP_NE():
-                if len(stack) < 2:
-                    print("!= impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    #if variable retrieve the content value 
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                   
-                    stack.append(int(a_value != b_value))     
-                    set_stack_counter()            
+                simulate_op_ne(op)
                 ip += 1
             elif op['type']==get_OP_DIV():
-                if len(stack) < 2:
-                    print("/ impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    if b_value == 0:
-                        #print(RUNTIME_ERROR[RUN_DIV_ZERO])
-                        print_output_simulation(RUNTIME_ERROR[RUN_DIV_ZERO], istoprint=istoprint)
-                        runtime_error_counter += 1
-                        error = True
-                        sys.exit(RUN_DIV_ZERO)
-                    else:
-                        stack.append(int(a_value / b_value))
-                        set_stack_counter()                 
+                simulate_op_div(op, istoprint)
                 ip += 1
             elif op['type']==get_OP_DIVMOD():
-                if len(stack) < 2:
-                    print("DIVMOD impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    if b_value == 0:
-                        #print(RUNTIME_ERROR[RUN_DIV_ZERO])
-                        print_output_simulation(RUNTIME_ERROR[RUN_DIV_ZERO], istoprint=istoprint)
-                        runtime_error_counter += 1
-                        error = True
-                        sys.exit(RUN_DIV_ZERO)
-                    else:
-                        stack.append(int(a_value % b_value)) 
-                        stack.append(int(a_value / b_value))  
-                        set_stack_counter(2) 
+                simulate_op_divmod(op, istoprint)
                 ip += 1                
             elif op['type']==get_OP_MUL():
-                if len(stack) < 2:
-                    print("MUL impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    stack.append(int(a_value * b_value))
-                    set_stack_counter()                 
+                simulate_op_mul(op)
                 ip += 1
             elif op['type']==get_OP_WHILE():
                 ip += 1                
@@ -334,16 +130,13 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 if conditions_stack[level] == 0:
                     #print(RUNTIME_ERROR[RUN_INFINITE_LOOP])
                     print_output_simulation(RUNTIME_ERROR[RUN_INFINITE_LOOP], istoprint=istoprint)
-                    runtime_error_counter += 1
-                    error = True
-                    sys.exit(RUN_INFINITE_LOOP)
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=2)
                 if a_value == 0:
                     if len(op) >= 2:
                         ip = op['jmp']
                     else:
-                        print("do statement without jmp")
-                        runtime_error_counter += 1                    
-                        error = True
+                        #print("do statement without jmp")
+                        generate_runtime_error(op=op, errfunction=errfunction, msgid=1)
                 else:
                     ip += 1    
             elif op['type']==get_OP_MEM():#when using mem the address is put on the stack and never removed 
@@ -352,244 +145,133 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 set_stack_counter()
                 ip += 1  
             elif op['type']==get_OP_LOAD():
-                addr = stack.pop()
-                a_value = get_var_value(addr)
-                set_stack_counter(-1)
-                byte = mem[a_value]
-                stack.append(byte)
-                set_stack_counter()
+                simulate_op_load(op)
                 ip += 1                    
             elif op['type']==get_OP_STORE():
-                value = stack.pop() 
-                addr = stack.pop() 
-                set_stack_counter(-2)                
-                a_value = get_var_value(value)                
-                b_value = get_var_value(addr)                                
-                mem[b_value] = a_value & 0xFF
+                simulate_op_store(op)
+                #print("store!")
+                # value = stack.pop() 
+                # addr = stack.pop() 
+                # set_stack_counter(-2)                
+                # a_value = get_var_value(value)                
+                # b_value = get_var_value(addr)                                
+                # mem[b_value] = a_value & 0xFF
+                #print(stack, a_value, b_value, mem[b_value:1])
                 ip += 1  
             elif op['type']==get_OP_LOAD16():
-                a = stack.pop()
-                set_stack_counter(-1)
-                addr = get_var_value(a)                
-                _bytes = bytearray(2)
-                for offset in range(0,2):
-                    _bytes[offset] = mem[addr + offset]
-                stack.append(int.from_bytes(_bytes, byteorder="little"))
-                set_stack_counter()
+                simulate_op_load16(op)
                 ip += 1                    
             elif op['type']==get_OP_STORE16():
-                a = stack.pop()
-                b = stack.pop()
-                set_stack_counter(-2)
-                store_value = get_var_value(a)                
-                store_value16 = store_value.to_bytes(length=2, byteorder="little",  signed=(store_value < 0))
-                store_addr16 = get_var_value(b)                
-                for byte in store_value16:
-                    mem[store_addr16] = byte
-                    store_addr16 += 1
+                simulate_op_store16(op)
                 ip += 1                   
             elif op['type']==get_OP_LOAD32():
-                a = stack.pop()
-                addr = get_var_value(a)      
-                set_stack_counter(-1)          
-                _bytes = bytearray(4)
-                for offset in range(0,4):
-                    _bytes[offset] = mem[addr + offset]
-                stack.append(int.from_bytes(_bytes, byteorder="little"))
-                set_stack_counter()
+                simulate_op_load32(op)
                 ip += 1                     
             elif op['type']==get_OP_STORE32():
-                a = stack.pop()
-                b = stack.pop()                
-                set_stack_counter(-2)                
-                store_value = get_var_value(a)                
-                store_value32 = store_value.to_bytes(length=4, byteorder="little",  signed=(store_value < 0))
-                store_addr32 = get_var_value(b)   
-                for byte in store_value32:
-                    mem[store_addr32] = byte
-                    store_addr32 += 1
+                simulate_op_store32(op)
                 ip += 1                
             elif op['type']==get_OP_LOAD64():
-                a = stack.pop()
-                addr = get_var_value(a)
-                set_stack_counter(-1)
-                _bytes = bytearray(8)
-                for offset in range(0,8):
-                    _bytes[offset] = mem[addr + offset]
-                stack.append(int.from_bytes(_bytes, byteorder="little"))
-                set_stack_counter()
+                simulate_op_load64(op)
                 ip += 1
             elif op['type']==get_OP_STORE64():
-                a = stack.pop()
-                b = stack.pop()          
-                set_stack_counter(-2)                
-                store_value = get_var_value(a)                
-                store_value64 = store_value.to_bytes(length=8, byteorder="little",  signed=(store_value < 0))
-                store_addr64 = get_var_value(b)                
-                for byte in store_value64:
-                    mem[store_addr64] = byte
-                    store_addr64 += 1
+                simulate_op_store64(op)
                 ip += 1
             elif op['type']==get_OP_SWAP():
-                if len(stack) < 2:
-                    print("SWAP impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    a = stack.pop()
-                    b = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    stack.append(a_value)
-                    stack.append(b_value)
-                    set_stack_counter(2)
+                simulate_op_swap(op)
                 ip += 1        
             elif op['type']==get_OP_SHL():
-                if len(stack) < 2:
-                    print("SHL impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    stack.append(a_value << b_value)
-                    set_stack_counter()
+                simulate_op_shl(op)
                 ip += 1      
             elif op['type']==get_OP_SHR():
-                if len(stack) < 2:
-                    print("SHR impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    stack.append(a_value >> b_value)
-                    set_stack_counter()
+                simulate_op_shr(op)
                 ip += 1
             elif op['type']==get_OP_ORB():
-                if len(stack) < 2:
-                    print("ORB impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    stack.append(a_value | b_value)
-                    set_stack_counter()
+                simulate_op_orb(op)
                 ip += 1
             elif op['type']==get_OP_ANDB():
-                if len(stack) < 2:
-                    print("ANDB impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    stack.append(a_value & b_value)
-                    set_stack_counter()
+                simulate_op_andb(op)
                 ip += 1         
             elif op['type']==get_OP_DROP():
-                stack.pop()
-                set_stack_counter(-1)
+                if len(stack) < 1:
+                    #print("DROP impossible not enough element in stack")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+                else:
+                    stack.pop()
+                    set_stack_counter(-1)
                 ip += 1
             elif op['type']==get_OP_OVER():
-                b = stack.pop()
-                a = stack.pop()
-                set_stack_counter(-2)
-                a_value = get_var_value(a)
-                b_value = get_var_value(b)                
-                stack.append(a_value)
-                stack.append(b_value)
-                stack.append(a_value)
-                set_stack_counter(3)
+                simulate_op_over(op)
                 ip += 1
             elif op['type']==get_OP_MOD():
-                if len(stack) < 2:
-                    print("MOD impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-2)
-                    a_value = get_var_value(a)
-                    b_value = get_var_value(b)                    
-                    if b_value == 0:
-                        #print(RUNTIME_ERROR[RUN_DIV_ZERO])
-                        print_output_simulation(RUNTIME_ERROR[RUN_DIV_ZERO], istoprint=istoprint)
-                        runtime_error_counter += 1
-                        error = True
-                        sys.exit(RUN_DIV_ZERO)                        
-                    else:
-                        stack.append(a_value % b_value)
-                        set_stack_counter()
+                simulate_op_mod(op, istoprint)
                 ip += 1
             elif op['type']==get_OP_EXIT():
+                if len(stack) < 1:
+                    #print("EXIT impossible not enough element in stack")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
                 syscall_number = 60
                 a = stack.pop()
                 set_stack_counter(-1)
                 exit_code = get_var_value(a)
                 break
             elif op['type']==get_OP_WRITE():
-                if program[ip-1]['type']==get_OP_CHAR():
-                    #print(chr(program[ip - 1]['value']), end="")
-                    a = stack.pop()
-                    set_stack_counter(-1)
-                    a_value = get_var_value(a)
-                    #print_output_simulation(chr(program[ip - 1]['value']), end="", istoprint=istoprint)
-                    print_output_simulation(chr(a_value), end="", istoprint=istoprint)
-                elif program[ip-1]['type']==get_OP_READF():
-                    b = stack.pop() #addr
-                    a = stack.pop() #length
-                    set_stack_counter(-2)
-                    addr = get_var_value(b)
-                    length = get_var_value(a)
-                    offset = (addr+length)
-                    if length > 0: 
-                        s = buffer_file[addr:offset].decode('utf-8')                    
-                        print_output_simulation(s, end='', istoprint=istoprint)
-                elif len(stack) < 2:
-                        print("WRITE impossible not enough element in stack")
-                        runtime_error_counter += 1
-                        error = True
-                else:
-                    b = stack.pop() #addr
-                    a = stack.pop() #length
-                    addr = get_var_value(b)
-                    length = get_var_value(a)
-                    set_stack_counter(-2)
-                    offset = (addr+length) 
-                    s = mem[addr:offset].decode('utf-8')
-                    #print(s, end='')
-                    print_output_simulation(s, end='', istoprint=istoprint)
+                simulate_op_write(op=op, ip=ip, program=program, istoprint=istoprint)
+                # if program[ip-1]['type']==get_OP_CHAR():
+                #     if len(stack) < 1:
+                #         #print("WRITE impossible not enough element in stack")
+                #         generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+                #     #print(chr(program[ip - 1]['value']), end="")
+                #     a = stack.pop()
+                #     set_stack_counter(-1)
+                #     a_value = get_var_value(a)
+                #     #print_output_simulation(chr(program[ip - 1]['value']), end="", istoprint=istoprint)
+                #     print_output_simulation(chr(a_value), end="", istoprint=istoprint)
+                # elif program[ip-1]['type']==get_OP_READF():
+                #     if len(stack) < 2:
+                #         #print("READF impossible not enough element in stack")
+                #         generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+                #     b = stack.pop() #addr
+                #     a = stack.pop() #length
+                #     set_stack_counter(-2)
+                #     addr = get_var_value(b)
+                #     length = get_var_value(a)
+                #     offset = (addr+length)
+                #     if length > 0: 
+                #         s = buffer_file[addr:offset].decode('utf-8')                    
+                #         print_output_simulation(s, end='', istoprint=istoprint)
+                # elif len(stack) < 2:
+                #         #print("WRITE impossible not enough element in stack")
+                #         generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+                # else:
+                #     b = stack.pop() #addr
+                #     a = stack.pop() #length
+                #     addr = get_var_value(b)
+                #     length = get_var_value(a)
+                #     set_stack_counter(-2)
+                #     offset = (addr+length) 
+                #     s = mem[addr:offset].decode('utf-8')
+                #     #print(s, end='')
+                #     print_output_simulation(s, end='', istoprint=istoprint)
                 ip += 1
             elif op['type']==get_OP_SYSCALL0():
+                if len(stack) < 1:
+                    #print("SYSCALL0 impossible not enough element in stack")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
                 syscall_number = stack.pop()
                 set_stack_counter(-1)
                 if syscall_number == 39:
                     stack.append(os.getpid())
                     set_stack_counter()
                 else:
-                    print(f"unknown syscall0 number: {syscall_number}")
-                    runtime_error_counter += 1
-                    error = True      
+                    #print(f"unknown syscall0 number: {syscall_number}")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
                 stack.append(exit_code)
                 set_stack_counter()          
                 ip += 1
             elif op['type']==get_OP_SYSCALL1():
+                if len(stack) < 2:
+                    #print("SYSCALL1 impossible not enough element in stack")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
                 syscall_number = stack.pop()
                 exit_code = stack.pop()
                 set_stack_counter(-2)
@@ -597,76 +279,77 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                     break
                 else:
                     print(f"unknown syscall1: {syscall_number}")
-                    runtime_error_counter += 1
-                    error = True
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
                 stack.append(exit_code)
                 set_stack_counter()                   
                 ip += 1 
             elif op['type']==get_OP_SYSCALL2():
-                print("not implemented yet!")
-                runtime_error_counter += 1
-                error = True    
-                stack.append(exit_code) 
-                set_stack_counter()             
+                #print("not implemented yet!")
+                generate_runtime_error(op=op, errfunction=errfunction, msgid=5)
                 ip += 1                     
             elif op['type']==get_OP_SYSCALL3():
-                syscall_number = stack.pop()
-                arg1 = stack.pop()
-                arg2 = stack.pop()
-                arg3 = stack.pop()
-                set_stack_counter(-4)
-                if syscall_number == 1:
-                    fd = arg1
-                    buffer = arg2
-                    count = arg3
-                    s = mem[buffer:buffer+count].decode('utf-8')
-                    if fd == 1:
-                        #print(s, end='')
-                        print_output_simulation(s, end='', istoprint=istoprint)
-                    elif fd == 2:
-                        #print(s, end='', file=sys.stderr)
-                        print_output_simulation(s, end='', file=sys.stderr, istoprint=istoprint)
-                    else:
-                        print(f"unknown file descriptor: {fd}")
-                        runtime_error_counter += 1
-                        error = True
-                    stack.append(exit_code) 
-                    set_stack_counter()
-                elif syscall_number == 0:
-                    fd = arg1
-                    buffer = arg2
-                    count = arg3
-                    if fd == 0:
-                        s = sys.stdin.readline()
-                        mem[buffer:buffer+len(s)] = s.encode('utf-8')
-                        buffer += len(s)
-                        stack.append(len(s))
-                        set_stack_counter()
-                    else:
-                        print(f"unknown file descriptor: {fd}")
-                        runtime_error_counter += 1
-                        error = True
+                if len(stack) < 4:
+                    #print("SYSCALL3 impossible not enough element in stack")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+                #save_stack = stack.copy()
                 else:
-                    print(f"unknown syscall3: {syscall_number}")
-                    runtime_error_counter += 1
-                    error = True
-             
+                    syscall_number = stack.pop()
+                    arg1 = stack.pop()
+                    arg2 = stack.pop()
+                    arg3 = stack.pop()
+                    set_stack_counter(-4)
+                    #print(op, stack,syscall_number, arg1, arg2, arg3, mem[arg2:100])
+                    if arg2 == 0:
+                        #print(f"arg2 cannot be 0 {op}, {program[ip - 1]}, {program[ip - 2]}, {program[ip - 3]}, {save_stack}")
+                        generate_runtime_error(op=op, errfunction=errfunction, msgid=6)
+                    elif syscall_number == 1:
+                        fd = get_var_value(arg1)
+                        buffer = get_var_value(arg2)
+                        count = get_var_value(arg3)
+                        #print(mem[buffer:10], fd, buffer, count)
+                        s = mem[buffer:buffer+count].decode('utf-8')
+                        if fd == 1:
+                            #print(s, end='')
+                            print_output_simulation(s, end='', istoprint=istoprint)
+                        elif fd == 2:
+                            #print(s, end='', file=sys.stderr)
+                            print_output_simulation(s, end='', file=sys.stderr, istoprint=istoprint)
+                        else:
+                            os.write(fd, mem[buffer:buffer+count])
+                        stack.append(exit_code) 
+                        set_stack_counter()
+                    elif syscall_number == 0:
+                        fd = arg1
+                        buffer = arg2
+                        count = arg3
+                        if fd == 0:
+                            s = sys.stdin.readline()
+                            mem[buffer:buffer+len(s)] = s.encode('utf-8')
+                            buffer += len(s)
+                            stack.append(len(s))
+                            set_stack_counter()
+                        else:
+                            print(f"unknown file descriptor: {fd}")
+                            generate_runtime_error(op=op, errfunction=errfunction, msgid=7)
+                    else:
+                        #print(f"unknown syscall3: {syscall_number}")
+                        generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
                 ip += 1    
             elif op['type']==get_OP_SYSCALL4():
-                print("not implemented yet!")
-                error = True                
+                #print("not implemented yet!")
+                generate_runtime_error(op=op, errfunction=errfunction, msgid=5)             
                 stack.append(exit_code) 
                 set_stack_counter()             
                 ip += 1                                                     
             elif op['type']==get_OP_SYSCALL5():
-                print("not implemented yet!")
-                error = True                
+                #print("not implemented yet!")
+                generate_runtime_error(op=op, errfunction=errfunction, msgid=5)
                 stack.append(exit_code)
                 set_stack_counter()             
                 ip += 1                                                     
             elif op['type']==get_OP_SYSCALL6():
-                print("not implemented yet!")
-                error = True                
+                #print("not implemented yet!")
+                generate_runtime_error(op=op, errfunction=errfunction, msgid=5)
                 stack.append(exit_code) 
                 set_stack_counter()             
                 ip += 1  
@@ -705,12 +388,10 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 stack.append(argv_buf_ptr)
                 set_stack_counter()
                 ip += 1
-
             elif op['type']==get_OP_ASSIGN_VAR():
                 if len(stack) < 1:
-                    print("! impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
+                    #print("! impossible not enough element in stack")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
                 else:
                     a = stack.pop()
                     set_stack_counter(-1)
@@ -721,99 +402,45 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                         var_struct[var]['value'] = a_value
                     else:
                         print(f"! invalid value {a_value} for the variable type: {typevar}")
-                        runtime_error_counter += 1
-                        error = True
-                    #stack.append(var_struct[var]['value']) 
-                    #set_stack_counter()
+                        generate_runtime_error(op=op, errfunction=errfunction, msgid=8)
                 ip += 1                                         
             elif op['type']==get_OP_VARTYPE():              
                 ip += 1
             elif op['type']==get_OP_ROTATE():
-                if len(stack) < 3:
-                    print("! impossible not enough element in stack")
-                    runtime_error_counter += 1
-                    error = True
-                else:
-                    c = stack.pop()
-                    b = stack.pop()
-                    a = stack.pop()
-                    set_stack_counter(-3)
-                    stack.append(b)
-                    stack.append(c)
-                    stack.append(a)
-                    set_stack_counter(3)
+                simulate_op_rotate(op=op)
                 ip += 1
             elif op['type']==get_OP_OPEN():
-                b = stack.pop() #addr
-                a = stack.pop() #length
-                addr = get_var_value(b)
-                length = get_var_value(a)
-                set_stack_counter(-2)
-                offset = (addr+length) 
-                s = mem[addr:offset].decode('utf-8')
-                fd = os.open(s, os.O_RDONLY)
-                #print(files_struct, op)
-                stack.append(fd)
-                set_stack_counter()
+                simulate_op_open(op=op)
                 ip += 1
             elif op['type']==get_OP_OPENW():
-                b = stack.pop() #addr
-                a = stack.pop() #length
-                addr = get_var_value(b)
-                length = get_var_value(a)
-                set_stack_counter(-2)
-                offset = (addr+length) 
-                s = mem[addr:offset].decode('utf-8')
-                fd = os.open(s, os.O_CREAT|os.O_WRONLY|os.O_TRUNC)
-                stack.append(fd)
-                set_stack_counter()
+                if len(stack) < 2:
+                    #print("! impossible not enough element in stack")
+                    generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+                else:
+                    b = stack.pop() #addr
+                    a = stack.pop() #length
+                    addr = get_var_value(b)
+                    length = get_var_value(a)
+                    set_stack_counter(-2)
+                    offset = (addr+length) 
+                    s = mem[addr:offset].decode('utf-8')
+                    fd = os.open(s, os.O_CREAT|os.O_WRONLY|os.O_TRUNC)
+                    stack.append(fd)
+                    set_stack_counter()
                 ip += 1
             elif op['type']==get_OP_READF():
-                a = stack.pop()
-                set_stack_counter(-1)
-                fd = get_var_value(a)
-                buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
-                readbuf = os.read(fd, BUFFER_SIZE)
-                buflen = len(readbuf)
-                if buflen == 0:
-                    stack.append(0)
-                    stack.append(0)
-                else:
-                    stack.append(buflen)
-                    op['addr'] = buf_file_ptr
-                    buffer_file[buf_file_ptr:buflen] = readbuf
-                    stack.append(op['addr'])
-                    #print(buffer_file)
-                op['index'] = files_struct[fd]['index']
-                set_stack_counter(2)
+                simulate_op_readf(op=op, ip=ip, program=program, istoprint=istoprint)
                 ip += 1
             elif op['type']==get_OP_WRITEF():
-                #print(stack)
-                a = stack.pop()
-                b = stack.pop() #buffer length                
-                set_stack_counter(-2)                
-                fd = get_var_value(a)
-                op['index'] = files_struct[fd]['index']
-                length = get_var_value(b)
-                #c = stack.pop()
-                #length = get_var_value(c)
-                #offset = (addr + length)
-                writebuf = os.write(fd, buffer_file[1:length])
-                stack.append(writebuf)
-                set_stack_counter()
+                simulate_op_writef(op=op, ip=ip, program=program, istoprint=istoprint)
                 ip += 1
             elif op['type']==get_OP_CLOSE():
-                a = stack.pop()
-                fd = get_var_value(a)
-                set_stack_counter(-1)
-                os.close(fd)
-                op['index'] = files_struct[fd]['index']
+                simulate_op_close(op)
                 ip += 1
             else:
                 ip += 1                
                 error = True
-                print(f"Unknown opcode: {op}")  
-        # if isMem:
+                print(f"Unknown opcode: {op}")          # if isMem:
         #     print()
         #     print(f"memory dump {mem[:20]}")  
     #probably here need to destroy variables and argc, argv

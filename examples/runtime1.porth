@@ -1,0 +1,8 @@
+10  11 =
+VAR z u8 10 !z
+10 12 + 
+10 3 SYSCALL6
+
+12 0 MOD
+1 WHILE DUP 1 = DO
+END

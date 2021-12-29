@@ -565,5 +565,3 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
     if check_errors():
         error= True
     return program, error
-
-

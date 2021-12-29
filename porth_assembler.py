@@ -259,7 +259,7 @@ def generate_load_op(output):
 
 def generate_store_op(output):
     output.write("; store \n")
-    output.write("pop rbx\n")
+    output.write("pop rbx\n")    
     output.write("pop rax\n")
     output.write("mov [rax], bl\n")    
 
@@ -272,8 +272,8 @@ def generate_load16_op(output):
 
 def generate_store16_op(output):
     output.write("; store16 \n")
-    output.write("pop rbx\n")
-    output.write("pop rax\n")
+    output.write("pop rbx\n")    
+    output.write("pop rax\n")    
     output.write("mov [rax], bx\n")
 
 def generate_load32_op(output):
@@ -286,7 +286,7 @@ def generate_load32_op(output):
 def generate_store32_op(output):
     output.write("; store32 \n")
     output.write("pop rbx\n")
-    output.write("pop rax\n")
+    output.write("pop rax\n")    
     output.write("mov [rax], ebx\n")
         
 def generate_load64_op(output):
@@ -299,7 +299,7 @@ def generate_load64_op(output):
 def generate_store64_op(output):
     output.write("; store64 \n")
     output.write("pop rcx\n")
-    output.write("pop rax\n")
+    output.write("pop rax\n")    
     output.write("mov [rax], rcx\n")
 
 def generate_swap_op(output):
@@ -513,8 +513,8 @@ def generate_divmod_op(output, ip, libc):
     output.write("cmp rcx, 0\n")
     output.write(f"je addr_divmod_zero_{ip}\n")
     output.write("div rcx\n")
-    output.write("push rdx\n")
     output.write("push rax\n")            
+    output.write("push rdx\n")
     output.write(f"jmp addr_divmod_end_{ip}\n")
     output.write(f"addr_divmod_zero_{ip}:\n")
     #print the error message using printf if libc

@@ -1,0 +1,51 @@
+INCLUDE "include/std.porth"
+
+//op macros
+MACRO OP_PUSH_INT 0 ENDM
+MACRO OP_PLUS 1 ENDM
+MACRO OP_PRINT 2 ENDM
+
+//memory macros
+MACRO PUTD_BUFFER_CAP 32 ENDM 
+MACRO putd_buffer MEM ENDM
+MACRO MEM_CAPACITY 640000 ENDM
+
+
+MACRO ops-count 
+putd_buffer PUTD_BUFFER_CAP +  
+ENDM
+
+MACRO ops 
+ops-count 16 + 
+ENDM
+
+MACRO sizeof(Op) 
+16 
+ENDM
+
+MACRO push-op 
+ops-count $64 sizeof(Op) MUL ops + 
+DUP 8 + ROT @64 SWAP
+@64  
+ops-count inc64 
+ENDM
+
+
+MACRO dump-ops
+0 WHILE DUP ops-count $64 < DO
+DUP sizeof(Op) MUL ops + 
+"Type:       " puts DUP $64 .
+"Operand:    " puts 8 + $64 .
+"----------\n" puts
+1 +
+END
+ENDM
+
+
+OP_PUSH_INT 35 push-op
+OP_PUSH_INT 36 push-op
+OP_PLUS 0 push-op
+OP_PRINT 0 push-op
+
+dump-ops
+DROP

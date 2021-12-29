@@ -345,12 +345,12 @@ MACRO read SYS_read SYSCALL3 ENDM
 
 
 MACRO todo 
-"TODO\n" STDOUT write
+"TODO\n" stdout write
 1 EXIT
 ENDM
 
 MACRO error 
-STDERR write 
+stderr write 
 1 EXIT
 ENDM
 

@@ -1,0 +1,25 @@
+INCLUDE "include/std.porth"
+
+MACRO PUTD_BUFFER_CAP 32 ENDM 
+MACRO putd_buffer MEM ENDM
+MACRO MEM_CAPACITY 640000 ENDM
+
+MACRO putd
+  DUP 0 = IF
+    "0" puts
+  ELSE
+    putd_buffer PUTD_BUFFER_CAP +
+    WHILE OVER 0 > DO
+      1 - DUP ROT 
+      10 DIVMOD
+      ROT SWAP '0' +  @8 SWAP
+    END
+    DUP    
+    putd_buffer PUTD_BUFFER_CAP + SWAP - SWAP puts
+  END
+  DROP
+ENDM
+
+
+"_mem: resb " puts MEM_CAPACITY putd "\n" puts
+"fskfdjfksjfkqsjfkqjf\n" puts 

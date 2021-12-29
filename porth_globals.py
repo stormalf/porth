@@ -47,6 +47,7 @@ warning_msg = {}
 error_msg = {}
 files_struct = {}
 include_file=[]
+runtime_msg = {}
 
 
 iota_counter= 0
@@ -277,6 +278,13 @@ RUN_NO_ERROR=iota(True)
 RUN_DIV_ZERO=iota()
 RUN_UNKNOWN=iota()
 RUN_INFINITE_LOOP=iota()
+RUN_STK_ERR=iota()
+RUN_JMP_ERR=iota()
+RUN_SYSCALL_ERR=iota()
+RUN_NOTYET_ERR=iota()
+RUN_MEM_ERR=iota()
+RUN_FILE_ERR=iota()
+RUN_VAR_ERR=iota()
 
 RUNTIME_ERROR = {
     RUN_DIV_ZERO: "Division by zero!",

@@ -6,6 +6,7 @@ from typing import *
 
 error_table = {}
 warning_table = {}
+runtime_table = {}
 
 #returns the number of errors found
 def get_counter_error() -> int:
@@ -17,7 +18,16 @@ def get_counter_warning() -> int:
     global warning_counter
     return warning_counter    
 
+runtime_error_counter = 0
 
+def get_runtime_error() -> int:
+    global runtime_error_counter
+    return runtime_error_counter
+
+
+def set_runtime_error() -> int:
+    global runtime_error_counter
+    runtime_error_counter += 1
 
 
 def generate_error(filename:str, errfunction: str, msgid: int, fromline: int = 0, column: int = 0, token: str = None, toline: int = 0, increment=True) -> str:
@@ -113,5 +123,39 @@ def print_errors() -> None:
     for msg in error_msg:
             print(f"{error_msg[msg]['msg']} in function {error_msg[msg]['function']}")
 
+def check_runtime_errors() -> bool:
+    haveError = False
+    if get_runtime_error() > 0:
+        haveError = True
+    return haveError
+
+def print_runtime_errors() -> None:
+    global runtime_msg
+    for msg in runtime_msg:
+        print(f"{runtime_msg[msg]['msg']} in function {runtime_msg[msg]['function']}")
+            
+
+
+def generate_runtime_error(op: Dict,  errfunction: str, msgid: int, toline: int = 0, increment=True) -> str:
+    global runtime_error_counter, runtime_msg
+    filename, fromline, column = op['loc']
+    token = op['value']
+    runtime_msg[runtime_error_counter]= {'msg': runtime_error_management(filename=filename, msgid= msgid, fromline=fromline, column=column, token=token, toline=toline), 'function': errfunction}
+    if increment:
+        set_runtime_error()
+
+
+def runtime_error_management(filename:str, msgid: int, fromline: int = 0, column: int = 0, token: str = None, toline: int = 0) -> str:
+    global runtime_table
+    runtime_table[0] = f"Runtime Error Code {RUN_STK_ERR} in file {filename} line {fromline} column {column} `{token}` impossible not enough element in stack"
+    runtime_table[1] = f"Runtime Error Code {RUN_JMP_ERR} in file {filename} line {fromline} column {column} `{token}` statement without jmp"
+    runtime_table[2] = f"Runtime Error Code {RUN_INFINITE_LOOP} in file {filename} line {fromline} column {column} `{token}` infinite loop detected!"
+    runtime_table[3] = f"Runtime Error Code {RUN_DIV_ZERO} in file {filename} line {fromline} column {column} `{token}` division by zero!"
+    runtime_table[4] = f"Runtime Error Code {RUN_SYSCALL_ERR} in file {filename} line {fromline} column {column} `{token}`  unknown system call!"
+    runtime_table[5] = f"Runtime Error Code {RUN_NOTYET_ERR} in file {filename} line {fromline} column {column} `{token}`  not yet implemented!"
+    runtime_table[6] = f"Runtime Error Code {RUN_MEM_ERR} in file {filename} line {fromline} column {column} `{token}`  arg2 cannot be 0!"
+    runtime_table[7] = f"Runtime Error Code {RUN_FILE_ERR} in file {filename} line {fromline} column {column} `{token}`  unknown file descriptor!"
+    runtime_table[8] = f"Runtime Error Code {RUN_VAR_ERR} in file {filename} line {fromline} column {column} `{token}`  invalid value for the variable type!"
+    return runtime_table[msgid]
 
 #print(error_management("test", 3, 1, 1, "VAR"))

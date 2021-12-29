@@ -3,7 +3,7 @@ x .
 VAR y u8 10 !y
 y .
 
-x y DIVMOD !x !y
+x y DIVMOD !y !x
 x .
 y .
 
