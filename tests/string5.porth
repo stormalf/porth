@@ -1,0 +1,7 @@
+INCLUDE "include/std.porth"
+VAR z ptr 
+VAR x u16 0 !x
+
+123456789 z ITOS !z !x  //z contains the address and x the length of the string
+x z puts
+

@@ -114,7 +114,7 @@ Keyword, operators, and constants are defined in the language.
     '_': single quotes to create a char (1 character allowed except for some special characters see special_chars dictionary). It's possible to print some chars like '\n' or '\t' but some issues still yet with unicode characters that are coded in more than one byte.
     VAR: keyword to create a variable followed by the name of the variable, the type of the variable
     !variable_name: assignment operator pops the value and the variable and assign the value to the variable ex: !x pop the value and assign to x.
-    u8, u16, u32, u64, i8, i16, i32, i64, bool : variables types allowed for now.
+    u8, u16, u32, u64, i8, i16, i32, i64, bool, ptr : variables types allowed for now.
     ARGC: keyword to push the number of arguments passed to the program
     ARGV: keyword to push the arguments passed to the program
     ROT: rotate the top 3 values of the stack: a b c -> b c a
@@ -124,6 +124,7 @@ Keyword, operators, and constants are defined in the language.
     READF: read content from file to a buffer
     WRITEF: write content from buffer to a file
     DIVMOD: keyword to divide and return 2 values on stack (result and reminder)
+    ITOS : keyword to convert an integer to a string needs two variables one that contains the string and the second that will contains the length of the string
 
 ## Extra stack operators
 
@@ -208,7 +209,7 @@ The non-initialized variables are not taken into account for now (segment fault 
 1.0.33 Adding OPENW, READF, WRITEF to have the capability to read file content and to write into a new file. Fixing README mistake between $ and @.
 Missing controls on File like if open failed negative numbers return in RAX not checked.
 
-1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64 and bool. Adding controls to forbid wrong values depending the variable types.
+1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64, bool and ptr. Adding controls to forbid wrong values depending the variable types. Adding ITOS keyword to convert integer to string. Needs to variable to store the result. 1st a ptr and the second the length.
 
 ## simulation
 

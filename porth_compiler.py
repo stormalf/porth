@@ -196,7 +196,8 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
         elif var_struct[var]['type'] in (OPU64, OPI64):
             output.write(f"{var}: resq 8\n")
         elif var_struct[var]['type'] in (OPPTR):
-            output.write(f"{var}: resq 1\n")
+            output.write(f"{var}: resq 1\n") #to store address
+            output.write(f"{var}_str: resb BUFFER_SIZE\n") #to store string
     output.write("args_ptr: resq 1\n")
     output.close()
     if libc:

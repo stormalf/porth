@@ -73,6 +73,8 @@ def error_management(filename:str, msgid: int, fromline: int = 0, column: int = 
     error_table[30] = f"Error Code {ERR_VAR_ASSIGN} impossible to assign specified value for the variable type in file {filename}, line {fromline} column {column}"
     error_table[31] = f"Error Code {ERR_TOK_FILE} file {token} not closed in file {filename}"
     error_table[32] = f"Error Code {ERR_TOK_FILE} file already closed in file {filename}, line {fromline} column {column}"
+    error_table[33] = f"Error Code {ERR_TOK_ITOS} ITOS without variable in file {filename}, line {fromline} column {column}"
+    error_table[34] = f"Error Code {ERR_TOK_VAR_TYPE} variable `{token}` used for ITOS incorrect in file {filename}, line {fromline} column {column}"
     assert len(error_table) == get_MAX_ERROR(), "Max error table implemented!"      
     return error_table[msgid]
 

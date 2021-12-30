@@ -4,7 +4,7 @@ from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
 MAX_OPS = 67
-MAX_ERROR_TABLE = 33
+MAX_ERROR_TABLE = 35
 MAX_WARNING_TABLE=1
 
 BUFFER_SIZE = 2048
@@ -269,6 +269,7 @@ ERR_TOK_VAR=iota()
 ERR_TOK_VAR_DEF=iota()
 ERR_TOK_VAR_ID=iota()
 ERR_TOK_VAR_TYPE=iota()
+ERR_TOK_ITOS=iota()
 ERR_VAR_UNDEF=iota()
 ERR_VAR_ASSIGN=iota()
 ERR_VAR_TYPE=iota()
