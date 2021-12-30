@@ -1,0 +1,920 @@
+0 {'type': 48, 'loc': ('./porth.porth', 2, 1), 'value': 'VAR', 'jmp': None}
+1 {'type': 49, 'loc': ('./porth.porth', 2, 5), 'value': 'fw', 'jmp': None}
+2 {'type': 50, 'loc': ('./porth.porth', 2, 8), 'value': 'u8', 'jmp': None}
+3 {'type': 48, 'loc': ('./porth.porth', 3, 1), 'value': 'VAR', 'jmp': None}
+4 {'type': 49, 'loc': ('./porth.porth', 3, 5), 'value': 'x', 'jmp': None}
+5 {'type': 50, 'loc': ('./porth.porth', 3, 7), 'value': 'u64', 'jmp': None}
+6 {'type': 0, 'loc': ('./porth.porth', 139, 19), 'value': 0, 'jmp': None}
+7 {'type': 0, 'loc': ('./porth.porth', 252, 13), 'value': 35, 'jmp': None}
+8 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+9 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+10 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+11 {'type': 56, 'loc': ('./porth.porth', 178, 11), 'value': '$64', 'jmp': None}
+12 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+13 {'type': 17, 'loc': ('./porth.porth', 178, 26), 'value': 'MUL', 'jmp': None}
+14 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+15 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+16 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+17 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+18 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+19 {'type': 1, 'loc': ('./porth.porth', 178, 34), 'value': '+', 'jmp': None}
+20 {'type': 10, 'loc': ('./porth.porth', 179, 1), 'value': 'DUP', 'jmp': None}
+21 {'type': 0, 'loc': ('./porth.porth', 179, 5), 'value': 8, 'jmp': None}
+22 {'type': 1, 'loc': ('./porth.porth', 179, 7), 'value': '+', 'jmp': None}
+23 {'type': 60, 'loc': ('./porth.porth', 179, 9), 'value': 'ROT', 'jmp': None}
+24 {'type': 57, 'loc': ('./porth.porth', 179, 13), 'value': '@64', 'jmp': None}
+25 {'type': 34, 'loc': ('./porth.porth', 179, 17), 'value': 'SWAP', 'jmp': None}
+26 {'type': 57, 'loc': ('./porth.porth', 180, 1), 'value': '@64', 'jmp': None}
+27 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+28 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+29 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+30 {'type': 10, 'loc': ('./porth.porth', 7, 3), 'value': 'DUP', 'jmp': None}
+31 {'type': 56, 'loc': ('./porth.porth', 7, 7), 'value': '$64', 'jmp': None}
+32 {'type': 0, 'loc': ('./porth.porth', 7, 11), 'value': 1, 'jmp': None}
+33 {'type': 1, 'loc': ('./porth.porth', 7, 13), 'value': '+', 'jmp': None}
+34 {'type': 57, 'loc': ('./porth.porth', 7, 15), 'value': '@64', 'jmp': None}
+35 {'type': 0, 'loc': ('./porth.porth', 139, 19), 'value': 0, 'jmp': None}
+36 {'type': 0, 'loc': ('./porth.porth', 253, 13), 'value': 36, 'jmp': None}
+37 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+38 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+39 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+40 {'type': 56, 'loc': ('./porth.porth', 178, 11), 'value': '$64', 'jmp': None}
+41 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+42 {'type': 17, 'loc': ('./porth.porth', 178, 26), 'value': 'MUL', 'jmp': None}
+43 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+44 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+45 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+46 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+47 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+48 {'type': 1, 'loc': ('./porth.porth', 178, 34), 'value': '+', 'jmp': None}
+49 {'type': 10, 'loc': ('./porth.porth', 179, 1), 'value': 'DUP', 'jmp': None}
+50 {'type': 0, 'loc': ('./porth.porth', 179, 5), 'value': 8, 'jmp': None}
+51 {'type': 1, 'loc': ('./porth.porth', 179, 7), 'value': '+', 'jmp': None}
+52 {'type': 60, 'loc': ('./porth.porth', 179, 9), 'value': 'ROT', 'jmp': None}
+53 {'type': 57, 'loc': ('./porth.porth', 179, 13), 'value': '@64', 'jmp': None}
+54 {'type': 34, 'loc': ('./porth.porth', 179, 17), 'value': 'SWAP', 'jmp': None}
+55 {'type': 57, 'loc': ('./porth.porth', 180, 1), 'value': '@64', 'jmp': None}
+56 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+57 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+58 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+59 {'type': 10, 'loc': ('./porth.porth', 7, 3), 'value': 'DUP', 'jmp': None}
+60 {'type': 56, 'loc': ('./porth.porth', 7, 7), 'value': '$64', 'jmp': None}
+61 {'type': 0, 'loc': ('./porth.porth', 7, 11), 'value': 1, 'jmp': None}
+62 {'type': 1, 'loc': ('./porth.porth', 7, 13), 'value': '+', 'jmp': None}
+63 {'type': 57, 'loc': ('./porth.porth', 7, 15), 'value': '@64', 'jmp': None}
+64 {'type': 0, 'loc': ('./porth.porth', 140, 15), 'value': 1, 'jmp': None}
+65 {'type': 0, 'loc': ('./porth.porth', 254, 9), 'value': 0, 'jmp': None}
+66 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+67 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+68 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+69 {'type': 56, 'loc': ('./porth.porth', 178, 11), 'value': '$64', 'jmp': None}
+70 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+71 {'type': 17, 'loc': ('./porth.porth', 178, 26), 'value': 'MUL', 'jmp': None}
+72 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+73 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+74 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+75 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+76 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+77 {'type': 1, 'loc': ('./porth.porth', 178, 34), 'value': '+', 'jmp': None}
+78 {'type': 10, 'loc': ('./porth.porth', 179, 1), 'value': 'DUP', 'jmp': None}
+79 {'type': 0, 'loc': ('./porth.porth', 179, 5), 'value': 8, 'jmp': None}
+80 {'type': 1, 'loc': ('./porth.porth', 179, 7), 'value': '+', 'jmp': None}
+81 {'type': 60, 'loc': ('./porth.porth', 179, 9), 'value': 'ROT', 'jmp': None}
+82 {'type': 57, 'loc': ('./porth.porth', 179, 13), 'value': '@64', 'jmp': None}
+83 {'type': 34, 'loc': ('./porth.porth', 179, 17), 'value': 'SWAP', 'jmp': None}
+84 {'type': 57, 'loc': ('./porth.porth', 180, 1), 'value': '@64', 'jmp': None}
+85 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+86 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+87 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+88 {'type': 10, 'loc': ('./porth.porth', 7, 3), 'value': 'DUP', 'jmp': None}
+89 {'type': 56, 'loc': ('./porth.porth', 7, 7), 'value': '$64', 'jmp': None}
+90 {'type': 0, 'loc': ('./porth.porth', 7, 11), 'value': 1, 'jmp': None}
+91 {'type': 1, 'loc': ('./porth.porth', 7, 13), 'value': '+', 'jmp': None}
+92 {'type': 57, 'loc': ('./porth.porth', 7, 15), 'value': '@64', 'jmp': None}
+93 {'type': 0, 'loc': ('./porth.porth', 141, 16), 'value': 2, 'jmp': None}
+94 {'type': 0, 'loc': ('./porth.porth', 255, 10), 'value': 0, 'jmp': None}
+95 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+96 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+97 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+98 {'type': 56, 'loc': ('./porth.porth', 178, 11), 'value': '$64', 'jmp': None}
+99 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+100 {'type': 17, 'loc': ('./porth.porth', 178, 26), 'value': 'MUL', 'jmp': None}
+101 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+102 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+103 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+104 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+105 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+106 {'type': 1, 'loc': ('./porth.porth', 178, 34), 'value': '+', 'jmp': None}
+107 {'type': 10, 'loc': ('./porth.porth', 179, 1), 'value': 'DUP', 'jmp': None}
+108 {'type': 0, 'loc': ('./porth.porth', 179, 5), 'value': 8, 'jmp': None}
+109 {'type': 1, 'loc': ('./porth.porth', 179, 7), 'value': '+', 'jmp': None}
+110 {'type': 60, 'loc': ('./porth.porth', 179, 9), 'value': 'ROT', 'jmp': None}
+111 {'type': 57, 'loc': ('./porth.porth', 179, 13), 'value': '@64', 'jmp': None}
+112 {'type': 34, 'loc': ('./porth.porth', 179, 17), 'value': 'SWAP', 'jmp': None}
+113 {'type': 57, 'loc': ('./porth.porth', 180, 1), 'value': '@64', 'jmp': None}
+114 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+115 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+116 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+117 {'type': 10, 'loc': ('./porth.porth', 7, 3), 'value': 'DUP', 'jmp': None}
+118 {'type': 56, 'loc': ('./porth.porth', 7, 7), 'value': '$64', 'jmp': None}
+119 {'type': 0, 'loc': ('./porth.porth', 7, 11), 'value': 1, 'jmp': None}
+120 {'type': 1, 'loc': ('./porth.porth', 7, 13), 'value': '+', 'jmp': None}
+121 {'type': 57, 'loc': ('./porth.porth', 7, 15), 'value': '@64', 'jmp': None}
+122 {'type': 0, 'loc': ('./porth.porth', 139, 19), 'value': 0, 'jmp': None}
+123 {'type': 0, 'loc': ('./porth.porth', 256, 13), 'value': 25, 'jmp': None}
+124 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+125 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+126 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+127 {'type': 56, 'loc': ('./porth.porth', 178, 11), 'value': '$64', 'jmp': None}
+128 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+129 {'type': 17, 'loc': ('./porth.porth', 178, 26), 'value': 'MUL', 'jmp': None}
+130 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+131 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+132 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+133 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+134 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+135 {'type': 1, 'loc': ('./porth.porth', 178, 34), 'value': '+', 'jmp': None}
+136 {'type': 10, 'loc': ('./porth.porth', 179, 1), 'value': 'DUP', 'jmp': None}
+137 {'type': 0, 'loc': ('./porth.porth', 179, 5), 'value': 8, 'jmp': None}
+138 {'type': 1, 'loc': ('./porth.porth', 179, 7), 'value': '+', 'jmp': None}
+139 {'type': 60, 'loc': ('./porth.porth', 179, 9), 'value': 'ROT', 'jmp': None}
+140 {'type': 57, 'loc': ('./porth.porth', 179, 13), 'value': '@64', 'jmp': None}
+141 {'type': 34, 'loc': ('./porth.porth', 179, 17), 'value': 'SWAP', 'jmp': None}
+142 {'type': 57, 'loc': ('./porth.porth', 180, 1), 'value': '@64', 'jmp': None}
+143 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+144 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+145 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+146 {'type': 10, 'loc': ('./porth.porth', 7, 3), 'value': 'DUP', 'jmp': None}
+147 {'type': 56, 'loc': ('./porth.porth', 7, 7), 'value': '$64', 'jmp': None}
+148 {'type': 0, 'loc': ('./porth.porth', 7, 11), 'value': 1, 'jmp': None}
+149 {'type': 1, 'loc': ('./porth.porth', 7, 13), 'value': '+', 'jmp': None}
+150 {'type': 57, 'loc': ('./porth.porth', 7, 15), 'value': '@64', 'jmp': None}
+151 {'type': 0, 'loc': ('./porth.porth', 139, 19), 'value': 0, 'jmp': None}
+152 {'type': 0, 'loc': ('./porth.porth', 257, 13), 'value': 26, 'jmp': None}
+153 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+154 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+155 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+156 {'type': 56, 'loc': ('./porth.porth', 178, 11), 'value': '$64', 'jmp': None}
+157 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+158 {'type': 17, 'loc': ('./porth.porth', 178, 26), 'value': 'MUL', 'jmp': None}
+159 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+160 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+161 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+162 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+163 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+164 {'type': 1, 'loc': ('./porth.porth', 178, 34), 'value': '+', 'jmp': None}
+165 {'type': 10, 'loc': ('./porth.porth', 179, 1), 'value': 'DUP', 'jmp': None}
+166 {'type': 0, 'loc': ('./porth.porth', 179, 5), 'value': 8, 'jmp': None}
+167 {'type': 1, 'loc': ('./porth.porth', 179, 7), 'value': '+', 'jmp': None}
+168 {'type': 60, 'loc': ('./porth.porth', 179, 9), 'value': 'ROT', 'jmp': None}
+169 {'type': 57, 'loc': ('./porth.porth', 179, 13), 'value': '@64', 'jmp': None}
+170 {'type': 34, 'loc': ('./porth.porth', 179, 17), 'value': 'SWAP', 'jmp': None}
+171 {'type': 57, 'loc': ('./porth.porth', 180, 1), 'value': '@64', 'jmp': None}
+172 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+173 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+174 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+175 {'type': 10, 'loc': ('./porth.porth', 7, 3), 'value': 'DUP', 'jmp': None}
+176 {'type': 56, 'loc': ('./porth.porth', 7, 7), 'value': '$64', 'jmp': None}
+177 {'type': 0, 'loc': ('./porth.porth', 7, 11), 'value': 1, 'jmp': None}
+178 {'type': 1, 'loc': ('./porth.porth', 7, 13), 'value': '+', 'jmp': None}
+179 {'type': 57, 'loc': ('./porth.porth', 7, 15), 'value': '@64', 'jmp': None}
+180 {'type': 0, 'loc': ('./porth.porth', 140, 15), 'value': 1, 'jmp': None}
+181 {'type': 0, 'loc': ('./porth.porth', 258, 9), 'value': 0, 'jmp': None}
+182 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+183 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+184 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+185 {'type': 56, 'loc': ('./porth.porth', 178, 11), 'value': '$64', 'jmp': None}
+186 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+187 {'type': 17, 'loc': ('./porth.porth', 178, 26), 'value': 'MUL', 'jmp': None}
+188 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+189 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+190 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+191 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+192 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+193 {'type': 1, 'loc': ('./porth.porth', 178, 34), 'value': '+', 'jmp': None}
+194 {'type': 10, 'loc': ('./porth.porth', 179, 1), 'value': 'DUP', 'jmp': None}
+195 {'type': 0, 'loc': ('./porth.porth', 179, 5), 'value': 8, 'jmp': None}
+196 {'type': 1, 'loc': ('./porth.porth', 179, 7), 'value': '+', 'jmp': None}
+197 {'type': 60, 'loc': ('./porth.porth', 179, 9), 'value': 'ROT', 'jmp': None}
+198 {'type': 57, 'loc': ('./porth.porth', 179, 13), 'value': '@64', 'jmp': None}
+199 {'type': 34, 'loc': ('./porth.porth', 179, 17), 'value': 'SWAP', 'jmp': None}
+200 {'type': 57, 'loc': ('./porth.porth', 180, 1), 'value': '@64', 'jmp': None}
+201 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+202 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+203 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+204 {'type': 10, 'loc': ('./porth.porth', 7, 3), 'value': 'DUP', 'jmp': None}
+205 {'type': 56, 'loc': ('./porth.porth', 7, 7), 'value': '$64', 'jmp': None}
+206 {'type': 0, 'loc': ('./porth.porth', 7, 11), 'value': 1, 'jmp': None}
+207 {'type': 1, 'loc': ('./porth.porth', 7, 13), 'value': '+', 'jmp': None}
+208 {'type': 57, 'loc': ('./porth.porth', 7, 15), 'value': '@64', 'jmp': None}
+209 {'type': 0, 'loc': ('./porth.porth', 141, 16), 'value': 2, 'jmp': None}
+210 {'type': 0, 'loc': ('./porth.porth', 259, 10), 'value': 0, 'jmp': None}
+211 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+212 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+213 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+214 {'type': 56, 'loc': ('./porth.porth', 178, 11), 'value': '$64', 'jmp': None}
+215 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+216 {'type': 17, 'loc': ('./porth.porth', 178, 26), 'value': 'MUL', 'jmp': None}
+217 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+218 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+219 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+220 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+221 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+222 {'type': 1, 'loc': ('./porth.porth', 178, 34), 'value': '+', 'jmp': None}
+223 {'type': 10, 'loc': ('./porth.porth', 179, 1), 'value': 'DUP', 'jmp': None}
+224 {'type': 0, 'loc': ('./porth.porth', 179, 5), 'value': 8, 'jmp': None}
+225 {'type': 1, 'loc': ('./porth.porth', 179, 7), 'value': '+', 'jmp': None}
+226 {'type': 60, 'loc': ('./porth.porth', 179, 9), 'value': 'ROT', 'jmp': None}
+227 {'type': 57, 'loc': ('./porth.porth', 179, 13), 'value': '@64', 'jmp': None}
+228 {'type': 34, 'loc': ('./porth.porth', 179, 17), 'value': 'SWAP', 'jmp': None}
+229 {'type': 57, 'loc': ('./porth.porth', 180, 1), 'value': '@64', 'jmp': None}
+230 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+231 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+232 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+233 {'type': 10, 'loc': ('./porth.porth', 7, 3), 'value': 'DUP', 'jmp': None}
+234 {'type': 56, 'loc': ('./porth.porth', 7, 7), 'value': '$64', 'jmp': None}
+235 {'type': 0, 'loc': ('./porth.porth', 7, 11), 'value': 1, 'jmp': None}
+236 {'type': 1, 'loc': ('./porth.porth', 7, 13), 'value': '+', 'jmp': None}
+237 {'type': 57, 'loc': ('./porth.porth', 7, 15), 'value': '@64', 'jmp': None}
+238 {'type': 42, 'value': './bin/hello2.asm', 'loc': ('./porth.porth', 216, 2)}
+239 {'type': 63, 'loc': ('./porth.porth', 216, 20), 'value': 'OPENW', 'jmp': None, 'index': 3, 'options': 1005}
+240 {'type': 51, 'loc': ('./porth.porth', 216, 26), 'value': '!fw', 'jmp': None, 'variable': 'fw', 'index': 3}
+241 {'type': 42, 'value': '%define SYS_EXIT 60\n', 'loc': ('./porth.porth', 29, 2)}
+242 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+243 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+244 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+245 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+246 {'type': 42, 'value': '%define SYS_READ 0\n', 'loc': ('./porth.porth', 30, 2)}
+247 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+248 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+249 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+250 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+251 {'type': 42, 'value': '%define SYS_WRITE 1\n', 'loc': ('./porth.porth', 31, 2)}
+252 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+253 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+254 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+255 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+256 {'type': 42, 'value': '%define SYS_OPEN 2\n', 'loc': ('./porth.porth', 32, 2)}
+257 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+258 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+259 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+260 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+261 {'type': 42, 'value': '%define SYS_CLOSE 3\n', 'loc': ('./porth.porth', 33, 2)}
+262 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+263 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+264 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+265 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+266 {'type': 42, 'value': '%define BUFFER_SIZE 2048\n', 'loc': ('./porth.porth', 34, 2)}
+267 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+268 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+269 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+270 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+271 {'type': 42, 'value': '%define STDOUT 1\n', 'loc': ('./porth.porth', 35, 2)}
+272 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+273 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+274 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+275 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+276 {'type': 42, 'value': 'BITS 64\n', 'loc': ('./porth.porth', 36, 2)}
+277 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+278 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+279 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+280 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+281 {'type': 42, 'value': 'segment .text\n', 'loc': ('./porth.porth', 37, 2)}
+282 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+283 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+284 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+285 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+286 {'type': 42, 'value': '_read_write:\n', 'loc': ('./porth.porth', 38, 2)}
+287 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+288 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+289 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+290 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+291 {'type': 42, 'value': ' ; read file into a buffer\n', 'loc': ('./porth.porth', 39, 2)}
+292 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+293 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+294 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+295 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+296 {'type': 42, 'value': '  mov rax, SYS_READ\n', 'loc': ('./porth.porth', 40, 2)}
+297 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+298 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+299 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+300 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+301 {'type': 42, 'value': '  mov rdi, [_fd]\n', 'loc': ('./porth.porth', 41, 2)}
+302 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+303 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+304 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+305 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+306 {'type': 42, 'value': '  mov rsi, _file_buffer\n', 'loc': ('./porth.porth', 42, 2)}
+307 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+308 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+309 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+310 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+311 {'type': 42, 'value': '  mov rdx, BUFFER_SIZE\n', 'loc': ('./porth.porth', 43, 2)}
+312 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+313 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+314 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+315 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+316 {'type': 42, 'value': '  syscall\n', 'loc': ('./porth.porth', 44, 2)}
+317 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+318 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+319 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+320 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+321 {'type': 42, 'value': '  ret\n', 'loc': ('./porth.porth', 45, 2)}
+322 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+323 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+324 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+325 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+326 {'type': 42, 'value': '_open:\n', 'loc': ('./porth.porth', 46, 2)}
+327 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+328 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+329 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+330 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+331 {'type': 42, 'value': '    mov rax, SYS_OPEN  ; sys_open\n', 'loc': ('./porth.porth', 47, 2)}
+332 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+333 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+334 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+335 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+336 {'type': 42, 'value': '    mov rdi, [_file]   ; get file name address\n', 'loc': ('./porth.porth', 48, 2)}
+337 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+338 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+339 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+340 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+341 {'type': 42, 'value': '    mov rsi, [_options] ; read only\n', 'loc': ('./porth.porth', 49, 2)}
+342 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+343 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+344 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+345 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+346 {'type': 42, 'value': '    syscall\n', 'loc': ('./porth.porth', 50, 2)}
+347 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+348 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+349 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+350 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+351 {'type': 42, 'value': "    ;add eax, '0'     ; load fd\n", 'loc': ('./porth.porth', 51, 2)}
+352 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+353 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+354 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+355 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+356 {'type': 42, 'value': '    mov dword [_fd], eax  ; move _fd to buf\n', 'loc': ('./porth.porth', 52, 2)}
+357 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+358 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+359 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+360 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+361 {'type': 42, 'value': '    ret\n', 'loc': ('./porth.porth', 53, 2)}
+362 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+363 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+364 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+365 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+366 {'type': 42, 'value': '_close:\n', 'loc': ('./porth.porth', 54, 2)}
+367 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+368 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+369 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+370 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+371 {'type': 42, 'value': '    mov rsi, _fd\n', 'loc': ('./porth.porth', 55, 2)}
+372 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+373 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+374 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+375 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+376 {'type': 42, 'value': '    mov rdi, SYS_CLOSE\n', 'loc': ('./porth.porth', 56, 2)}
+377 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+378 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+379 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+380 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+381 {'type': 42, 'value': '    mov rax, 0\n', 'loc': ('./porth.porth', 57, 2)}
+382 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+383 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+384 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+385 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+386 {'type': 42, 'value': '    syscall\n', 'loc': ('./porth.porth', 58, 2)}
+387 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+388 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+389 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+390 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+391 {'type': 42, 'value': '    ret\n', 'loc': ('./porth.porth', 59, 2)}
+392 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+393 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+394 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+395 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+396 {'type': 42, 'value': '_write_buffer:\n', 'loc': ('./porth.porth', 60, 2)}
+397 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+398 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+399 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+400 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+401 {'type': 42, 'value': '  ; write the buffer content to the file descriptor\n', 'loc': ('./porth.porth', 61, 2)}
+402 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+403 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+404 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+405 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+406 {'type': 42, 'value': '  mov rdx, [_bufread] ; message length\n', 'loc': ('./porth.porth', 62, 2)}
+407 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+408 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+409 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+410 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+411 {'type': 42, 'value': '  mov rax, SYS_WRITE ; system call number (sys_write)\n', 'loc': ('./porth.porth', 63, 2)}
+412 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+413 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+414 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+415 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+416 {'type': 42, 'value': '  mov rdi, [_fd]; file descriptor\n', 'loc': ('./porth.porth', 64, 2)}
+417 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+418 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+419 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+420 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+421 {'type': 42, 'value': '  mov rsi, _file_buffer\n', 'loc': ('./porth.porth', 65, 2)}
+422 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+423 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+424 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+425 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+426 {'type': 42, 'value': '  syscall\n', 'loc': ('./porth.porth', 66, 2)}
+427 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+428 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+429 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+430 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+431 {'type': 42, 'value': '  ret\n', 'loc': ('./porth.porth', 67, 2)}
+432 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+433 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+434 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+435 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+436 {'type': 42, 'value': 'print:\n', 'loc': ('./porth.porth', 71, 2)}
+437 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+438 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+439 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+440 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+441 {'type': 42, 'value': '    mov r9, -3689348814741910323\n', 'loc': ('./porth.porth', 72, 2)}
+442 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+443 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+444 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+445 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+446 {'type': 42, 'value': '    sub rsp, 40\n', 'loc': ('./porth.porth', 73, 2)}
+447 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+448 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+449 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+450 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+451 {'type': 42, 'value': '    mov BYTE [rsp+31], 10\n', 'loc': ('./porth.porth', 74, 2)}
+452 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+453 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+454 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+455 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+456 {'type': 42, 'value': '    lea rcx, [rsp+30]\n', 'loc': ('./porth.porth', 75, 2)}
+457 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+458 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+459 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+460 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+461 {'type': 42, 'value': '.L2:\n', 'loc': ('./porth.porth', 76, 2)}
+462 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+463 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+464 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+465 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+466 {'type': 42, 'value': '    mov rax, rdi\n', 'loc': ('./porth.porth', 77, 2)}
+467 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+468 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+469 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+470 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+471 {'type': 42, 'value': '    lea r8, [rsp+32]\n', 'loc': ('./porth.porth', 78, 2)}
+472 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+473 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+474 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+475 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+476 {'type': 42, 'value': '    mul r9\n', 'loc': ('./porth.porth', 79, 2)}
+477 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+478 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+479 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+480 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+481 {'type': 42, 'value': '    mov rax, rdi\n', 'loc': ('./porth.porth', 80, 2)}
+482 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+483 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+484 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+485 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+486 {'type': 42, 'value': '    sub r8, rcx\n', 'loc': ('./porth.porth', 81, 2)}
+487 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+488 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+489 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+490 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+491 {'type': 42, 'value': '    shr rdx, 3\n', 'loc': ('./porth.porth', 82, 2)}
+492 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+493 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+494 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+495 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+496 {'type': 42, 'value': '    lea rsi, [rdx+rdx*4]\n', 'loc': ('./porth.porth', 83, 2)}
+497 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+498 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+499 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+500 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+501 {'type': 42, 'value': '    add rsi, rsi\n', 'loc': ('./porth.porth', 84, 2)}
+502 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+503 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+504 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+505 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+506 {'type': 42, 'value': '    sub rax, rsi\n', 'loc': ('./porth.porth', 85, 2)}
+507 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+508 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+509 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+510 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+511 {'type': 42, 'value': '    add eax, 48\n', 'loc': ('./porth.porth', 86, 2)}
+512 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+513 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+514 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+515 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+516 {'type': 42, 'value': '    mov BYTE [rcx], al\n', 'loc': ('./porth.porth', 87, 2)}
+517 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+518 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+519 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+520 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+521 {'type': 42, 'value': '    mov rax, rdi\n', 'loc': ('./porth.porth', 88, 2)}
+522 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+523 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+524 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+525 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+526 {'type': 42, 'value': '    mov rdi, rdx\n', 'loc': ('./porth.porth', 89, 2)}
+527 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+528 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+529 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+530 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+531 {'type': 42, 'value': '    mov rdx, rcx\n', 'loc': ('./porth.porth', 90, 2)}
+532 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+533 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+534 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+535 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+536 {'type': 42, 'value': '    sub rcx, 1\n', 'loc': ('./porth.porth', 91, 2)}
+537 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+538 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+539 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+540 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+541 {'type': 42, 'value': '    cmp rax, 9\n', 'loc': ('./porth.porth', 92, 2)}
+542 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+543 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+544 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+545 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+546 {'type': 42, 'value': '    ja .L2\n', 'loc': ('./porth.porth', 93, 2)}
+547 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+548 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+549 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+550 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+551 {'type': 42, 'value': '    lea rax, [rsp+32]\n', 'loc': ('./porth.porth', 94, 2)}
+552 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+553 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+554 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+555 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+556 {'type': 42, 'value': '    mov edi, 1\n', 'loc': ('./porth.porth', 95, 2)}
+557 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+558 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+559 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+560 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+561 {'type': 42, 'value': '    sub rdx, rax\n', 'loc': ('./porth.porth', 96, 2)}
+562 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+563 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+564 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+565 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+566 {'type': 42, 'value': '    xor eax, eax\n', 'loc': ('./porth.porth', 97, 2)}
+567 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+568 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+569 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+570 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+571 {'type': 42, 'value': '    lea rsi, [rsp+32+rdx]\n', 'loc': ('./porth.porth', 98, 2)}
+572 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+573 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+574 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+575 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+576 {'type': 42, 'value': '    mov rdx, r8\n', 'loc': ('./porth.porth', 99, 2)}
+577 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+578 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+579 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+580 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+581 {'type': 42, 'value': '    mov rax, 1\n', 'loc': ('./porth.porth', 100, 2)}
+582 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+583 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+584 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+585 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+586 {'type': 42, 'value': '    syscall\n', 'loc': ('./porth.porth', 101, 2)}
+587 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+588 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+589 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+590 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+591 {'type': 42, 'value': '    ;call write\n', 'loc': ('./porth.porth', 102, 2)}
+592 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+593 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+594 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+595 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+596 {'type': 42, 'value': '    add rsp, 40\n', 'loc': ('./porth.porth', 103, 2)}
+597 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+598 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+599 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+600 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+601 {'type': 42, 'value': '    ret\n', 'loc': ('./porth.porth', 104, 2)}
+602 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+603 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+604 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+605 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+606 {'type': 42, 'value': 'print_char:\n', 'loc': ('./porth.porth', 105, 2)}
+607 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+608 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+609 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+610 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+611 {'type': 42, 'value': '    push   rbp\n', 'loc': ('./porth.porth', 106, 2)}
+612 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+613 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+614 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+615 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+616 {'type': 42, 'value': '    mov    rbp, rsp\n', 'loc': ('./porth.porth', 107, 2)}
+617 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+618 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+619 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+620 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+621 {'type': 42, 'value': '    sub    rsp, 16\n', 'loc': ('./porth.porth', 108, 2)}
+622 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+623 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+624 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+625 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+626 {'type': 42, 'value': '    mov    rax, rdi\n', 'loc': ('./porth.porth', 109, 2)}
+627 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+628 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+629 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+630 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+631 {'type': 42, 'value': '    mov    [rbp - 4], al\n', 'loc': ('./porth.porth', 110, 2)}
+632 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+633 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+634 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+635 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+636 {'type': 42, 'value': '    lea    rsi, [rbp - 4]\n', 'loc': ('./porth.porth', 111, 2)}
+637 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+638 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+639 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+640 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+641 {'type': 42, 'value': '    mov    rdx, 1\n', 'loc': ('./porth.porth', 112, 2)}
+642 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+643 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+644 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+645 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+646 {'type': 42, 'value': '    mov    rdi, 1\n', 'loc': ('./porth.porth', 113, 2)}
+647 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+648 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+649 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+650 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+651 {'type': 42, 'value': '    mov    rax, 1\n', 'loc': ('./porth.porth', 114, 2)}
+652 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+653 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+654 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+655 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+656 {'type': 42, 'value': '    syscall\n', 'loc': ('./porth.porth', 115, 2)}
+657 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+658 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+659 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+660 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+661 {'type': 42, 'value': '    add rsp, 16\n', 'loc': ('./porth.porth', 116, 2)}
+662 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+663 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+664 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+665 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+666 {'type': 42, 'value': '    pop    rbp\n', 'loc': ('./porth.porth', 117, 2)}
+667 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+668 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+669 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+670 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+671 {'type': 42, 'value': '    ret\n', 'loc': ('./porth.porth', 118, 2)}
+672 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+673 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+674 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+675 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+676 {'type': 42, 'value': 'global _start\n', 'loc': ('./porth.porth', 119, 2)}
+677 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+678 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+679 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+680 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+681 {'type': 42, 'value': '_start:\n', 'loc': ('./porth.porth', 120, 2)}
+682 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+683 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+684 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+685 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+686 {'type': 0, 'loc': ('./porth.porth', 219, 1), 'value': 0, 'jmp': None}
+687 {'type': 19, 'loc': ('./porth.porth', 219, 3), 'value': 'WHILE', 'jmp': None}
+688 {'type': 10, 'loc': ('./porth.porth', 219, 9), 'value': 'DUP', 'jmp': None}
+689 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+690 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+691 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+692 {'type': 56, 'loc': ('./porth.porth', 219, 23), 'value': '$64', 'jmp': None}
+693 {'type': 12, 'loc': ('./porth.porth', 219, 27), 'value': '<', 'jmp': None}
+694 {'type': 20, 'loc': ('./porth.porth', 219, 29), 'value': 'DO', 'jmp': 837, 'level': 0}
+695 {'type': 10, 'loc': ('./porth.porth', 221, 1), 'value': 'DUP', 'jmp': None}
+696 {'type': 0, 'loc': ('./porth.porth', 173, 1), 'value': 16, 'jmp': None}
+697 {'type': 17, 'loc': ('./porth.porth', 221, 16), 'value': 'MUL', 'jmp': None}
+698 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+699 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+700 {'type': 1, 'loc': ('./porth.porth', 165, 29), 'value': '+', 'jmp': None}
+701 {'type': 0, 'loc': ('./porth.porth', 169, 11), 'value': 8, 'jmp': None}
+702 {'type': 1, 'loc': ('./porth.porth', 169, 13), 'value': '+', 'jmp': None}
+703 {'type': 1, 'loc': ('./porth.porth', 221, 24), 'value': '+', 'jmp': None}
+704 {'type': 10, 'loc': ('./porth.porth', 222, 1), 'value': 'DUP', 'jmp': None}
+705 {'type': 56, 'loc': ('./porth.porth', 222, 5), 'value': '$64', 'jmp': None}
+706 {'type': 0, 'loc': ('./porth.porth', 139, 19), 'value': 0, 'jmp': None}
+707 {'type': 4, 'loc': ('./porth.porth', 222, 21), 'value': '=', 'jmp': None}
+708 {'type': 5, 'loc': ('./porth.porth', 222, 23), 'value': 'IF', 'jmp': 777}
+709 {'type': 42, 'value': '; push \n', 'loc': ('./porth.porth', 223, 6)}
+710 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+711 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+712 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+713 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+714 {'type': 42, 'value': 'mov rax, ', 'loc': ('./porth.porth', 224, 6)}
+715 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+716 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+717 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+718 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+719 {'type': 0, 'loc': ('./porth.porth', 224, 18), 'value': 8, 'jmp': None}
+720 {'type': 1, 'loc': ('./porth.porth', 224, 20), 'value': '+', 'jmp': None}
+721 {'type': 56, 'loc': ('./porth.porth', 224, 22), 'value': '$64', 'jmp': None}
+722 {'type': 10, 'loc': ('./porth.porth', 149, 3), 'value': 'DUP', 'jmp': None}
+723 {'type': 0, 'loc': ('./porth.porth', 149, 7), 'value': 0, 'jmp': None}
+724 {'type': 4, 'loc': ('./porth.porth', 149, 9), 'value': '=', 'jmp': None}
+725 {'type': 5, 'loc': ('./porth.porth', 149, 11), 'value': 'IF', 'jmp': 732}
+726 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+727 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+728 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+729 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+730 {'type': 42, 'value': '0', 'loc': ('./porth.porth', 150, 6)}
+731 {'type': 7, 'loc': ('./porth.porth', 151, 3), 'value': 'ELSE', 'jmp': 764}
+732 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+733 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+734 {'type': 1, 'loc': ('./porth.porth', 152, 33), 'value': '+', 'jmp': None}
+735 {'type': 19, 'loc': ('./porth.porth', 153, 5), 'value': 'WHILE', 'jmp': None}
+736 {'type': 40, 'loc': ('./porth.porth', 153, 11), 'value': 'OVER', 'jmp': None}
+737 {'type': 0, 'loc': ('./porth.porth', 153, 16), 'value': 0, 'jmp': None}
+738 {'type': 11, 'loc': ('./porth.porth', 153, 18), 'value': '>', 'jmp': None}
+739 {'type': 20, 'loc': ('./porth.porth', 153, 20), 'value': 'DO', 'jmp': 753, 'level': 1}
+740 {'type': 0, 'loc': ('./porth.porth', 154, 7), 'value': 1, 'jmp': None}
+741 {'type': 2, 'loc': ('./porth.porth', 154, 9), 'value': '-', 'jmp': None}
+742 {'type': 10, 'loc': ('./porth.porth', 154, 11), 'value': 'DUP', 'jmp': None}
+743 {'type': 60, 'loc': ('./porth.porth', 154, 15), 'value': 'ROT', 'jmp': None}
+744 {'type': 0, 'loc': ('./porth.porth', 155, 7), 'value': 10, 'jmp': None}
+745 {'type': 18, 'loc': ('./porth.porth', 155, 10), 'value': 'DIVMOD', 'jmp': None}
+746 {'type': 60, 'loc': ('./porth.porth', 156, 7), 'value': 'ROT', 'jmp': None}
+747 {'type': 34, 'loc': ('./porth.porth', 156, 11), 'value': 'SWAP', 'jmp': None}
+748 {'type': 47, 'loc': ('./porth.porth', 156, 16), 'value': 48, 'jmp': None}
+749 {'type': 1, 'loc': ('./porth.porth', 156, 20), 'value': '+', 'jmp': None}
+750 {'type': 23, 'loc': ('./porth.porth', 156, 22), 'value': '@', 'jmp': None}
+751 {'type': 34, 'loc': ('./porth.porth', 156, 24), 'value': 'SWAP', 'jmp': None}
+752 {'type': 6, 'loc': ('./porth.porth', 157, 5), 'value': 'END', 'jmp': 735}
+753 {'type': 10, 'loc': ('./porth.porth', 158, 5), 'value': 'DUP', 'jmp': None}
+754 {'type': 21, 'loc': ('./porth.porth', 145, 19), 'value': 'MEM', 'jmp': None}
+755 {'type': 0, 'loc': ('./porth.porth', 144, 23), 'value': 32, 'jmp': None}
+756 {'type': 1, 'loc': ('./porth.porth', 159, 33), 'value': '+', 'jmp': None}
+757 {'type': 34, 'loc': ('./porth.porth', 159, 35), 'value': 'SWAP', 'jmp': None}
+758 {'type': 2, 'loc': ('./porth.porth', 159, 40), 'value': '-', 'jmp': None}
+759 {'type': 34, 'loc': ('./porth.porth', 159, 42), 'value': 'SWAP', 'jmp': None}
+760 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+761 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+762 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+763 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+764 {'type': 6, 'loc': ('./porth.porth', 160, 3), 'value': 'END', 'jmp': 765}
+765 {'type': 35, 'loc': ('./porth.porth', 161, 3), 'value': 'DROP', 'jmp': None}
+766 {'type': 42, 'value': '\n', 'loc': ('./porth.porth', 224, 36)}
+767 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+768 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+769 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+770 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+771 {'type': 42, 'value': 'push rax\n', 'loc': ('./porth.porth', 225, 6)}
+772 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+773 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+774 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+775 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+776 {'type': 7, 'loc': ('./porth.porth', 226, 1), 'value': 'ELSE', 'jmp': 833}
+777 {'type': 10, 'loc': ('./porth.porth', 227, 5), 'value': 'DUP', 'jmp': None}
+778 {'type': 56, 'loc': ('./porth.porth', 227, 9), 'value': '$64', 'jmp': None}
+779 {'type': 0, 'loc': ('./porth.porth', 140, 15), 'value': 1, 'jmp': None}
+780 {'type': 4, 'loc': ('./porth.porth', 227, 21), 'value': '=', 'jmp': None}
+781 {'type': 5, 'loc': ('./porth.porth', 227, 23), 'value': 'IF', 'jmp': 808}
+782 {'type': 42, 'value': '; add \n', 'loc': ('./porth.porth', 228, 10)}
+783 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+784 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+785 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+786 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+787 {'type': 42, 'value': 'pop    rax \n', 'loc': ('./porth.porth', 229, 10)}
+788 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+789 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+790 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+791 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+792 {'type': 42, 'value': 'pop    rcx \n', 'loc': ('./porth.porth', 230, 10)}
+793 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+794 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+795 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+796 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+797 {'type': 42, 'value': 'add    rax, rcx \n', 'loc': ('./porth.porth', 231, 10)}
+798 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+799 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+800 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+801 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+802 {'type': 42, 'value': 'push    rax \n', 'loc': ('./porth.porth', 232, 10)}
+803 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+804 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+805 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+806 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+807 {'type': 7, 'loc': ('./porth.porth', 233, 5), 'value': 'ELSE', 'jmp': 832}
+808 {'type': 10, 'loc': ('./porth.porth', 234, 9), 'value': 'DUP', 'jmp': None}
+809 {'type': 56, 'loc': ('./porth.porth', 234, 13), 'value': '$64', 'jmp': None}
+810 {'type': 0, 'loc': ('./porth.porth', 141, 16), 'value': 2, 'jmp': None}
+811 {'type': 4, 'loc': ('./porth.porth', 234, 26), 'value': '=', 'jmp': None}
+812 {'type': 5, 'loc': ('./porth.porth', 234, 28), 'value': 'IF', 'jmp': 824}
+813 {'type': 42, 'value': 'pop rdi \n', 'loc': ('./porth.porth', 235, 14)}
+814 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+815 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+816 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+817 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+818 {'type': 42, 'value': 'call print\n', 'loc': ('./porth.porth', 236, 14)}
+819 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+820 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+821 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+822 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+823 {'type': 7, 'loc': ('./porth.porth', 238, 9), 'value': 'ELSE', 'jmp': 831}
+824 {'type': 42, 'value': 'unreachable\n', 'loc': ('./porth.porth', 239, 14)}
+825 {'type': 0, 'loc': ('./porth.porth', 4, 14), 'value': 1, 'jmp': None}
+826 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+827 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+828 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+829 {'type': 0, 'loc': ('./porth.porth', 239, 22), 'value': 1, 'jmp': None}
+830 {'type': 32, 'loc': ('./porth.porth', 239, 24), 'value': 'EXIT', 'jmp': None}
+831 {'type': 6, 'loc': ('./porth.porth', 240, 9), 'value': 'END', 'jmp': 832}
+832 {'type': 6, 'loc': ('./porth.porth', 241, 9), 'value': 'END', 'jmp': 833}
+833 {'type': 6, 'loc': ('./porth.porth', 242, 9), 'value': 'END', 'jmp': 834}
+834 {'type': 0, 'loc': ('./porth.porth', 244, 1), 'value': 1, 'jmp': None}
+835 {'type': 1, 'loc': ('./porth.porth', 244, 3), 'value': '+', 'jmp': None}
+836 {'type': 6, 'loc': ('./porth.porth', 245, 1), 'value': 'END', 'jmp': 687}
+837 {'type': 42, 'value': 'mov rax, SYS_EXIT\n', 'loc': ('./porth.porth', 124, 2)}
+838 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+839 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+840 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+841 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+842 {'type': 42, 'value': 'mov rdi, 0\n', 'loc': ('./porth.porth', 125, 2)}
+843 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+844 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+845 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+846 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+847 {'type': 42, 'value': 'syscall\n', 'loc': ('./porth.porth', 126, 2)}
+848 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+849 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+850 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+851 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+852 {'type': 42, 'value': 'section .data \n', 'loc': ('./porth.porth', 130, 2)}
+853 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+854 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+855 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+856 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+857 {'type': 42, 'value': "_format db  '%lld', 10, 0\n", 'loc': ('./porth.porth', 131, 2)}
+858 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+859 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+860 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+861 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+862 {'type': 42, 'value': "_format2 db '%s', 10, 0\n", 'loc': ('./porth.porth', 132, 2)}
+863 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+864 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+865 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+866 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+867 {'type': 42, 'value': "_char db  '%c', 0\n", 'loc': ('./porth.porth', 133, 2)}
+868 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+869 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+870 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+871 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+872 {'type': 42, 'value': "_negative db '-', 0\n", 'loc': ('./porth.porth', 134, 2)}
+873 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+874 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+875 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+876 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+877 {'type': 42, 'value': '_security  dq  100000000\n', 'loc': ('./porth.porth', 135, 2)}
+878 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+879 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+880 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+881 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+882 {'type': 42, 'value': 'section .bss    ; uninitialized data section\n', 'loc': ('./porth.porth', 196, 2)}
+883 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+884 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+885 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+886 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+887 {'type': 42, 'value': '_file RESQ 1\n', 'loc': ('./porth.porth', 197, 2)}
+888 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+889 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+890 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+891 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+892 {'type': 42, 'value': '_options RESQ 1\n', 'loc': ('./porth.porth', 198, 2)}
+893 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+894 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+895 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+896 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+897 {'type': 42, 'value': '_fd RESQ 1\n', 'loc': ('./porth.porth', 199, 2)}
+898 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+899 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+900 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+901 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+902 {'type': 42, 'value': '_file_buffer resb BUFFER_SIZE\n', 'loc': ('./porth.porth', 200, 2)}
+903 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+904 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+905 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+906 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+907 {'type': 42, 'value': '_bufread RESQ 1\n', 'loc': ('./porth.porth', 201, 2)}
+908 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+909 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+910 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+911 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+912 {'type': 42, 'value': '_mem: resb 640000\n', 'loc': ('./porth.porth', 202, 2)}
+913 {'type': 49, 'loc': ('./porth.porth', 25, 1), 'value': 'fw', 'jmp': None}
+914 {'type': 0, 'loc': ('./porth.porth', 10, 17), 'value': 1, 'jmp': None}
+915 {'type': 27, 'loc': ('./porth.porth', 13, 11), 'value': 'SYSCALL3', 'jmp': None}
+916 {'type': 35, 'loc': ('./porth.porth', 13, 20), 'value': 'DROP', 'jmp': None}
+917 {'type': 49, 'loc': ('./porth.porth', 249, 1), 'value': 'fw', 'jmp': None}
+918 {'type': 62, 'loc': ('./porth.porth', 249, 4), 'value': 'CLOSE', 'jmp': None, 'index': 3}
+919 {'type': 35, 'loc': ('./porth.porth', 264, 1), 'value': 'DROP', 'jmp': None}

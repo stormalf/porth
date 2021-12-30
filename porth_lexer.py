@@ -564,4 +564,6 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
             generate_error(filename=filename, errfunction=errfunction, msgid= 31, token=files_struct[fd]['filename'])
     if check_errors():
         error= True
+    # for index, op in enumerate(program):
+    #     print(index, op)
     return program, error

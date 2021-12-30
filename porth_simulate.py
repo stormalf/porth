@@ -388,6 +388,7 @@ def simulate_op_load64(op: Dict) -> None:
         for offset in range(0,8):
             _bytes[offset] = mem[addr + offset]
         stack.append(int.from_bytes(_bytes, byteorder="little"))
+        #print(op, addr, int.from_bytes(_bytes, byteorder="little"))
         set_stack_counter()
 
 def simulate_op_store64(op: Dict) -> None:

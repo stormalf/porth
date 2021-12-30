@@ -12,11 +12,11 @@ MACRO MEM_CAPACITY 640000 ENDM
 
 
 MACRO ops-count 
-putd_buffer PUTD_BUFFER_CAP +  
+putd_buffer PUTD_BUFFER_CAP +  //1280033
 ENDM
 
 MACRO ops 
-ops-count 16 + 
+ops-count 8 +  //1280041 starts the beginning of operations
 ENDM
 
 MACRO sizeof(Op) 
@@ -24,10 +24,10 @@ MACRO sizeof(Op)
 ENDM
 
 MACRO push-op 
-ops-count $64 sizeof(Op) MUL ops + 
-DUP 8 + ROT @64 SWAP
+ops-count $64 sizeof(Op) MUL ops + //1280041 + (16* 0) = 1280041
+DUP 8 + ROT @64 SWAP //access to operand and swap to store type  //1280049 store 35 and 12800041 store 0
 @64  
-ops-count inc64 
+ops-count inc64 //increment counter stored in 1280033
 ENDM
 
 
@@ -41,6 +41,53 @@ DUP sizeof(Op) MUL ops +
 END
 ENDM
 
+MACRO putd
+  DUP 0 = IF
+    "0" puts
+  ELSE
+    putd_buffer PUTD_BUFFER_CAP + //1280033
+    WHILE OVER 0 > DO
+      1 - DUP ROT 
+      10 DIVMOD
+      ROT SWAP '0' + @ SWAP
+    END
+    DUP    
+    putd_buffer PUTD_BUFFER_CAP + SWAP - SWAP puts
+  END
+
+ENDM
+
+
+MACRO compile-ops 
+0 WHILE DUP ops-count $64 < DO
+//ptr type
+DUP sizeof(Op) MUL ops + 
+DUP $64 OP_PUSH_INT = IF
+    "; push \n" puts   
+    "mov rax, " puts 8 + $64 putd "\n" puts       
+    "push rax\n" puts
+ELSE
+    DUP $64 OP_PLUS = IF
+        "; add \n" puts
+        "pop    rax \n" puts
+        "pop    rcx \n" puts
+        "add    rax, rcx \n" puts
+        "push    rax \n" puts
+    ELSE
+        DUP $64 OP_PRINT = IF
+            "pop rdi \n" puts
+            "call print\n" puts
+
+        ELSE
+            "unreachable\n" puts 1 EXIT
+        END
+        END
+        END
+    DROP
+1 +
+END
+ENDM 
+
 
 OP_PUSH_INT 35 push-op
 OP_PUSH_INT 36 push-op
@@ -48,4 +95,5 @@ OP_PLUS 0 push-op
 OP_PRINT 0 push-op
 
 dump-ops
+//compile-ops
 DROP

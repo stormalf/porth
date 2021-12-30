@@ -1,0 +1,6 @@
+INCLUDE "include/std.porth"
+"\n" puts
+"\n" puts
+"\n" puts
+"\n" strlen .
+DROP //memory address caused by strlen

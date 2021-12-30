@@ -252,6 +252,7 @@ link to pypy : https://www.pypy.org/download.html
 
 ## TODO
 
+- Adding type checking to avoid invisibles bugs! like missing DROP to remove address from stack on while loops! (2 days lost of time!)
 - Adding controls to check if open/read/write returns negative values.
 - Adding pointers and how to dereference them ?
 - Adding other types for variables (char, string, float)

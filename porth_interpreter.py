@@ -22,7 +22,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
     error = False
     #isMem = False
     ip = 0
-    str_size= NULL_POINTER_PADDING
+    str_size= 0
     #mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY() + get_MEM_CAPACITY())
     #buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
     outlist=[outfile]
@@ -47,7 +47,8 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
     if not error:
         while ip < len(program):
             op = program[ip]
-            #print(stack)
+            #print(op)
+            #print(op, stack)
             if check_runtime_errors():
                 print_runtime_errors()
                 print(f"Errors found during runtime simulation: {get_runtime_error()}")                
@@ -117,6 +118,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
             elif op['type']==get_OP_WHILE():
                 ip += 1                
             elif op['type']==get_OP_DO():
+                #print(op, stack)
                 a = stack.pop()
                 a_value = get_var_value(a)
                 set_stack_counter(-1)
