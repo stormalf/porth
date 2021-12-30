@@ -674,7 +674,7 @@ def simulate_op_openw(op: Dict) -> None:
         set_stack_counter()
         
 def simulate_op_syscall0(op: Dict) -> None:
-    global stack, files_struct
+    global stack, files_struct, exit_code
     errfunction="simulate_op_syscall0"
     if len(stack) < 1:
         #print("SYSCALL0 impossible not enough element in stack")
@@ -711,7 +711,69 @@ def simulate_op_syscall1(op: Dict) -> bool:
             set_stack_counter()                   
     return exit
 
-
+def simulate_op_syscall3(op: Dict, istoprint: bool) -> None:
+    global stack, files_struct, mem, exit_code
+    errfunction="simulate_op_syscall3"
+    if len(stack) < 4:
+        #print("SYSCALL3 impossible not enough element in stack")
+        generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+        stack.append(exit_code)
+        set_stack_counter()                    
+        #save_stack = stack.copy()
+    else:
+        syscall_number = stack.pop()
+        arg1 = stack.pop()
+        arg2 = stack.pop()
+        arg3 = stack.pop()
+        set_stack_counter(-4)
+        #print(op, stack,syscall_number, arg1, arg2, arg3, mem[arg2:100])
+        if arg2 == 0:
+            #print(f"arg2 cannot be 0 {op}, {program[ip - 1]}, {program[ip - 2]}, {program[ip - 3]}, {save_stack}")
+            generate_runtime_error(op=op, errfunction=errfunction, msgid=6)
+            stack.append(exit_code)
+            set_stack_counter()
+        elif syscall_number == 1:
+            fd = get_var_value(arg1)
+            buffer = get_var_value(arg2)
+            count = get_var_value(arg3)
+            #print(mem[buffer:10], fd, buffer, count)
+            s = mem[buffer:buffer+count].decode('utf-8')
+            if fd == 1:
+                #print(s, end='')
+                print_output_simulation(s, end='', istoprint=istoprint)
+                stack.append(exit_code)
+                set_stack_counter()                            
+            elif fd == 2:
+                #print(s, end='', file=sys.stderr)
+                print_output_simulation(s, end='', file=sys.stderr, istoprint=istoprint)
+                stack.append(exit_code)
+                set_stack_counter()                            
+            else:
+                os.write(fd, mem[buffer:buffer+count])
+                stack.append(exit_code)
+                set_stack_counter()                            
+                # stack.append(exit_code) 
+                # set_stack_counter()
+        elif syscall_number == 0:
+            fd = arg1
+            buffer = arg2
+            count = arg3
+            if fd == 0:
+                s = sys.stdin.readline()
+                mem[buffer:buffer+len(s)] = s.encode('utf-8')
+                buffer += len(s)
+                stack.append(len(s))
+                set_stack_counter()
+            else:
+                print(f"unknown file descriptor: {fd}")
+                generate_runtime_error(op=op, errfunction=errfunction, msgid=7)
+                stack.append(exit_code)
+                set_stack_counter()
+        else:
+            #print(f"unknown syscall3: {syscall_number}")
+            generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
+            stack.append(exit_code)
+            set_stack_counter()                       
 
 
 #print only if requested
@@ -724,5 +786,3 @@ def print_output_simulation(value, file: FileIO = sys.stdout, end: str = None, i
         else:
             print(value, end=end, file=file)
             stdoutput = stdoutput + str(value) + end
-
-
