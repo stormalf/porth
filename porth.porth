@@ -1,119 +1,16 @@
+// standard library
 INCLUDE "include/std.porth"
+//assembly macro
+INCLUDE "porth_assembly.porth"
+
+//to store file descriptor for output assembly file
 VAR fw u8 
 
+//macro to write into a file 
 MACRO putf
 fw write
 ENDM
 
-MACRO common_header
-"%define SYS_EXIT 60\n" putf
-"%define SYS_READ 0\n" putf
-"%define SYS_WRITE 1\n" putf
-"%define SYS_OPEN 2\n" putf
-"%define SYS_CLOSE 3\n" putf
-"%define BUFFER_SIZE 2048\n" putf
-"%define STDOUT 1\n" putf
-"BITS 64\n" putf
-"segment .text\n" putf
-"_read_write:\n" putf
-" ; read file into a buffer\n" putf
-"  mov rax, SYS_READ\n" putf
-"  mov rdi, [_fd]\n" putf
-"  mov rsi, _file_buffer\n" putf
-"  mov rdx, BUFFER_SIZE\n" putf
-"  syscall\n" putf
-"  ret\n" putf
-"_open:\n" putf
-"    mov rax, SYS_OPEN  ; sys_open\n" putf
-"    mov rdi, [_file]   ; get file name address\n" putf
-"    mov rsi, [_options] ; read only\n" putf
-"    syscall\n" putf
-"    ;add eax, '0'     ; load fd\n" putf
-"    mov dword [_fd], eax  ; move _fd to buf\n" putf
-"    ret\n" putf
-"_close:\n" putf
-"    mov rsi, _fd\n" putf
-"    mov rdi, SYS_CLOSE\n" putf
-"    mov rax, 0\n" putf
-"    syscall\n" putf
-"    ret\n" putf
-"_write_buffer:\n" putf
-"  ; write the buffer content to the file descriptor\n" putf
-"  mov rdx, [_bufread] ; message length\n" putf
-"  mov rax, SYS_WRITE ; system call number (sys_write)\n" putf
-"  mov rdi, [_fd]; file descriptor\n" putf
-"  mov rsi, _file_buffer\n" putf
-"  syscall\n" putf
-"  ret\n" putf
-ENDM
-
-MACRO header2 
-"print:\n" putf
-"    mov r9, -3689348814741910323\n" putf
-"    sub rsp, 40\n" putf
-"    mov BYTE [rsp+31], 10\n" putf
-"    lea rcx, [rsp+30]\n" putf
-".L2:\n" putf
-"    mov rax, rdi\n" putf
-"    lea r8, [rsp+32]\n" putf
-"    mul r9\n" putf
-"    mov rax, rdi\n" putf
-"    sub r8, rcx\n" putf
-"    shr rdx, 3\n" putf
-"    lea rsi, [rdx+rdx*4]\n" putf
-"    add rsi, rsi\n" putf
-"    sub rax, rsi\n" putf
-"    add eax, 48\n" putf
-"    mov BYTE [rcx], al\n" putf
-"    mov rax, rdi\n" putf
-"    mov rdi, rdx\n" putf
-"    mov rdx, rcx\n" putf
-"    sub rcx, 1\n" putf
-"    cmp rax, 9\n" putf
-"    ja .L2\n" putf
-"    lea rax, [rsp+32]\n" putf
-"    mov edi, 1\n" putf
-"    sub rdx, rax\n" putf
-"    xor eax, eax\n" putf
-"    lea rsi, [rsp+32+rdx]\n" putf
-"    mov rdx, r8\n" putf
-"    mov rax, 1\n" putf
-"    syscall\n" putf
-"    ;call write\n" putf
-"    add rsp, 40\n" putf
-"    ret\n" putf
-"print_char:\n" putf
-"    push   rbp\n" putf
-"    mov    rbp, rsp\n" putf
-"    sub    rsp, 16\n" putf
-"    mov    rax, rdi\n" putf
-"    mov    [rbp - 4], al\n" putf
-"    lea    rsi, [rbp - 4]\n" putf
-"    mov    rdx, 1\n" putf
-"    mov    rdi, 1\n" putf
-"    mov    rax, 1\n" putf
-"    syscall\n" putf
-"    add rsp, 16\n" putf
-"    pop    rbp\n" putf
-"    ret\n" putf
-"global _start\n" putf
-"_start:\n" putf
-ENDM
-
-MACRO footer 
-"mov rax, SYS_EXIT\n" putf
-"mov rdi, 0\n" putf
-"syscall\n" putf
-ENDM
-
-MACRO data
-"section .data \n" putf
-"_format db  '%lld', 10, 0\n" putf
-"_format2 db '%s', 10, 0\n" putf
-"_char db  '%c', 0\n" putf
-"_negative db '-', 0\n" putf
-"_security  dq  100000000\n" putf
-ENDM
 
 //op macros
 MACRO OP_PUSH_INT 0 ENDM
@@ -125,6 +22,8 @@ MACRO PUTD_BUFFER_CAP 32 ENDM
 MACRO putd_buffer MEM ENDM
 MACRO MEM_CAPACITY 640000 ENDM
 
+
+//write numbers as strings
 MACRO putd
   DUP 0 = IF
     "0" putf
@@ -171,27 +70,18 @@ DUP sizeof(Op) MUL ops +
 END
 ENDM
 
-
-MACRO bss
-"section .bss    ; uninitialized data section\n" putf
-"_file RESQ 1\n" putf
-"_options RESQ 1\n" putf
-"_fd RESQ 1\n" putf
-"_file_buffer resb BUFFER_SIZE\n" putf
-"_bufread RESQ 1\n" putf
-"_mem: resb 640000\n" putf //MEM_CAPACITY putd "\n" putf
-ENDM
-
 //struct OP {
 //    type: u64,
 //    operand: u64
 //}
 
+//simulation mode not implemented yet
 MACRO simulate-op
 "TODO: simulation not implemented yet\n" putf 1 EXIT
 ENDM
 
 
+//compilation mode works fine for simple operations
 MACRO compile-ops 
 "./bin/hello2.asm" OPENW !fw
 common_header
@@ -206,17 +96,11 @@ DUP $64 OP_PUSH_INT = IF
     //DROP
 ELSE
     DUP $64 OP_PLUS = IF
-        "; add \n" putf
-        "pop    rax \n" putf
-        "pop    rcx \n" putf
-        "add    rax, rcx \n" putf
-        "push    rax \n" putf
-        //DROP
+      generate_op_add
+
     ELSE
         DUP $64 OP_PRINT = IF
-            "pop rdi \n" putf
-            "call print\n" putf
-      //DROP
+          generate_op_dump
         ELSE
             "unreachable\n" puts 1 EXIT
         END
@@ -243,4 +127,4 @@ OP_PRINT 0 push-op
 //dump-ops
 compile-ops
 
-DROP
+DROP //drop memory address!
