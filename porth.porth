@@ -1,7 +1,7 @@
 // standard library
 INCLUDE "include/std.porth"
 //assembly macro
-INCLUDE "porth_assembly.porth"
+INCLUDE "porth_assembler.porth"
 
 //to store file descriptor for output assembly file
 VAR fw u8 
