@@ -3,7 +3,7 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 66
+MAX_OPS = 67
 MAX_ERROR_TABLE = 33
 MAX_WARNING_TABLE=1
 
@@ -40,6 +40,9 @@ MIN_I64 = -9223372036854775808
 MIN_BOOL = 0
 MAX_BOOL = 1
 
+MIN_PTR = NULL_POINTER_PADDING
+MAX_PTR = NULL_POINTER_PADDING + STR_CAPACITY + ARGV_CAPACITY + MEM_CAPACITY
+
 #struct 
 var_struct = {}
 macro_struct= {}
@@ -68,7 +71,8 @@ DOUBLE_QUOTE = '"'
 #STRING_LITERAL = [DOUBLE_QUOTE, " "]
 
 reserved_words = ["_format", "_format2", "_negative", "_security", "_file", "_options", "_fd", "_mem", "_char", "_open", \
-    "_close", "print", ".L2", "print_char", "_start", "main", "print_error", ".bss", ".data", ".text", "_file_buffer", "_write_buffer"]
+    "_close", "print", ".L2", "print_char", "_start", "main", "print_error", ".bss", ".data", ".text", "_file_buffer", "_write_buffer" \
+        "_int_to_string", ".push_chars", ".pop_chars"]
 
 
 #files mode
@@ -131,7 +135,7 @@ def get_var_qualifier(type: str) -> str:
         return "word"
     elif type in (OPU32, OPI32):
         return "dword"
-    elif type in (OPU64, OPI64):
+    elif type in (OPU64, OPI64, OPPTR):
         return "qword"
 
 def get_register(type: str) -> str:
@@ -141,7 +145,7 @@ def get_register(type: str) -> str:
         return "ax"
     elif type in(OPU32, OPI32):
         return "eax"
-    elif type in(OPU64, OPI64):
+    elif type in(OPU64, OPI64, OPPTR):
         return "rax"
 
 def check_valid_value(type: str, value: int) -> bool:
@@ -163,6 +167,8 @@ def check_valid_value(type: str, value: int) -> bool:
     elif type == OPI64 and (value < MIN_I64 or value > MAX_I64):
         isValid = False
     elif type == OPBOOL and (value < MIN_BOOL or value > MAX_BOOL):
+        isValid = False
+    elif type == OPPTR and (value < MIN_PTR or value > MAX_PTR):
         isValid = False
     return isValid
 
@@ -241,6 +247,7 @@ OP_CLOSE=iota()
 OP_OPENW=iota()
 OP_READF=iota()
 OP_WRITEF=iota()
+OP_ITOS=iota()
 
 #keep in last line to have the counter working
 COUNT_OPS=iota()
@@ -372,6 +379,8 @@ OPI8="i8"
 OPI16="i16"
 OPI32="i32"
 OPI64="i64"
+OPITOS="ITOS" #convert int to string return into stack the length and the address of the string
+OPPTR="ptr"
 # OPF32="f32"
 # OPF64="f64"
 # OPSTRING="str"
@@ -379,7 +388,7 @@ OPI64="i64"
 
 OPERATORS=[OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_SHL, OP_SHR, OP_ANDB, OP_ORB, OP_MOD]
 
-VAR_TYPE=[OPU8,OPU16,OPU32,OPU64, OPBOOL, OPI8, OPI16, OPI32, OPI64]
+VAR_TYPE=[OPU8,OPU16,OPU32,OPU64, OPBOOL, OPI8, OPI16, OPI32, OPI64, OPPTR]
 
 #forbidden_tokens = [PLUS, MINUS, DUMP]
 
@@ -600,6 +609,8 @@ def get_OP_READF() -> int:
 def get_OP_WRITEF() -> int:
     return OP_WRITEF
 
+def get_OP_ITOS() -> int:
+    return OP_ITOS
 
 keyword_table: Dict = {
     PLUS: OP_ADD,
@@ -662,7 +673,8 @@ keyword_table: Dict = {
     OPCLOSE: OP_CLOSE,
     OPOPENW: OP_OPENW,
     OPREADF: OP_READF,
-    OPWRITEF: OP_WRITEF
+    OPWRITEF: OP_WRITEF,
+    OPITOS: OP_ITOS
 }
 
 special_chars: Dict = {

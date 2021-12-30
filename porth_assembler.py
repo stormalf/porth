@@ -42,6 +42,41 @@ _write_buffer:
   mov rsi, _file_buffer
   syscall
   ret
+
+; Input
+; RAX = pointer to the int to convert
+; RDI = address of the result
+; Output:
+; R9 = lengths of the string
+_int_to_string:
+    xor r9, r9            ; initialize r9
+    xor   rbx, rbx        ; clear the rbx, I will use as counter for stack pushes
+.push_chars:
+    inc r9                ; increment the counter
+    xor rdx, rdx          ; clear rdx
+    mov rcx, 10           ; rcx is divisor, devide by 10
+    div rcx               ; devide rdx by rcx, result in rax remainder in rdx
+    add rdx, 0x30         ; add 0x30 to rdx convert int => ascii
+    push rdx              ; push result to stack
+    inc rbx               ; increment my stack push counter
+    test rax, rax         ; is rax 0?
+    jnz .push_chars       ; if rax not 0 repeat
+
+.pop_chars:
+    pop rax               ; pop result from stack into rax
+    inc r9                ; increment the counter
+    stosb                 ; store contents of rax in at the address of num which is in RDI
+    dec rbx               ; decrement my stack push counter
+    cmp rbx, 0            ; check if stack push counter is 0
+    jg .pop_chars         ; not 0 repeat
+    mov rax, 0x0
+    stosb                 ; add null terminated string
+    inc r9                ; increment the counter    
+    ;mov rax, 0x0a
+    ;stosb                 ; add return
+    ;inc r9                ; increment the counter    
+    ret                   ; return to main
+
 '''
 
 
@@ -713,3 +748,10 @@ def generate_writef_op(output, op):
     output.write("call _write_buffer\n")   
     output.write(f"push rax\n")
 
+def generate_itos_op(output):
+    output.write("; itos \n")
+    output.write("pop rdi\n") # buffer to store string
+    output.write("pop rax\n") # value to convert to string
+    output.write("call _int_to_string\n")
+    output.write(f"push r9\n") #push string length
+    output.write(f"push rdi\n") #push string address

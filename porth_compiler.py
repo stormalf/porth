@@ -156,6 +156,8 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
             generate_readf_op(output, op)
         elif op['type']==get_OP_WRITEF():
             generate_writef_op(output, op)
+        elif op['type']==get_OP_ITOS():
+            generate_itos_op(output)
         else:
             print(f"Unknown bytecode op: {op}")    
             error = True 
@@ -193,6 +195,8 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
             output.write(f"{var}: resd 4\n")
         elif var_struct[var]['type'] in (OPU64, OPI64):
             output.write(f"{var}: resq 8\n")
+        elif var_struct[var]['type'] in (OPPTR):
+            output.write(f"{var}: resq 1\n")
     output.write("args_ptr: resq 1\n")
     output.close()
     if libc:

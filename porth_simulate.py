@@ -13,6 +13,9 @@ mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY(
 mem_buf_ptr  = NULL_POINTER_PADDING + get_STR_CAPACITY() + get_ARGV_CAPACITY()
 buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
 buf_file_ptr = NULL_POINTER_PADDING
+argv_buf_ptr = NULL_POINTER_PADDING + get_STR_CAPACITY()
+str_buf_ptr  = NULL_POINTER_PADDING
+str_size = 1 #null terminated character string
 
 def simulate_op_push(value: Any) -> None:
     global stack
@@ -776,6 +779,31 @@ def simulate_op_syscall3(op: Dict, istoprint: bool) -> None:
             stack.append(exit_code)
             set_stack_counter()                       
 
+def simulate_op_itos(op: Dict) -> None:
+    global stack, mem, str_buf_ptr, str_size
+    errfunction="simulate_op_itos"
+    if len(stack) < 2:
+        #print("itos impossible not enough element in stack")
+        generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+    else:
+        b = stack.pop() #addr
+        a = stack.pop() #value to convert to string
+        set_stack_counter(-2)
+        b_value = get_var_value(b) #addr (not used for the moment not sure if it is useful)
+        a_value = get_var_value(a)
+        s = str(a_value) #convert to string
+        bstr = bytes(s, 'utf-8')
+        strlen = len(bstr)
+        stack.append(strlen)
+        set_stack_counter()
+        if 'addr' not in op:
+            str_ptr = str_buf_ptr+str_size
+            op['addr'] = str_ptr
+            mem[str_ptr:str_ptr+strlen] = bstr
+            str_size += strlen
+            assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
+            stack.append(op['addr'])
+            set_stack_counter()
 
 #print only if requested
 def print_output_simulation(value, file: FileIO = sys.stdout, end: str = None, istoprint: bool = True) -> None:

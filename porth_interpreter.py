@@ -3,7 +3,7 @@
 
 from io import FileIO
 import sys
-import os
+#import os
 from typing import Tuple
 from porth_globals import *
 from typing import *
@@ -13,7 +13,7 @@ from porth_simulate import *
 #simulate the program execution without compiling it. To be able to re-use the simulate function to detect some warnings and errors
 #the output is printed only if the function is requested with istoprint=True (default behaviour)
 def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tuple[List,bool, int]:
-    global exit_code, MAX_LOOP_SECURITY, var_struct, BUFFER_SIZE, stack, mem, mem_buf_ptr
+    global exit_code, MAX_LOOP_SECURITY, var_struct, BUFFER_SIZE, stack, mem, mem_buf_ptr, argv_buf_ptr, str_buf_ptr, str_size
     #print(program)
     errfunction="simulate"
     conditions_stack = {}
@@ -22,13 +22,13 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
     error = False
     #isMem = False
     ip = 0
-    str_size= 0
+    #str_size= 0
     #mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY() + get_MEM_CAPACITY())
     #buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
     outlist=[outfile]
     parameter.insert(0, outlist)
-    argv_buf_ptr = NULL_POINTER_PADDING + get_STR_CAPACITY()
-    str_buf_ptr  = NULL_POINTER_PADDING
+    #argv_buf_ptr = NULL_POINTER_PADDING + get_STR_CAPACITY()
+    #str_buf_ptr  = NULL_POINTER_PADDING
     #buf_file_ptr = NULL_POINTER_PADDING
     #mem_buf_ptr  = NULL_POINTER_PADDING + get_STR_CAPACITY() + get_ARGV_CAPACITY()
     argc = 0
@@ -314,6 +314,9 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 ip += 1
             elif op['type']==get_OP_CLOSE():
                 simulate_op_close(op)
+                ip += 1
+            elif op['type']==get_OP_ITOS():
+                simulate_op_itos(op)
                 ip += 1
             else:
                 ip += 1                

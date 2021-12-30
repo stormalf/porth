@@ -40,6 +40,42 @@ MACRO common_header
 "  mov rsi, _file_buffer\n" putf
 "  syscall\n" putf
 "  ret\n" putf
+"; Input\n" putf
+"; RAX = pointer to the int to convert\n" putf
+"; RDI = address of the result\n" putf
+"; R9 = number of digits\n" putf
+"; Output:\n" putf
+"; None\n" putf
+"_int_to_string:\n" putf
+"    xor r9, r9            ; initialize r9\n" putf
+"    xor   rbx, rbx        ; clear the rbx, I will use as counter for stack pushes\n" putf
+".push_chars:\n" putf
+"    inc r9                ; increment the counter\n" putf
+"    xor rdx, rdx          ; clear rdx\n" putf
+"    mov rcx, 10           ; rcx is divisor, devide by 10\n" putf
+"    div rcx               ; devide rdx by rcx, result in rax remainder in rdx\n" putf
+"    add rdx, 0x30         ; add 0x30 to rdx convert int => ascii\n" putf
+"    push rdx              ; push result to stack\n" putf
+"    inc rbx               ; increment my stack push counter\n" putf
+"    test rax, rax         ; is rax 0?\n" putf
+"    jnz .push_chars       ; if rax not 0 repeat\n" putf
+"\n" putf
+".pop_chars:\n" putf
+"    pop rax               ; pop result from stack into rax\n" putf
+"    inc r9                ; increment the counter\n" putf
+"    stosb                 ; store contents of rax in at the address of num which is in RDI\n" putf
+"    dec rbx               ; decrement my stack push counter\n" putf
+"    cmp rbx, 0            ; check if stack push counter is 0\n" putf
+"    jg .pop_chars         ; not 0 repeat\n" putf
+"    mov rax, 0x0\n" putf
+"    stosb                 ; add null terminated character\n" putf
+"    inc r9                ; increment the counter\n" putf
+"    ;mov rax, 0x0a\n" putf
+"    ;stosb                 ; add return\n" putf
+"    ;inc r9                ; increment the counter\n" putf
+"\n" putf
+"    ret                   ; return to main\n" putf
+
 ENDM
 
 //header for assembly without libc!
