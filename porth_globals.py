@@ -3,8 +3,8 @@
 from typing import *
 
 #Need to increase the max_ops each time we add a new opcode
-MAX_OPS = 67
-MAX_ERROR_TABLE = 35
+MAX_OPS = 68
+MAX_ERROR_TABLE = 36
 MAX_WARNING_TABLE=1
 
 BUFFER_SIZE = 2048
@@ -72,7 +72,7 @@ DOUBLE_QUOTE = '"'
 
 reserved_words = ["_format", "_format2", "_negative", "_security", "_file", "_options", "_fd", "_mem", "_char", "_open", \
     "_close", "print", ".L2", "print_char", "_start", "main", "print_error", ".bss", ".data", ".text", "_file_buffer", "_write_buffer" \
-        "_int_to_string", ".push_chars", ".pop_chars"]
+        "_int_to_string", ".push_chars", ".pop_chars", "_itos", ".int_to_string_end"]
 
 
 #files mode
@@ -149,6 +149,7 @@ def get_register(type: str) -> str:
         return "rax"
 
 def check_valid_value(type: str, value: int) -> bool:
+    #print(type, value)
     isValid = True
     if type == OPU8 and (value < MIN_U8 or value > MAX_U8) :
         isValid = False
@@ -248,6 +249,7 @@ OP_OPENW=iota()
 OP_READF=iota()
 OP_WRITEF=iota()
 OP_ITOS=iota()
+OP_LEN=iota()
 
 #keep in last line to have the counter working
 COUNT_OPS=iota()
@@ -382,6 +384,7 @@ OPI32="i32"
 OPI64="i64"
 OPITOS="ITOS" #convert int to string return into stack the length and the address of the string
 OPPTR="ptr"
+OPLEN="LEN"
 # OPF32="f32"
 # OPF64="f64"
 # OPSTRING="str"
@@ -613,6 +616,9 @@ def get_OP_WRITEF() -> int:
 def get_OP_ITOS() -> int:
     return OP_ITOS
 
+def get_OP_LEN() -> int:
+    return OP_LEN
+
 keyword_table: Dict = {
     PLUS: OP_ADD,
     MINUS: OP_SUB,
@@ -675,7 +681,8 @@ keyword_table: Dict = {
     OPOPENW: OP_OPENW,
     OPREADF: OP_READF,
     OPWRITEF: OP_WRITEF,
-    OPITOS: OP_ITOS
+    OPITOS: OP_ITOS,
+    OPLEN: OP_LEN
 }
 
 special_chars: Dict = {

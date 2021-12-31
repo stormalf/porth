@@ -48,9 +48,16 @@ _write_buffer:
 ; RDI = address of the result
 ; Output:
 ; R9 = lengths of the string
+; R8 = 0 if positive, 1 if negative
 _int_to_string:
     xor r9, r9            ; initialize r9
+    xor r8, r8            ; initialize r8
     xor   rbx, rbx        ; clear the rbx, I will use as counter for stack pushes
+    cmp  rax, 0          ; check if the number is negative
+    jge  .int_to_string_positive
+    mov r8, 1            ; set r8 to 1
+    neg  rax            ; make the number positive
+.int_to_string_positive:
 .push_chars:
     inc r9                ; increment the counter
     xor rdx, rdx          ; clear rdx
@@ -63,6 +70,14 @@ _int_to_string:
     jnz .push_chars       ; if rax not 0 repeat
 
 .pop_chars:
+    cmp  r8, 0          ; check if the number is negative
+    je  .int_to_string_end
+    mov r8, 0            ; set r8 to 0 to avoid the negative sign for each digit
+    inc r9                ; increment the counter
+    mov rax, 0x2D        ; push '-' to the stack
+    stosb                 ; add null terminated string
+
+.int_to_string_end:    
     pop rax               ; pop result from stack into rax
     stosb                 ; store contents of rax in at the address of num which is in RDI
     dec rbx               ; decrement my stack push counter
@@ -70,10 +85,6 @@ _int_to_string:
     jg .pop_chars         ; not 0 repeat
     mov rax, 0x0
     stosb                 ; add null terminated string
-    inc r9                ; increment the counter    
-    ;mov rax, 0x0a
-    ;stosb                 ; add return
-    ;inc r9                ; increment the counter    
     ret                   ; return to main
 
 '''
@@ -183,6 +194,7 @@ _file RESQ 1
 _options RESQ 1
 _fd RESQ 1
 _file_buffer resb BUFFER_SIZE
+_itos resb BUFFER_SIZE
 _bufread RESQ 1
 _mem: resb {get_MEM_CAPACITY()}
 '''
@@ -652,18 +664,14 @@ def generate_idvar_op(output, bytecode_prev_ip, op):
     if bytecode_prev_ip['type'] != get_OP_VAR():
         value = var_struct[op['value']]['value']
         var = op['value']
-        if value != None:
-            output.write("; idvar \n")
-            typev=get_var_type(var)
-            qualifier=get_var_qualifier(typev)
-            register=get_register(typev)
-            output.write("xor rax, rax\n")
-            if typev != OPPTR:
-                output.write(f"mov {register},  {qualifier} [{var}]\n")
-            else:
-                output.write(f"mov {register},  {var}_str\n")
-                #output.write(f"mov {register},  {var}\n")
-            output.write("push rax\n")
+        #if value != None:
+        output.write("; idvar \n")
+        typev=get_var_type(var)
+        qualifier=get_var_qualifier(typev)
+        register=get_register(typev)
+        output.write("xor rax, rax\n")
+        output.write(f"mov {register},  {qualifier} [{var}]\n")
+        output.write("push rax\n")
 
 def generate_assign_op(output, bytecode_prev_ip, op):
     global var_struct
@@ -672,17 +680,17 @@ def generate_assign_op(output, bytecode_prev_ip, op):
         var = op['variable']
         value = var_struct[var]['value']
         #print(var, value)
-        if value != None:
-            output.write("; idvar \n")
-            typev=get_var_type(var)
-            qualifier=get_var_qualifier(typev)
-            register=get_register(typev)
-            output.write("pop rax\n") #value or address
-            #print(var, value, typev, qualifier, register)
-            if typev != OPPTR:
-                output.write(f"mov {qualifier} [{var}], {register}\n")
-            else:
-                output.write(f"mov [{var}], {register}\n") #store address
+        #if value != None:
+        output.write("; idvar \n")
+        typev=get_var_type(var)
+        qualifier=get_var_qualifier(typev)
+        register=get_register(typev)
+        output.write("pop rax\n") #value or address
+        #print(var, value, typev, qualifier, register)
+        if typev != OPPTR:
+            output.write(f"mov {qualifier} [{var}], {register}\n")
+        else:
+            output.write(f"mov [{var}], {register}\n") #store address
             #print(qualifier, typev, register, var)
             #output.write(f"push rax\n")  
 
@@ -760,14 +768,33 @@ def generate_writef_op(output, op):
 
 def generate_itos_op(output):
     output.write("; itos \n")
-    output.write("pop rax\n") # address to store string var_str
+    #output.write("pop rax\n") # address to store string var_str
+    output.write("mov rax, _itos\n") # value to convert
     output.write("mov rdi, rax\n") #load address to RDI
-    output.write("mov rcx, rax\n")
+    #output.write("mov rcx, rax\n")
     output.write("pop rax\n") # value to convert to string
-    output.write("push rcx\n") #save address
     output.write("call _int_to_string\n")
-    output.write("pop rcx\n") #restore address
+    #output.write("pop rcx\n") #restore address
     output.write("mov rax,  r9\n") #push string length
     output.write("push rax\n")
-    output.write("mov rax, rcx\n") 
+    #output.write("mov rax, rcx\n") 
+    output.write("mov rax, _itos\n")
     output.write("push rax\n") # push string address
+
+
+def generate_len_op(output, ip, bytecode):
+    output.write("; len \n")
+    if bytecode[ip - 1 ]['type']==get_OP_STRING():
+        output.write("pop rax\n")
+        output.write("pop rax\n")
+        output.write("push rax\n")
+    else:
+        output.write("mov rax, _itos\n") # address to store string
+        output.write("mov rdi, rax\n") #load address to RDI
+        #output.write("mov rcx, rax\n")
+        output.write("pop rax\n") # value to convert to string
+        output.write("call _int_to_string\n")
+        #output.write("pop rcx\n") #restore address
+        output.write("mov rax,  r9\n") #push string length
+        output.write("push rax\n")
+

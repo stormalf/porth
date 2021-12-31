@@ -289,6 +289,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                     a_value = get_var_value(a)
                     var = op['value'][1:]
                     typevar = var_struct[var]['type']
+                    #print(var, typevar, a_value)
                     if check_valid_value(type=typevar, value=a_value):
                         var_struct[var]['value'] = a_value
                     else:
@@ -317,6 +318,9 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 ip += 1
             elif op['type']==get_OP_ITOS():
                 simulate_op_itos(op)
+                ip += 1
+            elif op['type']==get_OP_LEN():
+                simulate_op_len(op, ip, program)
                 ip += 1
             else:
                 ip += 1                

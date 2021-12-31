@@ -124,7 +124,8 @@ Keyword, operators, and constants are defined in the language.
     READF: read content from file to a buffer
     WRITEF: write content from buffer to a file
     DIVMOD: keyword to divide and return 2 values on stack (result and reminder)
-    ITOS : keyword to convert an integer to a string needs two variables one that contains the string and the second that will contains the length of the string
+    ITOS : keyword to convert an integer to a string needs a value or variable containing a value (PTR not allowed!) and returns the length of the string and the address of the string. See string5.porth for an example.
+    LEN: keyword to get the length of a string, integer. Internally it calls ITOS and DROP the return address.
 
 ## Extra stack operators
 
@@ -209,7 +210,7 @@ The non-initialized variables are not taken into account for now (segment fault 
 1.0.33 Adding OPENW, READF, WRITEF to have the capability to read file content and to write into a new file. Fixing README mistake between $ and @.
 Missing controls on File like if open failed negative numbers return in RAX not checked.
 
-1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64, bool and ptr. Adding controls to forbid wrong values depending the variable types. Adding ITOS keyword to convert integer to string. Needs to variable to store the result. 1st a ptr and the second the length.
+1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64, bool and ptr. Adding controls to forbid wrong values depending the variable types. Adding ITOS keyword to convert integer to string. Adding LEN that returns the length of string, number of digits for an integer.
 
 ## simulation
 
@@ -254,6 +255,7 @@ link to pypy : https://www.pypy.org/download.html
 ## TODO
 
 - Adding type checking to avoid invisibles bugs! like missing DROP to remove address from stack on while loops! (2 days lost of time!)
+- Adding control if negative numbers for itos ?
 - Adding controls to check if open/read/write returns negative values.
 - Adding pointers and how to dereference them ?
 - Adding other types for variables (char, string, float)

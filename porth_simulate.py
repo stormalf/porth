@@ -780,17 +780,28 @@ def simulate_op_syscall3(op: Dict, istoprint: bool) -> None:
             set_stack_counter()                       
 
 def simulate_op_itos(op: Dict) -> None:
-    global stack, mem, str_buf_ptr, str_size
+    global stack, mem, str_buf_ptr, str_size, var_struct
     errfunction="simulate_op_itos"
-    if len(stack) < 2:
+    if len(stack) < 1:
         #print("itos impossible not enough element in stack")
         generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
     else:
-        b = stack.pop() #addr
         a = stack.pop() #value to convert to string
-        set_stack_counter(-2)
-        b_value = get_var_value(b) #addr (not used for the moment not sure if it is useful)
+        set_stack_counter(-1)
+        if a in var_struct:
+            var = a
+        else:
+            var = None
         a_value = get_var_value(a)
+        if a_value == None:
+            #print(f"itos: {a} is not a valid value")
+            generate_runtime_error(op=op, errfunction=errfunction, msgid=9)
+            return
+        if var != None:
+            typev = var_struct[var]['type']
+            if check_valid_value(type=typev, value=a_value) == False:
+                generate_runtime_error(op=op, errfunction=errfunction, msgid=10)
+                return
         s = str(a_value) #convert to string
         bstr = bytes(s, 'utf-8')
         strlen = len(bstr)
@@ -804,6 +815,48 @@ def simulate_op_itos(op: Dict) -> None:
             assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
             stack.append(op['addr'])
             set_stack_counter()
+
+def simulate_op_len(op: Dict, ip: int, program:List) -> None:
+    global stack, mem, str_buf_ptr, str_size, var_struct
+    errfunction="simulate_op_len"
+    if len(stack) < 1:
+        #print("len impossible not enough element in stack")
+        generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+    else:
+        a = stack.pop() #value to retrieve length
+        set_stack_counter(-1)
+        if a in var_struct:
+            var = a
+        else:
+            var = None
+        a_value = get_var_value(a)
+    
+        if a_value == None:
+            #print(f"itos: {a} is not a valid value")
+            generate_runtime_error(op=op, errfunction=errfunction, msgid=9)
+            return
+        if var != None:
+            typev = var_struct[var]['type']
+            if check_valid_value(type=typev, value=a_value) == False:
+                generate_runtime_error(op=op, errfunction=errfunction, msgid=10)
+                return
+        #if the previous instruction is a string, the a_value is the address into memory
+        # for now we drop it and ge the previous one!
+        if program[ip - 1]['type'] == get_OP_STRING():
+            if len(stack) < 1:
+                #print("len impossible not enough element in stack")
+                generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
+            else:
+                a = stack.pop() #value to retrieve length
+                set_stack_counter(-1)
+                stack.append(a)
+                set_stack_counter()
+        else: 
+            s = str(a_value) #convert to string
+            strlen = len(s)
+            stack.append(strlen)
+            set_stack_counter()
+
 
 #print only if requested
 def print_output_simulation(value, file: FileIO = sys.stdout, end: str = None, istoprint: bool = True) -> None:

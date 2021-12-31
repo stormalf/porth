@@ -498,21 +498,17 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
                 var_used = var_struct[op['value']]['used']
                 var_used += 1
                 var_struct[op['value']]['used'] = var_used
-        elif op['type'] == OP_ITOS:
+        elif op['type'] == OP_ITOS or op['type'] == OP_LEN:
             if previous_op['type'] == OP_IDVAR:
                 var = previous_op['value']
-                if var_struct[var]['type'] != OPPTR:
+                if var_struct[var]['type'] == OPPTR:
                     #print(f"Error Code {ERR_VAR_TYPE} variable `{previous_op['value']}` used for ITOS incorrect in file {filename}, line {line} column {col}")
-                    generate_error(filename=filename, errfunction=errfunction, msgid= 34, token=previous_op['value'], fromline=line, column=col)
+                    generate_error(filename=filename, errfunction=errfunction, msgid= 34, token=var, fromline=line, column=col)
                 else:
-                    op['variable'] = previous_op['value']
-                    value = program[ip - 2]['value']
-                    if value in var_struct:
-                        value = var_struct[value]['value']
-                    var_struct[var]['value'] = value
-            else:
-                #print(f"Error Code {ERR_TOK_BLOCK} ITOS without variable in file {filename}, line {line} column {col}")
-                generate_error(filename=filename, errfunction=errfunction, msgid= 33, fromline=line, column=col)
+                    value = var_struct[var]['value']
+                    #if value == None:
+                    #    #print(f"Error Code {ERR_VAR_UNDEF} variable `{op['value']}` used before definition in file {filename}, line {line} column {col}")
+                    #    generate_error(filename=filename, errfunction=errfunction, msgid= 35, token=var, fromline=line, column=col)
         elif op['type'] == OP_ASSIGN_VAR:
             var =  op['value'][1:]            
             def_line = var_struct[var]['definition'][1]
@@ -522,18 +518,17 @@ def cross_reference_block(program: List) -> Tuple[List, bool]:
                 op['index'] = previous_op['index']
                 var_struct[var]['value'] =  previous_op['index']   
                 #print(var_struct,  program[ip - 1]['value'])
-            elif previous_op['type'] == OP_ITOS:
-                var = op['variable']
             else: 
-                value = previous_op['value']
-                try:
-                    value = int(value)
-                    if check_valid_value(typevar, value):
-                        var_struct[var]['value'] = value
-                    else:
-                        generate_error(filename=filename, errfunction=errfunction, msgid= 30, token=var, fromline=line, column=col)
-                except ValueError:
-                    pass
+                value = var_struct[var]['value']
+                if value != None:
+                    try:
+                        value = int(value)
+                        if check_valid_value(typevar, value):
+                            var_struct[var]['value'] = value
+                        else:
+                            generate_error(filename=filename, errfunction=errfunction, msgid= 30, token=var, fromline=line, column=col)
+                    except ValueError:
+                        pass
             if current_line < def_line:
                 #print(f"Error Code {ERR_VAR_UNDEF} variable `{op['value']}` used before definition in file {filename}, line {line} column {col}")
                 generate_error(filename=filename, errfunction=errfunction, msgid= 24, token=op['value'], fromline=line, column=col) 

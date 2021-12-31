@@ -1,0 +1,10 @@
+INCLUDE "include/std.porth"
+
+12 LEN .
+123 LEN .
+1234 LEN .
+0 LEN .
+12345 LEN .
+1234567890 LEN .
+"test string" LEN .
+

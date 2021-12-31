@@ -10,3 +10,4 @@ fd READF WHILE 0 != DO
 END
 fd CLOSE
 fw CLOSE
+DROP
