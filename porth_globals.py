@@ -385,14 +385,18 @@ OPI64="i64"
 OPITOS="ITOS" #convert int to string return into stack the length and the address of the string
 OPPTR="ptr"
 OPLEN="LEN"
-# OPF32="f32"
-# OPF64="f64"
-# OPSTRING="str"
-# OPCHAR="char"
+OPF32="f32"
+OPF64="f64"
+OPSTRING="str"
+OPCHAR="char"
 
 OPERATORS=[OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_SHL, OP_SHR, OP_ANDB, OP_ORB, OP_MOD]
 
 VAR_TYPE=[OPU8,OPU16,OPU32,OPU64, OPBOOL, OPI8, OPI16, OPI32, OPI64, OPPTR]
+
+OPINT = [OPU8, OPU16, OPU32, OPU64, OPI8, OPI16, OPI32, OPI64]
+OPFLOAT = [OPF32, OPF64]
+
 
 #forbidden_tokens = [PLUS, MINUS, DUMP]
 

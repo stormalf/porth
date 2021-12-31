@@ -18,19 +18,22 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
     errfunction="simulate"
     conditions_stack = {}
     assert get_OPS() == get_MAX_OPS(),  "Max Opcode implemented! expected " + str(get_MAX_OPS()) + " but got " + str(get_OPS())  
-    #stack=[]
+    control_stack = []
+    typeint = "INT"
+    typefloat = "FLOAT"
+    typechar = "CHAR"
+    typebool = "BOOL"
+    typeptr = "PTR"
+    typestr = "STR"
+    typeunknown = "UNK"
+    typein = {'in':None}
+    typeout = {'out':None}
+    mystack = []
     error = False
     #isMem = False
     ip = 0
-    #str_size= 0
-    #mem = bytearray(NULL_POINTER_PADDING +  get_STR_CAPACITY() +  get_ARGV_CAPACITY() + get_MEM_CAPACITY())
-    #buffer_file = bytearray(NULL_POINTER_PADDING + BUFFER_SIZE)
     outlist=[outfile]
     parameter.insert(0, outlist)
-    #argv_buf_ptr = NULL_POINTER_PADDING + get_STR_CAPACITY()
-    #str_buf_ptr  = NULL_POINTER_PADDING
-    #buf_file_ptr = NULL_POINTER_PADDING
-    #mem_buf_ptr  = NULL_POINTER_PADDING + get_STR_CAPACITY() + get_ARGV_CAPACITY()
     argc = 0
     for arg in parameter:        
         value = arg[0].encode('utf-8')
@@ -54,73 +57,137 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 print(f"Errors found during runtime simulation: {get_runtime_error()}")                
                 sys.exit(-1)
             if op['type']==get_OP_PUSH():
+                typein['in'] = None
+                typeout['out'] = (typeint)
+                mystack = simulate_op_push(op['value'])
+                control_stack.append((op, typein, typeout, mystack))                
                 ip += 1
-                simulate_op_push(op['value'])
             elif op['type']==get_OP_ADD():
-                simulate_op_add(op)        
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("INT")                
+                mystack = simulate_op_add(op)        
+                control_stack.append((op, typein, typeout, mystack))                
                 ip += 1
             elif op['type']==get_OP_SUB():
-                simulate_op_sub(op)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("INT")
+                mystack = simulate_op_sub(op)
+                control_stack.append((op, typein, typeout, mystack))                
                 ip += 1                
             elif op['type']==get_OP_EQUAL():
-                simulate_op_equal(op)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("BOOL")                
+                mystack = simulate_op_equal(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1                
             elif op['type']==get_OP_DUMP():
-                simulate_op_dump(op, ip, program, istoprint)
+                typein['in'] = ("INT")
+                typeout['out'] = None                
+                mystack = simulate_op_dump(op, ip, program, istoprint)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1   
             elif op['type']==get_OP_IF():
+                typein['in'] = ("BOOL")
+                typeout['out'] = None                
                 ip += 1                
-                newip = simulate_op_if(op)
+                mystack, newip = simulate_op_if(op)
+                control_stack.append((op, typein, typeout, mystack))                                    
                 if newip != None:
                     ip = newip
-            elif op['type']==get_OP_ELSE():
+            elif op['type']==get_OP_ELSE() or op['type']==get_OP_END():
+                typein['in'] = None
+                typeout['out'] = None     
+                mystack = stack.copy()             
+                control_stack.append((op, typein, typeout, mystack))                                    
                 if len(op) >= 2:
                     ip = op['jmp']
                 else:
                     #print("else statement without jmp")
                     generate_runtime_error(op=op, errfunction=errfunction, msgid= 1)
-            elif op['type']==get_OP_END():
-                if len(op) >= 2:
-                    ip = op['jmp']
-                else:
-                    #print("end statement without jmp")
-                    generate_runtime_error(op=op, errfunction=errfunction, msgid= 1)
+            # elif op['type']==get_OP_END():
+            #     typein['in'] = None
+            #     typeout['out'] = None     
+            #     mystack = stack.copy()             
+            #     control_stack.append((op, typein, typeout, mystack))                                    
+            #     if len(op) >= 2:
+            #         ip = op['jmp']
+            #     else:
+            #         #print("end statement without jmp")
+            #         generate_runtime_error(op=op, errfunction=errfunction, msgid= 1)
             elif op['type']==get_OP_DUP():
-                simulate_op_dup(op)
+                typein['in'] = ("INT")
+                typeout['out'] = ("INT", "INT")                
+                mystack = simulate_op_dup(op)
+                control_stack.append((op, typein, typeout, mystack))                                                    
                 ip += 1 
             elif op['type']==get_OP_DUP2():
-                simulate_op_dup2(op)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("INT", "INT", "INT", "INT")                       
+                mystack = simulate_op_dup2(op)
+                control_stack.append((op, typein, typeout, mystack))                                                                    
                 ip += 1                 
             elif op['type']==get_OP_GT():
-                simulate_op_gt(op)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("BOOL")                     
+                mystack = simulate_op_gt(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1        
             elif op['type']==get_OP_LT():
-                simulate_op_lt(op)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("BOOL")                       
+                mystack = simulate_op_lt(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1   
             elif op['type']==get_OP_GE(): 
-                simulate_op_ge(op)               
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("BOOL")                       
+                mystack = simulate_op_ge(op)               
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_LE():
-                simulate_op_le(op)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("BOOL")                       
+                mystack = simulate_op_le(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_NE():
-                simulate_op_ne(op)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("BOOL")                       
+                mystack = simulate_op_ne(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_DIV():
-                simulate_op_div(op, istoprint)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("INT")                       
+                mystack = simulate_op_div(op, istoprint)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_DIVMOD():
-                simulate_op_divmod(op, istoprint)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("INT", "INT")                       
+                mystack = simulate_op_divmod(op, istoprint)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1                
             elif op['type']==get_OP_MUL():
-                simulate_op_mul(op)
+                typein['in'] = ("INT", "INT")
+                typeout['out'] = ("INT")                       
+                mystack = simulate_op_mul(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_WHILE():
+                typein['in'] = None
+                typeout['out'] = None
+                mystack = stack.copy()
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1                
             elif op['type']==get_OP_DO():
+                typein['in'] = ("BOOL")
+                typeout['out'] = None                       
                 #print(op, stack)
                 a = stack.pop()
                 a_value = get_var_value(a)
+                mystack = stack.copy()
+                control_stack.append((op, typein, typeout, mystack))
                 set_stack_counter(-1)
                 level = op['level']
                 if level not in conditions_stack:
@@ -143,47 +210,89 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                     ip += 1    
             elif op['type']==get_OP_MEM():#when using mem the address is put on the stack and never removed 
                 #isMem = True
+                typein['in'] = None
+                typeout['out'] = ("PTR")                       
                 stack.append(mem_buf_ptr)
+                mystack = stack.copy()
                 set_stack_counter()
                 ip += 1  
             elif op['type']==get_OP_LOAD():
-                simulate_op_load(op)
+                typein['in'] = ("PTR")
+                typeout['out'] = ("INT")
+                mystack = simulate_op_load(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1                    
             elif op['type']==get_OP_STORE():
-                simulate_op_store(op)
+                typein['in'] = ("INT", "PTR")
+                typeout['out'] = None
+                mystack = simulate_op_store(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1  
             elif op['type']==get_OP_LOAD16():
-                simulate_op_load16(op)
+                typein['in'] = ("PTR")
+                typeout['out'] = ("INT")                
+                mystack = simulate_op_load16(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1                    
             elif op['type']==get_OP_STORE16():
-                simulate_op_store16(op)
+                typein['in'] = ("INT", "PTR")
+                typeout['out'] = None
+                mystack = simulate_op_store16(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1                   
             elif op['type']==get_OP_LOAD32():
-                simulate_op_load32(op)
+                typein['in'] = ("PTR")
+                typeout['out'] = ("INT")                
+                mystack = simulate_op_load32(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1                     
             elif op['type']==get_OP_STORE32():
-                simulate_op_store32(op)
+                typein['in'] = ("INT", "PTR")
+                typeout['out'] = None
+                mystack = simulate_op_store32(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1                
             elif op['type']==get_OP_LOAD64():
-                simulate_op_load64(op)
+                typein['in'] = ("PTR")
+                typeout['out'] = ("INT")                
+                mystack = simulate_op_load64(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_STORE64():
-                simulate_op_store64(op)
+                typein['in'] = ("INT", "PTR")
+                typeout['out'] = None
+                mystack = simulate_op_store64(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_SWAP():
-                simulate_op_swap(op)
+                typein['in'] = ("INT", "INT")
+                typein['out'] = ("INT", "INT")                
+                mystack = simulate_op_swap(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1        
             elif op['type']==get_OP_SHL():
-                simulate_op_shl(op)
+                typein['in'] = ("INT", "INT")
+                typein['out'] = ("INT")                
+                mystack = simulate_op_shl(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1      
             elif op['type']==get_OP_SHR():
-                simulate_op_shr(op)
+                typein['in'] = ("INT", "INT")
+                typein['out'] = ("INT")                
+                mystack = simulate_op_shr(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_ORB():
-                simulate_op_orb(op)
+                typein['in'] = ("INT", "INT")
+                typein['out'] = ("BOOL")                       
+                mystack = simulate_op_orb(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_ANDB():
-                simulate_op_andb(op)
+                typein['in'] = ("INT", "INT")
+                typein['out'] = ("BOOL")                       
+                mystack = simulate_op_andb(op)
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1         
             elif op['type']==get_OP_DROP():
                 if len(stack) < 1:
@@ -192,12 +301,16 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 else:
                     stack.pop()
                     set_stack_counter(-1)
+                typein['in'] = ("INT")
+                typein['out'] = None
+                mystack = stack.copy()
+                control_stack.append((op, typein, typeout, mystack))
                 ip += 1
             elif op['type']==get_OP_OVER():
-                simulate_op_over(op)
+                mystack = simulate_op_over(op)
                 ip += 1
             elif op['type']==get_OP_MOD():
-                simulate_op_mod(op, istoprint)
+                mystack = simulate_op_mod(op, istoprint)
                 ip += 1
             elif op['type']==get_OP_EXIT():
                 if len(stack) < 1:
@@ -215,7 +328,7 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 simulate_op_syscall0(op=op)
                 ip += 1
             elif op['type']==get_OP_SYSCALL1():
-                exit = simulate_op_syscall1(op=op)
+                _, exit = simulate_op_syscall1(op=op)
                 if exit:
                     break
                 ip += 1 

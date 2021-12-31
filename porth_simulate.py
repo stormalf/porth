@@ -17,12 +17,13 @@ argv_buf_ptr = NULL_POINTER_PADDING + get_STR_CAPACITY()
 str_buf_ptr  = NULL_POINTER_PADDING
 str_size = 1 #null terminated character string
 
-def simulate_op_push(value: Any) -> None:
+def simulate_op_push(value: Any) -> List:
     global stack
     stack.append(value)
     set_stack_counter()
+    return stack.copy()
 
-def simulate_op_add(op: Dict) -> None:
+def simulate_op_add(op: Dict) -> List:
     global stack
     errfunction="simulate_op_add"
     if len(stack) < 2:
@@ -37,8 +38,9 @@ def simulate_op_add(op: Dict) -> None:
         b_value = get_var_value(b)
         stack.append(a_value + b_value)
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_sub(op: Dict) -> None:
+def simulate_op_sub(op: Dict) -> List:
     global stack
     errfunction="simulate_op_sub"
     if len(stack) < 2:
@@ -53,8 +55,9 @@ def simulate_op_sub(op: Dict) -> None:
         b_value = get_var_value(b)                  
         stack.append(a_value - b_value)
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_equal(op: Dict) -> None:
+def simulate_op_equal(op: Dict) -> List:
     global stack
     errfunction="simulate_op_equal"
     if len(stack) < 2:
@@ -68,9 +71,10 @@ def simulate_op_equal(op: Dict) -> None:
         a_value = get_var_value(a)
         b_value = get_var_value(b)                
         stack.append(int(a_value == b_value)) 
-        set_stack_counter()        
+        set_stack_counter()
+    return stack.copy()        
 
-def simulate_op_dump(op: Dict, ip: int , program: List, istoprint: bool) -> None:
+def simulate_op_dump(op: Dict, ip: int , program: List, istoprint: bool) -> List:
     global stack
     errfunction="simulate_op_dump"
     if len(stack) == 0:
@@ -85,8 +89,9 @@ def simulate_op_dump(op: Dict, ip: int , program: List, istoprint: bool) -> None
         else:
             #print(a)
             print_output_simulation(a, istoprint=istoprint)
+    return stack.copy()
 
-def simulate_op_if(op: Dict) -> None:
+def simulate_op_if(op: Dict) -> Tuple[List, Union[None, int]]:
     global stack
     errfunction="simulate_op_if"
     ip = None
@@ -103,10 +108,10 @@ def simulate_op_if(op: Dict) -> None:
             else:
                 #print("if statement without jmp")
                 generate_runtime_error(op=op, errfunction=errfunction, msgid= 1)
-    return ip
+    return stack.copy(), ip
 
 
-def simulate_op_dup(op: Dict) -> None:
+def simulate_op_dup(op: Dict) -> List:
     global stack
     errfunction="simulate_op_dup"
     if len(stack) == 0:
@@ -120,8 +125,9 @@ def simulate_op_dup(op: Dict) -> None:
         stack.append(a_value)
         stack.append(a_value)
         set_stack_counter(2)
+    return stack.copy()
 
-def simulate_op_dup2(op: Dict) -> None:
+def simulate_op_dup2(op: Dict) -> List:
     global stack
     errfunction="simulate_op_dup2"
     if len(stack) < 2:
@@ -139,8 +145,9 @@ def simulate_op_dup2(op: Dict) -> None:
         stack.append(a_value)
         stack.append(b_value)
         set_stack_counter(4)
+    return stack.copy()
 
-def simulate_op_gt(op: Dict) -> None:
+def simulate_op_gt(op: Dict) -> List:
     global stack
     errfunction="simulate_op_gt"
     if len(stack) < 2:
@@ -155,9 +162,10 @@ def simulate_op_gt(op: Dict) -> None:
         b_value = get_var_value(b)                  
         stack.append(int(a_value > b_value)) 
         set_stack_counter()
+    return stack.copy()
 
 
-def simulate_op_lt(op: Dict) -> None:
+def simulate_op_lt(op: Dict) -> List:
     global stack
     errfunction="simulate_op_lt"
     if len(stack) < 2:
@@ -172,9 +180,10 @@ def simulate_op_lt(op: Dict) -> None:
         b_value = get_var_value(b)                  
         stack.append(int(a_value < b_value)) 
         set_stack_counter()
+    return stack.copy()
 
 
-def simulate_op_ge(op: Dict) -> None:
+def simulate_op_ge(op: Dict) -> List:
     global stack
     errfunction="simulate_op_ge"
     if len(stack) < 2:
@@ -189,8 +198,9 @@ def simulate_op_ge(op: Dict) -> None:
         b_value = get_var_value(b)                  
         stack.append(int(a_value >= b_value)) 
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_le(op: Dict) -> None:
+def simulate_op_le(op: Dict) -> List:
     global stack
     errfunction="simulate_op_le"
     if len(stack) < 2:
@@ -205,8 +215,9 @@ def simulate_op_le(op: Dict) -> None:
         b_value = get_var_value(b)                  
         stack.append(int(a_value <= b_value)) 
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_ne(op: Dict) -> None:
+def simulate_op_ne(op: Dict) -> List:
     global stack
     errfunction="simulate_op_ne"
     if len(stack) < 2:
@@ -221,9 +232,10 @@ def simulate_op_ne(op: Dict) -> None:
         b_value = get_var_value(b)                  
         stack.append(int(a_value != b_value)) 
         set_stack_counter()
+    return stack.copy()
 
 
-def simulate_op_div(op: Dict, istoprint: bool) -> None:
+def simulate_op_div(op: Dict, istoprint: bool) -> List:
     global stack
     errfunction="simulate_op_div"
     if len(stack) < 2:
@@ -242,8 +254,9 @@ def simulate_op_div(op: Dict, istoprint: bool) -> None:
         else:
             stack.append(int(a_value / b_value))
             set_stack_counter()                 
+    return stack.copy()
 
-def simulate_op_divmod(op: Dict, istoprint: bool) -> None:
+def simulate_op_divmod(op: Dict, istoprint: bool) -> List:
     global stack
     errfunction="simulate_op_divmod"
     if len(stack) < 2:
@@ -263,8 +276,9 @@ def simulate_op_divmod(op: Dict, istoprint: bool) -> None:
             stack.append(int(a_value / b_value))
             stack.append(int(a_value % b_value))
             set_stack_counter(2)
+    return stack.copy()
 
-def simulate_op_mul(op: Dict) -> None:
+def simulate_op_mul(op: Dict) -> List:
     global stack
     errfunction="simulate_op_mul"
     if len(stack) < 2:
@@ -278,8 +292,9 @@ def simulate_op_mul(op: Dict) -> None:
         b_value = get_var_value(b)                    
         stack.append(int(a_value * b_value))
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_load(op: Dict) -> None:
+def simulate_op_load(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_load"
     if len(stack) < 1:
@@ -292,8 +307,9 @@ def simulate_op_load(op: Dict) -> None:
         byte = mem[a_value]
         stack.append(byte)
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_store(op: Dict) -> None:
+def simulate_op_store(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_store"
     if len(stack) < 2:
@@ -306,8 +322,9 @@ def simulate_op_store(op: Dict) -> None:
         a_value = get_var_value(value)                
         b_value = get_var_value(addr)                                
         mem[b_value] = a_value & 0xFF
+    return stack.copy()    
 
-def simulate_op_load16(op: Dict) -> None:
+def simulate_op_load16(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_load16"
     if len(stack) < 1:
@@ -322,9 +339,9 @@ def simulate_op_load16(op: Dict) -> None:
             _bytes[offset] = mem[addr + offset]
         stack.append(int.from_bytes(_bytes, byteorder="little"))
         set_stack_counter()
+    return stack.copy()
 
-
-def simulate_op_store16(op: Dict) -> None:
+def simulate_op_store16(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_store16"
     if len(stack) < 2:
@@ -340,9 +357,9 @@ def simulate_op_store16(op: Dict) -> None:
         for byte in store_value16:
             mem[store_addr16] = byte
             store_addr16 += 1
+    return stack.copy()
 
-
-def simulate_op_load32(op: Dict) -> None:
+def simulate_op_load32(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_load32"
     if len(stack) < 1:
@@ -357,9 +374,9 @@ def simulate_op_load32(op: Dict) -> None:
             _bytes[offset] = mem[addr + offset]
         stack.append(int.from_bytes(_bytes, byteorder="little"))
         set_stack_counter()
+    return stack.copy()
 
-
-def simulate_op_store32(op: Dict) -> None:
+def simulate_op_store32(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_store32"
     if len(stack) < 2:
@@ -375,9 +392,9 @@ def simulate_op_store32(op: Dict) -> None:
         for byte in store_value32:
             mem[store_addr32] = byte
             store_addr32 += 1
+    return stack.copy()
 
-
-def simulate_op_load64(op: Dict) -> None:
+def simulate_op_load64(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_load64"
     if len(stack) < 1:
@@ -393,8 +410,9 @@ def simulate_op_load64(op: Dict) -> None:
         stack.append(int.from_bytes(_bytes, byteorder="little"))
         #print(op, addr, int.from_bytes(_bytes, byteorder="little"))
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_store64(op: Dict) -> None:
+def simulate_op_store64(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_store64"
     if len(stack) < 2:
@@ -410,8 +428,9 @@ def simulate_op_store64(op: Dict) -> None:
         for byte in store_value64:
             mem[store_addr64] = byte
             store_addr64 += 1
+    return stack.copy()
 
-def simulate_op_swap(op: Dict) -> None:
+def simulate_op_swap(op: Dict) -> List:
     global stack
     errfunction="simulate_op_swap"
     if len(stack) < 2:
@@ -426,8 +445,9 @@ def simulate_op_swap(op: Dict) -> None:
         stack.append(b_value)
         stack.append(a_value)
         set_stack_counter(2)
+    return stack.copy()
 
-def simulate_op_shl(op: Dict) -> None:
+def simulate_op_shl(op: Dict) -> List:
     global stack
     errfunction="simulate_op_shl"
     if len(stack) < 2:
@@ -441,8 +461,9 @@ def simulate_op_shl(op: Dict) -> None:
         b_value = get_var_value(b)                    
         stack.append(a_value << b_value)
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_shr(op: Dict) -> None:
+def simulate_op_shr(op: Dict) -> List:
     global stack
     errfunction="simulate_op_shr"
     if len(stack) < 2:
@@ -456,8 +477,9 @@ def simulate_op_shr(op: Dict) -> None:
         b_value = get_var_value(b)                    
         stack.append(a_value >> b_value)
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_orb(op: Dict) -> None:
+def simulate_op_orb(op: Dict) -> List:
     global stack
     errfunction="simulate_op_orb"
     if len(stack) < 2:
@@ -471,8 +493,9 @@ def simulate_op_orb(op: Dict) -> None:
         b_value = get_var_value(b)                    
         stack.append(a_value | b_value)
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_andb(op: Dict) -> None:
+def simulate_op_andb(op: Dict) -> List:
     global stack
     errfunction="simulate_op_andb"
     if len(stack) < 2:
@@ -486,8 +509,9 @@ def simulate_op_andb(op: Dict) -> None:
         b_value = get_var_value(b)                    
         stack.append(a_value & b_value)
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_over(op: Dict) -> None:
+def simulate_op_over(op: Dict) -> List:
     global stack
     errfunction="simulate_op_over"
     if len(stack) < 2:
@@ -503,8 +527,9 @@ def simulate_op_over(op: Dict) -> None:
         stack.append(b_value)
         stack.append(a_value)
         set_stack_counter(3)
+    return stack.copy()
 
-def simulate_op_mod(op: Dict, istoprint: bool) -> None:
+def simulate_op_mod(op: Dict, istoprint: bool) -> List:
     global stack
     errfunction="simulate_op_mod"
     if len(stack) < 2:
@@ -523,8 +548,9 @@ def simulate_op_mod(op: Dict, istoprint: bool) -> None:
         else:
             stack.append(a_value % b_value)
             set_stack_counter()
+    return stack.copy()
 
-def simulate_op_write(op: Dict, ip: int, program: List, istoprint: bool) -> None:
+def simulate_op_write(op: Dict, ip: int, program: List, istoprint: bool) -> List:
     global stack, mem, buffer_file
     errfunction="simulate_op_write"
     if program[ip-1]['type']==get_OP_CHAR():
@@ -565,9 +591,10 @@ def simulate_op_write(op: Dict, ip: int, program: List, istoprint: bool) -> None
         s = mem[addr:offset].decode('utf-8')
         #print(s, end='')
         print_output_simulation(s, end='', istoprint=istoprint)
+    return stack.copy()
 
 
-def simulate_op_readf(op: Dict, ip: int, program: List, istoprint: bool) -> None:
+def simulate_op_readf(op: Dict, ip: int, program: List, istoprint: bool) -> List:
     global stack, mem, buffer_file, buf_file_ptr
     errfunction="simulate_op_readf"
     if len(stack) < 1:
@@ -591,8 +618,9 @@ def simulate_op_readf(op: Dict, ip: int, program: List, istoprint: bool) -> None
             #print(buffer_file)
         op['index'] = files_struct[fd]['index']
         set_stack_counter(2)
+    return stack.copy()
 
-def simulate_op_writef(op: Dict, ip: int, program: List, istoprint: bool) -> None:
+def simulate_op_writef(op: Dict, ip: int, program: List, istoprint: bool) -> List:
     global stack, mem, buffer_file, buf_file_ptr
     errfunction="simulate_op_writef"
     if len(stack) < 2:
@@ -609,8 +637,9 @@ def simulate_op_writef(op: Dict, ip: int, program: List, istoprint: bool) -> Non
         writebuf = os.write(fd, buffer_file[1:length])
         stack.append(writebuf)
         set_stack_counter()
+    return stack.copy()
  
-def simulate_op_close(op: Dict) -> None:
+def simulate_op_close(op: Dict) -> List:
     global stack, files_struct
     errfunction="simulate_op_close"
     if len(stack) < 1:
@@ -622,9 +651,9 @@ def simulate_op_close(op: Dict) -> None:
         set_stack_counter(-1)
         os.close(fd)
         op['index'] = files_struct[fd]['index']
+    return stack.copy()
 
-
-def simulate_op_rotate(op: Dict) -> None:
+def simulate_op_rotate(op: Dict) -> List:
     global stack
     errfunction="simulate_op_rotate"
     if len(stack) < 3:
@@ -639,8 +668,9 @@ def simulate_op_rotate(op: Dict) -> None:
         stack.append(c)
         stack.append(a)
         set_stack_counter(3)
+    return stack.copy()
 
-def simulate_op_open(op: Dict) -> None:
+def simulate_op_open(op: Dict) -> List:
     global stack, files_struct, mem
     errfunction="simulate_op_open"
     if len(stack) < 2:
@@ -658,8 +688,9 @@ def simulate_op_open(op: Dict) -> None:
         #print(files_struct, op)
         stack.append(fd)
         set_stack_counter()
+    return stack.copy()
 
-def simulate_op_openw(op: Dict) -> None:
+def simulate_op_openw(op: Dict) -> List:
     global stack, mem
     errfunction="simulate_op_openw"
     if len(stack) < 2:
@@ -676,8 +707,9 @@ def simulate_op_openw(op: Dict) -> None:
         fd = os.open(s, os.O_CREAT|os.O_WRONLY|os.O_TRUNC)
         stack.append(fd)
         set_stack_counter()
+    return stack.copy()
         
-def simulate_op_syscall0(op: Dict) -> None:
+def simulate_op_syscall0(op: Dict) -> List:
     global stack, files_struct, exit_code
     errfunction="simulate_op_syscall0"
     if len(stack) < 1:
@@ -694,8 +726,9 @@ def simulate_op_syscall0(op: Dict) -> None:
             generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
             stack.append(exit_code)
             set_stack_counter()          
+    return stack.copy()
 
-def simulate_op_syscall1(op: Dict) -> bool:
+def simulate_op_syscall1(op: Dict) -> Tuple[List, bool]:
     global stack, files_struct
     exit = False
     errfunction="simulate_op_syscall1"
@@ -713,9 +746,9 @@ def simulate_op_syscall1(op: Dict) -> bool:
             generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
             stack.append(exit_code)
             set_stack_counter()                   
-    return exit
+    return stack.copy(), exit
 
-def simulate_op_syscall3(op: Dict, istoprint: bool) -> None:
+def simulate_op_syscall3(op: Dict, istoprint: bool) -> List:
     global stack, files_struct, mem, exit_code
     errfunction="simulate_op_syscall3"
     if len(stack) < 4:
@@ -778,8 +811,9 @@ def simulate_op_syscall3(op: Dict, istoprint: bool) -> None:
             generate_runtime_error(op=op, errfunction=errfunction, msgid=4)
             stack.append(exit_code)
             set_stack_counter()                       
+    return stack.copy()
 
-def simulate_op_itos(op: Dict) -> None:
+def simulate_op_itos(op: Dict) -> List:
     global stack, mem, str_buf_ptr, str_size, var_struct
     errfunction="simulate_op_itos"
     if len(stack) < 1:
@@ -815,8 +849,9 @@ def simulate_op_itos(op: Dict) -> None:
             assert str_size <= get_STR_CAPACITY(), "String buffer overflow!"
             stack.append(op['addr'])
             set_stack_counter()
+    return stack.copy()
 
-def simulate_op_len(op: Dict, ip: int, program:List) -> None:
+def simulate_op_len(op: Dict, ip: int, program:List) -> List:
     global stack, mem, str_buf_ptr, str_size, var_struct
     errfunction="simulate_op_len"
     if len(stack) < 1:
@@ -856,6 +891,7 @@ def simulate_op_len(op: Dict, ip: int, program:List) -> None:
             strlen = len(s)
             stack.append(strlen)
             set_stack_counter()
+    return stack.copy()
 
 
 #print only if requested
