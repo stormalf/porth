@@ -40,20 +40,27 @@ MACRO common_header
 "  mov rsi, _file_buffer\n" putf
 "  syscall\n" putf
 "  ret\n" putf
+"\n" putf
 "; Input\n" putf
 "; RAX = pointer to the int to convert\n" putf
 "; RDI = address of the result\n" putf
-"; R9 = number of digits\n" putf
 "; Output:\n" putf
-"; None\n" putf
+"; R9 = lengths of the string\n" putf
+"; R8 = 0 if positive, 1 if negative\n" putf
 "_int_to_string:\n" putf
 "    xor r9, r9            ; initialize r9\n" putf
+"    xor r8, r8            ; initialize r8\n" putf
 "    xor   rbx, rbx        ; clear the rbx, I will use as counter for stack pushes\n" putf
+"    cmp  rax, 0          ; check if the number is negative\n" putf
+"    jge  .int_to_string_positive\n" putf
+"    mov r8, 1            ; set r8 to 1\n" putf
+"    neg  rax            ; make the number positive\n" putf
+".int_to_string_positive:\n" putf
 ".push_chars:\n" putf
 "    inc r9                ; increment the counter\n" putf
 "    xor rdx, rdx          ; clear rdx\n" putf
 "    mov rcx, 10           ; rcx is divisor, devide by 10\n" putf
-"    div rcx               ; devide rdx by rcx, result in rax remainder in rdx\n" putf
+"    div rcx               ; devide rdx by rcx, result in rax remainder in rdx\n"
 "    add rdx, 0x30         ; add 0x30 to rdx convert int => ascii\n" putf
 "    push rdx              ; push result to stack\n" putf
 "    inc rbx               ; increment my stack push counter\n" putf
@@ -61,15 +68,23 @@ MACRO common_header
 "    jnz .push_chars       ; if rax not 0 repeat\n" putf
 "\n" putf
 ".pop_chars:\n" putf
+"    cmp  r8, 0          ; check if the number is negative\n" putf
+"    je  .int_to_string_end\n" putf
+"    mov r8, 0            ; set r8 to 0 to avoid the negative sign for each digit\n" putf
+"    inc r9                ; increment the counter\n" putf
+"    mov rax, 0x2D        ; push '-' to the stack\n" putf
+"    stosb                 ; add null terminated string\n" putf
+"\n" putf
+".int_to_string_end:    \n" putf
 "    pop rax               ; pop result from stack into rax\n" putf
 "    stosb                 ; store contents of rax in at the address of num which is in RDI\n" putf
 "    dec rbx               ; decrement my stack push counter\n" putf
 "    cmp rbx, 0            ; check if stack push counter is 0\n" putf
 "    jg .pop_chars         ; not 0 repeat\n" putf
-"    mov rax, 0x0\n" putf
-"    stosb                 ; add null terminated character\n" putf
+"    mov rax, 0x0
+"    stosb                 ; add null terminated string\n" putf
 "    ret                   ; return to main\n" putf
-
+"\n" putf
 ENDM
 
 //header for assembly without libc!

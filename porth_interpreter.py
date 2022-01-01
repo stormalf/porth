@@ -12,7 +12,7 @@ from porth_simulate import *
 
 #simulate the program execution without compiling it. To be able to re-use the simulate function to detect some warnings and errors
 #the output is printed only if the function is requested with istoprint=True (default behaviour)
-def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tuple[List,bool, int]:
+def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True, debug: bool = False) -> Tuple[List,bool, int]:
     global exit_code, MAX_LOOP_SECURITY, var_struct, BUFFER_SIZE, stack, mem, mem_buf_ptr, argv_buf_ptr, str_buf_ptr, str_size
     global typeint, typefloat, typechar, typebool, typeptr, typeunknown, typestr, control_stack, type_stack, typeidvar
     #print(program)
@@ -369,8 +369,9 @@ def simulate(program: List, parameter: List, outfile:str, istoprint=True) -> Tup
                 ip += 1                
                 error = True
                 print(f"Unknown opcode: {op}")          # if isMem:
-            control_stack.append((op,  mystack))       
-            #print(ip - 1, control_stack[ip - 1], mystack, type_stack)        
+            control_stack.append((op,  mystack))  
+            if debug:    
+                print(ip - 1, control_stack[ip - 1], mystack, type_stack)        
         #     print()
         #     print(f"memory dump {mem[:20]}")  
     #probably here need to destroy variables and argc, argv

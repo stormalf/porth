@@ -41,7 +41,7 @@ def main(args, filename: str) -> None:
     #simulation         
     if not error and args.simulate:
         #print("simulating...")
-        stack, error, exit_code = simulate(program, args.parameter, args.outfile)
+        stack, error, exit_code = simulate(program=program, parameter=args.parameter, outfile=args.outfile, debug=args.debug)
     #compilation
     if not error and (args.compile or args.run):
         #print("compiling...")
@@ -74,6 +74,7 @@ if __name__=='__main__':
     parser.add_argument('-V', '--version', help='Display the version of porth', action='version', version=porthVersion())
     parser.add_argument('-c', '--compile', help='compile', action="store_true", required=False)
     parser.add_argument('-d', '--dump', help='dump', action="store_true", required=False)
+    parser.add_argument('-D', '--debug', help='dump', action="store_true", required=False)    
     parser.add_argument('-s', '--simulate', help='simulate', action="store_true", required=False)
     parser.add_argument('-r', '--run', help='compile and run', action="store_true", required=False)      
     #parser.add_argument('-a', '--ast', help='ast tree', action="store_true", required=False)  

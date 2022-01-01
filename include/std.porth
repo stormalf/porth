@@ -381,6 +381,12 @@ MACRO inc64
   DUP $64 1 + @64
 ENDM
 
+
+MACRO dec64
+  DUP $64 1 - @64
+ENDM
+
+
 MACRO strlen
 0 SWAP WHILE DUP $ 0 != DO
     1 + SWAP 1 + SWAP

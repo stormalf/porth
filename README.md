@@ -210,7 +210,7 @@ The non-initialized variables are not taken into account for now (segment fault 
 1.0.33 Adding OPENW, READF, WRITEF to have the capability to read file content and to write into a new file. Fixing README mistake between $ and @.
 Missing controls on File like if open failed negative numbers return in RAX not checked.
 
-1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64, bool and ptr. Adding controls to forbid wrong values depending the variable types. Adding ITOS keyword to convert integer to string. Adding LEN that returns the length of string, number of digits for an integer.
+1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64, bool and ptr. Adding controls to forbid wrong values depending the variable types. Adding ITOS keyword to convert integer to string. Adding LEN that returns the length of string, number of digits for an integer. Type checking not working well for now. Need to work on each operator to clarify what is expected. Changing READF/WRITEF to be able to use puts or WRITE or SYSCALL3 after a READF operation.
 
 ## simulation
 
@@ -254,8 +254,8 @@ link to pypy : https://www.pypy.org/download.html
 
 ## TODO
 
-- Adding type checking to avoid invisibles bugs! like missing DROP to remove address from stack on while loops! (2 days lost of time!)
-- Adding control if negative numbers for itos ?
+- Improving the type checking system
+- Improving the stack system. It's quite complex to manage the stack and to know when to use swap or not and when to drop or not!
 - Adding controls to check if open/read/write returns negative values.
 - Adding pointers and how to dereference them ?
 - Adding other types for variables (char, string, float)
@@ -264,3 +264,40 @@ link to pypy : https://www.pypy.org/download.html
 - Trying to implement similar language but using ANTLR4.
 - Generate a real AST and symbol table.
 - rewriting porth in porth
+
+## Detailed documentation
+
+OPEN:
+Description : open the file and returns the file descriptor (3 or higher if succeeds or negative value if fails)
+IN : pop the string address
+IN : pop the length of the string
+OUT : push the file descriptor
+
+READF:
+Description : read the file and returns the buffer address and the length of the buffer
+IN: pop the file descriptor
+OUT: push the buffer address
+OUT: push the length of the buffer
+
+WRITEF:
+Description : write the buffer into the file (defined by the file descriptor)
+IN: pop the file descriptor
+IN: pop the buffer address
+IN: pop the length of the buffer
+
+CLOSE:
+Description : close the file (defined by the file descriptor)
+IN: pop the file descriptor
+OUT: None
+
+ITOS:
+Description : convert an integer into a string
+IN: pop the integer
+OUT: push the string address
+OUT: push the length of the string
+
+LEN:
+Description : return the length of a string, integer, char. Internally calls ITOS or if it's already a string drop the address and returns the length.
+IN: pop the string address or the integer or the char
+IN: pop the length of the string (if string)
+OUT: push the length of the string

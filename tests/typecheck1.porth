@@ -1,2 +1,33 @@
 10 15 + 33 +
 .
+10 2 DIVMOD . . 
+5 7 MUL .
+18 6 DIV .
+14 7 - .
+17 8 SHR .
+17 8 SHL .
+10 5 =  .
+10 5 != .
+10 5 < .
+10 5 <= .
+10 5 > .
+10 5 >= .
+    
+30 DUP 3 MOD 0 = 
+OVER 5 MOD 0 =
+ANDB .
+DROP
+33 DUP 3 MOD 0 = 
+OVER 5 MOD 0 =
+ORB .
+DROP
+
+34 DUP 3 MOD 0 = 
+OVER 5 MOD 0 =
+ORB .
+DROP
+
+34 DUP 3 MOD 0 = 
+OVER 5 MOD 0 =
+ANDB .
+DROP

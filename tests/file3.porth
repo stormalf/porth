@@ -4,10 +4,12 @@ VAR fw u32
 "./bin/pgm12.asm" OPEN !fd
 "./bin/output.txt" OPENW !fw 
 
+//READF put on the stack the buffer and the length  
 WHILE fd READF DUP 0 != DO
+//writef expects on the top of the stack the buffer and below the length 
 SWAP fw WRITEF DROP //to remove the number of bytes written
 END
-DROP
+DROP //to remove the 0
 fd CLOSE
 fw CLOSE
-DROP
+DROP 
