@@ -754,6 +754,7 @@ def generate_readf_op(output, op):
     output.write("pop rax\n") # file descriptor
     output.write("mov dword[_fd], eax\n")    
     output.write("call _read_write\n")
+    output.write("push qword _file_buffer\n")
     output.write("mov qword [_bufread], rax\n")
     output.write("push rax\n")
 
@@ -761,6 +762,7 @@ def generate_writef_op(output, op):
     output.write("; writef \n")
     output.write("pop rax\n") # file descriptor  
     output.write("mov dword[_fd], eax\n")
+    output.write("pop rax\n") # buffer but not used we used _file_buffer each time!
     output.write("pop rax\n") #length of buffer
     #output.write("mov qword [_bufread], rax\n")    
     output.write("call _write_buffer\n")   

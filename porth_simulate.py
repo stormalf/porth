@@ -858,19 +858,34 @@ def simulate_op_write(op: Dict, ip: int, program: List, istoprint: bool) -> List
     else:
         b = stack.pop() #addr
         a = stack.pop() #length
-        addr = get_var_value(b)
-        length = get_var_value(a)
-        set_stack_counter(-2)
-        tb = type_stack.pop()
-        if tb != typeptr:
-            print(f"TypeChecking: incorrect type on stack for WRITE operation {tb}. Expecting {typeptr}")
-            sys.exit(1)
-        ta = type_stack.pop()
-        if ta != typeint:
-            print(f"TypeChecking: incorrect type on stack for WRITE operation {ta}. Expecting {typeint}")
-            sys.exit(1)
-        offset = (addr+length) 
-        s = mem[addr:offset].decode('utf-8')
+        set_stack_counter(-2)        
+        if b == "BUFFER_FILE":
+            addr = buf_file_ptr
+            length = get_var_value(a)
+            tb = type_stack.pop()
+            if tb != typeptr:
+                print(f"TypeChecking: incorrect type on stack for WRITE operation {tb}. Expecting {typeptr}")
+                sys.exit(1)
+            ta = type_stack.pop()
+            if ta != typeint:
+                print(f"TypeChecking: incorrect type on stack for WRITE operation {ta}. Expecting {typeint}")
+                sys.exit(1)
+            offset = (addr+length) 
+            s = buffer_file[addr:offset].decode('utf-8')
+
+        else:
+            addr = get_var_value(b)
+            length = get_var_value(a)
+            tb = type_stack.pop()
+            if tb != typeptr:
+                print(f"TypeChecking: incorrect type on stack for WRITE operation {tb}. Expecting {typeptr}")
+                sys.exit(1)
+            ta = type_stack.pop()
+            if ta != typeint:
+                print(f"TypeChecking: incorrect type on stack for WRITE operation {ta}. Expecting {typeint}")
+                sys.exit(1)
+            offset = (addr+length) 
+            s = mem[addr:offset].decode('utf-8')
         #print(s, end='')
         print_output_simulation(s, end='', istoprint=istoprint)
     return stack.copy()
@@ -894,45 +909,55 @@ def simulate_op_readf(op: Dict, ip: int, program: List, istoprint: bool) -> List
         readbuf = os.read(fd, BUFFER_SIZE)
         buflen = len(readbuf)
         if buflen == 0:
+            stack.append("BUFFER_FILE")
+            type_stack.append(typeptr)
             stack.append(0)
-            type_stack.append(typeint)
-            #stack.append(0)
-            #type_stack.append(typeptr)
+            type_stack.append(typeint)            
         else:
+            op['addr'] = buf_file_ptr
+            buffer_file[buf_file_ptr:buf_file_ptr+buflen] = readbuf
+            #stack.append(op['addr'])
+            stack.append("BUFFER_FILE")
+            type_stack.append(typeptr)
             stack.append(buflen)
             type_stack.append(typeint)
-            op['addr'] = buf_file_ptr
-            buffer_file[buf_file_ptr:buflen] = readbuf
-            #stack.append(op['addr'])
-            #type_stack.append(typeptr)
             #print(buffer_file)
         op['index'] = files_struct[fd]['index']
-        set_stack_counter(1)
+        set_stack_counter(2)
     return stack.copy()
 
 def simulate_op_writef(op: Dict, ip: int, program: List, istoprint: bool) -> List:
     global stack, mem, buffer_file, buf_file_ptr, type_stack
     errfunction="simulate_op_writef"
-    if len(stack) < 2:
+    if len(stack) < 3:
         #print("! impossible not enough element in stack")
         generate_runtime_error(op=op, errfunction=errfunction, msgid=0)
     else:
         #print(stack)
-        a = stack.pop()
-        b = stack.pop() #buffer length                
-        set_stack_counter(-2)                
-        tb = type_stack.pop()
-        if tb not in(typeptr, typeidvar):
-            print(f"TypeChecking: incorrect type on stack for WRITEF operation {tb}. Expecting {typeptr} or {typeidvar}")
+        a = stack.pop() #fd
+        addr = stack.pop() # buffer address
+        b = stack.pop() #buffer length     
+        if addr == "BUFFER_FILE":
+            addr = buf_file_ptr
+        else:
             sys.exit(1)
+        set_stack_counter(-3)                
         ta = type_stack.pop()
         if ta not in(typeint, typeidvar):
             print(f"TypeChecking: incorrect type on stack for WRITEF operation {ta}. Expecting {typeint} or {typeidvar}")
             sys.exit(1)
+        tb = type_stack.pop()
+        if tb not in(typeptr, typeidvar):
+            print(f"TypeChecking: incorrect type on stack for WRITEF operation {tb}. Expecting {typeptr} or {typeidvar}")
+            sys.exit(1)
+        tc = type_stack.pop()
+        if tc not in(typeint, typeidvar):
+            print(f"TypeChecking: incorrect type on stack for WRITEF operation {tc}. Expecting {typeint} or {typeidvar}")
+            sys.exit(1)
         fd = get_var_value(a)
         op['index'] = files_struct[fd]['index']
         length = get_var_value(b)
-        writebuf = os.write(fd, buffer_file[1:length])
+        writebuf = os.write(fd, buffer_file[addr:length])
         stack.append(writebuf)
         type_stack.append(typeint)
         set_stack_counter()
@@ -1141,9 +1166,12 @@ def simulate_op_syscall3(op: Dict, istoprint: bool) -> List:
         elif syscall_number == 1:
             fd = get_var_value(arg1)
             buffer = get_var_value(arg2)
-            count = get_var_value(arg3)
+            count = get_var_value(arg3)            
+            if buffer == "BUFFER_FILE":
+                s = buffer_file[buf_file_ptr:buf_file_ptr+count].decode('utf-8')
             #print(mem[buffer:10], fd, buffer, count)
-            s = mem[buffer:buffer+count].decode('utf-8')
+            else: 
+                s = mem[buffer:buffer+count].decode('utf-8')
             if fd == 1:
                 #print(s, end='')
                 print_output_simulation(s, end='', istoprint=istoprint)
@@ -1157,7 +1185,10 @@ def simulate_op_syscall3(op: Dict, istoprint: bool) -> List:
                 set_stack_counter()       
                 type_stack.append(typeint)                     
             else:
-                os.write(fd, mem[buffer:buffer+count])
+                if buffer == "BUFFER_FILE":
+                    os.write(fd, buffer_file[buf_file_ptr:buf_file_ptr+count])
+                else:
+                    os.write(fd, mem[buffer:buffer+count])
                 stack.append(exit_code)
                 set_stack_counter()       
                 type_stack.append(typeint)                     

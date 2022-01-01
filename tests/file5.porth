@@ -1,10 +1,9 @@
-
 INCLUDE "include/std.porth"
 VAR fd u32 
 "./bin/pgm12.asm" OPEN !fd
 
 WHILE fd READF DUP 0 != DO
-SWAP puts
+SWAP WRITE
 END
 DROP
 fd CLOSE

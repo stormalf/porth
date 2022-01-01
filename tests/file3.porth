@@ -5,9 +5,9 @@ VAR fw u32
 "./bin/output.txt" OPENW !fw 
 
 WHILE fd READF DUP 0 != DO
-fw WRITEF DROP //to remove the number of bytes written
+SWAP fw WRITEF DROP //to remove the number of bytes written
 END
-
+DROP
 fd CLOSE
 fw CLOSE
 DROP
