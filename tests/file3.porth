@@ -4,10 +4,10 @@ VAR fw u32
 "./bin/pgm12.asm" OPEN !fd
 "./bin/output.txt" OPENW !fw 
 
-fd READF WHILE 0 != DO
-    fw WRITEF DROP //to remove the number of bytes written
-    fd READF 
+WHILE fd READF DUP 0 != DO
+fw WRITEF DROP //to remove the number of bytes written
 END
+
 fd CLOSE
 fw CLOSE
 DROP

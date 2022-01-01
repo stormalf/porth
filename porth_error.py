@@ -160,6 +160,7 @@ def runtime_error_management(filename:str, msgid: int, fromline: int = 0, column
     runtime_table[7] = f"Runtime Error Code {RUN_FILE_ERR} in file {filename} line {fromline} column {column} `{token}`  unknown file descriptor!"
     runtime_table[8] = f"Runtime Error Code {RUN_VAR_ERR} in file {filename} line {fromline} column {column} `{token}`  invalid value for the variable type!"
     runtime_table[9] = f"Error Code {ERR_VAR_UNDEF} variable `{token}` undefined value in file {filename}, line {fromline} column {column}"
+    
     return runtime_table[msgid]
 
 #print(error_management("test", 3, 1, 1, "VAR"))
