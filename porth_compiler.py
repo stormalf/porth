@@ -8,7 +8,7 @@ from porth_assembler import *
 
 
 #compile the bytecode using nasm and gcc (for printf usage)
-def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = []) -> bool:
+def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [], debug: bool = False) -> bool:
     global exit_code, var_struct
     bss_var = []
     strs = []
@@ -202,8 +202,12 @@ def compile(bytecode: List, outfile: str, libc: bool = True, parameter: List = [
         #     output.write(f"{var}_str: resb BUFFER_SIZE\n") #to store string
     output.write("args_ptr: resq 1\n")
     output.close()
-    if libc:
-        os.system(f"nasm -felf64 {asmfile}  &&  gcc -static {outfile}.o -o {outfile} ")
+    if debug:
+        debug_info = f"-F dwarf -g -l {outfile}.lst"
     else:
-        os.system(f"nasm -felf64 {asmfile}  &&  ld -static {outfile}.o -o {outfile} ")
+        debug_info = ""
+    if libc:
+        os.system(f"nasm -felf64 {asmfile} {debug_info}  -o {outfile}.o  &&  gcc -g -static {outfile}.o -o {outfile} ")
+    else:
+        os.system(f"nasm -felf64 {asmfile} {debug_info}  -o {outfile}.o  &&  ld -g -static {outfile}.o -o {outfile} ")
     return error

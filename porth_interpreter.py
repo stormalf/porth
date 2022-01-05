@@ -49,29 +49,25 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                 sys.exit(-1)
             if op['type']==get_OP_PUSH():
                 mystack = simulate_op_push(op['value'])
-                ip += 1
             elif op['type']==get_OP_ADD():
                 mystack = simulate_op_add(op)        
                 #print(ip, control_stack[ip])
-                ip += 1
             elif op['type']==get_OP_SUB():
                 mystack = simulate_op_sub(op)
-                ip += 1                
             elif op['type']==get_OP_EQUAL():
                 mystack = simulate_op_equal(op)
-                ip += 1                
             elif op['type']==get_OP_DUMP():
                 mystack = simulate_op_dump(op, ip, program, istoprint)
-                ip += 1   
             elif op['type']==get_OP_IF():
-                ip += 1                
                 mystack, newip = simulate_op_if(op)
                 if newip != None:
                     ip = newip
+                    continue
             elif op['type']==get_OP_ELSE() or op['type']==get_OP_END():
                 mystack = stack.copy()             
                 if len(op) >= 2:
                     ip = op['jmp']
+                    continue
                 else:
                     #print("else statement without jmp")
                     generate_runtime_error(op=op, errfunction=errfunction, msgid= 1)
@@ -87,37 +83,26 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
             #         generate_runtime_error(op=op, errfunction=errfunction, msgid= 1)
             elif op['type']==get_OP_DUP():
                 mystack = simulate_op_dup(op)
-                ip += 1 
             elif op['type']==get_OP_DUP2():
                 mystack = simulate_op_dup2(op)
-                ip += 1                 
             elif op['type']==get_OP_GT():
                 mystack = simulate_op_gt(op)
-                ip += 1        
             elif op['type']==get_OP_LT():
                 mystack = simulate_op_lt(op)
-                ip += 1   
             elif op['type']==get_OP_GE(): 
                 mystack = simulate_op_ge(op)               
-                ip += 1
             elif op['type']==get_OP_LE():
                 mystack = simulate_op_le(op)
-                ip += 1
             elif op['type']==get_OP_NE():
                 mystack = simulate_op_ne(op)
-                ip += 1
             elif op['type']==get_OP_DIV():
                 mystack = simulate_op_div(op, istoprint)
-                ip += 1
             elif op['type']==get_OP_DIVMOD():
                 mystack = simulate_op_divmod(op, istoprint)
-                ip += 1                
             elif op['type']==get_OP_MUL():
                 mystack = simulate_op_mul(op)
-                ip += 1
             elif op['type']==get_OP_WHILE():
                 mystack = stack.copy()
-                ip += 1                
             elif op['type']==get_OP_DO():
                 #print(op, stack)
                 a = stack.pop()
@@ -142,57 +127,44 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                 if a_value == 0:
                     if len(op) >= 2:
                         ip = op['jmp']
+                        continue
                     else:
                         #print("do statement without jmp")
                         generate_runtime_error(op=op, errfunction=errfunction, msgid=1)
-                else:
-                    ip += 1    
+                # else:
+                #     ip += 1    
             elif op['type']==get_OP_MEM():#when using mem the address is put on the stack and never removed 
                 #isMem = True
                 stack.append(mem_buf_ptr)
                 mystack = stack.copy()
                 set_stack_counter()
                 type_stack.append(typeptr)
-                ip += 1  
             elif op['type']==get_OP_LOAD():
                 mystack = simulate_op_load(op)
-                ip += 1                    
             elif op['type']==get_OP_STORE():
                 mystack = simulate_op_store(op)
-                ip += 1  
             elif op['type']==get_OP_LOAD16():
                 mystack = simulate_op_load16(op)
-                ip += 1                    
             elif op['type']==get_OP_STORE16():
                 mystack = simulate_op_store16(op)
-                ip += 1                   
             elif op['type']==get_OP_LOAD32():
                 mystack = simulate_op_load32(op)
-                ip += 1                     
             elif op['type']==get_OP_STORE32():
                 mystack = simulate_op_store32(op)
-                ip += 1                
             elif op['type']==get_OP_LOAD64():
                 mystack = simulate_op_load64(op)
-                ip += 1
             elif op['type']==get_OP_STORE64():
                 mystack = simulate_op_store64(op)
-                ip += 1
             elif op['type']==get_OP_SWAP():
                 mystack = simulate_op_swap(op)
-                ip += 1        
             elif op['type']==get_OP_SHL():
                 mystack = simulate_op_shl(op)
-                ip += 1      
             elif op['type']==get_OP_SHR():
                 mystack = simulate_op_shr(op)
-                ip += 1
             elif op['type']==get_OP_ORB():
                 mystack = simulate_op_orb(op)
-                ip += 1
             elif op['type']==get_OP_ANDB():
                 mystack = simulate_op_andb(op)
-                ip += 1         
             elif op['type']==get_OP_DROP():
                 if len(stack) < 1:
                     #print("DROP impossible not enough element in stack")
@@ -201,14 +173,11 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                     stack.pop()
                     set_stack_counter(-1)
                     type_stack.pop()
-                mystack = stack.copy()
-                ip += 1
+                    mystack = stack.copy()
             elif op['type']==get_OP_OVER():
                 mystack = simulate_op_over(op)
-                ip += 1
             elif op['type']==get_OP_MOD():
                 mystack = simulate_op_mod(op, istoprint)
-                ip += 1
             elif op['type']==get_OP_EXIT():
                 if len(stack) < 1:
                     #print("EXIT impossible not enough element in stack")
@@ -225,25 +194,20 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                 break
             elif op['type']==get_OP_WRITE():
                 mystack = simulate_op_write(op=op, ip=ip, program=program, istoprint=istoprint)
-                ip += 1
             elif op['type']==get_OP_SYSCALL0():
                 mystack = simulate_op_syscall0(op=op)
-                ip += 1
             elif op['type']==get_OP_SYSCALL1():
                 mystack, exit = simulate_op_syscall1(op=op)
                 if exit:
                     break
-                ip += 1 
             elif op['type']==get_OP_SYSCALL2():
                 #print("not implemented yet!")
                 generate_runtime_error(op=op, errfunction=errfunction, msgid=5)
                 stack.append(exit_code) 
                 set_stack_counter()                       
                 type_stack.append(typeint)  
-                ip += 1                     
             elif op['type']==get_OP_SYSCALL3():
                 mystack = simulate_op_syscall3(op=op, istoprint=istoprint)
-                ip += 1
             elif op['type']==get_OP_SYSCALL4():
                 #print("not implemented yet!")
                 generate_runtime_error(op=op, errfunction=errfunction, msgid=5)             
@@ -251,7 +215,6 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                 set_stack_counter()       
                 type_stack.append(typeint)                      
                 mystack = stack.copy()
-                ip += 1                                                     
             elif op['type']==get_OP_SYSCALL5():
                 #print("not implemented yet!")
                 generate_runtime_error(op=op, errfunction=errfunction, msgid=5)
@@ -259,7 +222,6 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                 set_stack_counter()             
                 type_stack.append(typeint)                
                 mystack = stack.copy()
-                ip += 1                                                     
             elif op['type']==get_OP_SYSCALL6():
                 #print("not implemented yet!")
                 generate_runtime_error(op=op, errfunction=errfunction, msgid=5)
@@ -267,13 +229,11 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                 set_stack_counter()             
                 type_stack.append(typeint)
                 mystack = stack.copy()
-                ip += 1  
             elif op['type']==get_OP_CHAR():
                 stack.append(op['value'])
                 type_stack.append(typechar)
                 mystack = stack.copy()
                 set_stack_counter()
-                ip += 1
             elif op['type']==get_OP_STRING():
                 bstr = bytes(op['value'], 'utf-8')
                 strlen = len(bstr)
@@ -290,10 +250,8 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                 set_stack_counter()
                 type_stack.append(typeptr)
                 mystack = stack.copy()
-                ip += 1
             elif op['type']==get_OP_VAR():
                 mystack = stack.copy()
-                ip += 1
             elif op['type']==get_OP_IDVAR():
                 if program[ip - 1]['type'] != get_OP_VAR():
                     #print(op)
@@ -302,19 +260,16 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                     type_stack.append(typeidvar)
                     #print(stack, op, get_OP_VAR())
                 mystack = stack.copy()
-                ip += 1
             elif op['type']==get_OP_ARGC():
                 stack.append(argc)
                 set_stack_counter()
                 type_stack.append(typeint)                
                 mystack = stack.copy()
-                ip += 1
             elif op['type']==get_OP_ARGV():
                 stack.append(argv_buf_ptr)
                 set_stack_counter()
                 type_stack.append(typeptr)
                 mystack = stack.copy()
-                ip += 1
             elif op['type']==get_OP_ASSIGN_VAR():
                 if len(stack) < 1:
                     #print("! impossible not enough element in stack")
@@ -337,41 +292,32 @@ def simulate(program: List, parameter: List, outfile:str, istoprint: bool = True
                         print(f"! invalid value {a_value} for the variable type: {typevar}")
                         generate_runtime_error(op=op, errfunction=errfunction, msgid=8)
                     mystack = stack.copy()
-                ip += 1                                         
             elif op['type']==get_OP_VARTYPE():              
                 mystack = stack.copy()
-                ip += 1
             elif op['type']==get_OP_ROTATE():
                 mystack = simulate_op_rotate(op=op)
-                ip += 1
             elif op['type']==get_OP_OPEN():
                 mystack = simulate_op_open(op=op)
-                ip += 1
             elif op['type']==get_OP_OPENW():
                 mystack = simulate_op_openw(op=op)
-                ip += 1
             elif op['type']==get_OP_READF():
                 mystack = simulate_op_readf(op=op, ip=ip, program=program, istoprint=istoprint)
-                ip += 1
             elif op['type']==get_OP_WRITEF():
                 mystack = simulate_op_writef(op=op, ip=ip, program=program, istoprint=istoprint)
-                ip += 1
             elif op['type']==get_OP_CLOSE():
                 mystack = simulate_op_close(op)
-                ip += 1
             elif op['type']==get_OP_ITOS():
                 mystack = simulate_op_itos(op)
-                ip += 1
             elif op['type']==get_OP_LEN():
                 mystack = simulate_op_len(op, ip, program)
-                ip += 1
             else:
-                ip += 1                
                 error = True
                 print(f"Unknown opcode: {op}")          # if isMem:
-            control_stack.append((op,  mystack))  
-            if debug:    
-                print(ip - 1, control_stack[ip - 1], mystack, type_stack)        
+            control_stack.append((op,  mystack, type_stack.copy()))
+            ip += 1  
+        if debug:    
+            for i, op in enumerate(program):
+                print(i, op, control_stack[i])        
         #     print()
         #     print(f"memory dump {mem[:20]}")  
     #probably here need to destroy variables and argc, argv

@@ -14,7 +14,7 @@ It uses often the same syntax that I used in the current code. Sometimes it stil
 
 ./porth.py --help
 
-    usage: porth.py [-h] [-V] [-c] [-d] [-s] [-r] [-l] -i INPUTFILE [-o OUTFILE] [-w] [-p PARAMETER [PARAMETER ...]]
+    usage: porth.py [-h] [-V] [-c] [-d] [-D] [-s] [-r] [-l] -i INPUTFILE [-o OUTFILE] [-w] [-p PARAMETER [PARAMETER ...]]
 
     porth is a python3 forth language simulation
 
@@ -23,6 +23,7 @@ It uses often the same syntax that I used in the current code. Sometimes it stil
     -V, --version         Display the version of porth
     -c, --compile         compile
     -d, --dump            dump
+    -D, --debug           dump
     -s, --simulate        simulate
     -r, --run             compile and run
     -l, --libc            using gcc and libc
@@ -210,7 +211,7 @@ The non-initialized variables are not taken into account for now (segment fault 
 1.0.33 Adding OPENW, READF, WRITEF to have the capability to read file content and to write into a new file. Fixing README mistake between $ and @.
 Missing controls on File like if open failed negative numbers return in RAX not checked.
 
-1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64, bool and ptr. Adding controls to forbid wrong values depending the variable types. Adding ITOS keyword to convert integer to string. Adding LEN that returns the length of string, number of digits for an integer. Type checking not working well for now. Need to work on each operator to clarify what is expected. Changing READF/WRITEF to be able to use puts or WRITE or SYSCALL3 after a READF operation.
+1.0.34 Enabling warnings during test to check if the stack is empty at the end. Usage of MEM leaves address on the stack. DROP needed to keep the stack empty at the end. Probably same issue with OVER ? Adding other variables types i8, i16, i32, i64, bool and ptr. Adding controls to forbid wrong values depending the variable types. Adding ITOS keyword to convert integer to string. Adding LEN that returns the length of string, number of digits for an integer. Type checking not working well for now. Need to work on each operator to clarify what is expected. Changing READF/WRITEF to be able to use puts or WRITE or SYSCALL3 after a READF operation. Adding -D for debug print the operations , stack and type on the stack in simulation mode (in compilation mode generate only objects with debug info to be used by gdb).
 
 ## simulation
 
